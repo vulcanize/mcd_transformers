@@ -18,11 +18,11 @@ echo "Connecting with: $CONNECT_STRING"
 set +e
 
 # Run the DB migrations
-./goose postgres "$CONNECT_STRING" up
+./goose -dir ./migrations postgres "$CONNECT_STRING" up
 if [ $? -eq 0 ]; then
   # Fire up the services
   ./vulcanizedb lightSync --config environments/staging.toml &
-  ./vulcanizedb continuousLogSync --config environments/staging.toml &
+  ./vulcanizedb composeAndExecute --config environments/staging.toml &
 else
   echo "Could not run migrations. Are the database details correct?"
 fi
