@@ -20,8 +20,8 @@ COPY --from=builder /go/src/github.com/pressly/goose/cmd/goose/goose /app/goose
 # COPY --from=builder /go/src/github.com/vulcanize/vulcanizedb/db/migrations/* /app/migrations/
 
 ADD ./dockerfiles/startup_script.sh /app/
-ADD ./environments/staging.toml /app/environments/
-# Collision between core and plugin?
+ADD ./environments/composeAndExecuteEventTransformers.toml /app/environments/
+ADD ./environments/composeAndExecuteStorageTransformers.toml /app/environments/
 ADD ./db/migrations/* /app/migrations/
 
 WORKDIR /app

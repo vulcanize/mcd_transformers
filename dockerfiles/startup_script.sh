@@ -22,7 +22,8 @@ set +e
 if [ $? -eq 0 ]; then
   # Fire up the services
   ./vulcanizedb lightSync --config environments/staging.toml &
-  ./vulcanizedb composeAndExecute --config environments/staging.toml &
+  ./vulcanizedb composeAndExecute --config environments/composeAndExecuteEventTransformers.toml &
+  ./vulcanizedb composeAndExecute --config environments/composeAndExecuteStorageTransformers.toml &
 else
   echo "Could not run migrations. Are the database details correct?"
 fi
