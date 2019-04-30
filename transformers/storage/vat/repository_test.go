@@ -30,6 +30,9 @@ import (
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	. "github.com/vulcanize/mcd_transformers/transformers/storage/test_helpers"
 	"github.com/vulcanize/mcd_transformers/transformers/storage/vat"
+	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres/repositories"
+	"github.com/vulcanize/vulcanizedb/pkg/fakes"
+	"database/sql"
 )
 
 var _ = Describe("Vat storage repository", func() {
@@ -343,26 +346,243 @@ var _ = Describe("Vat storage repository", func() {
 		})
 	})
 
-	It("persists vat debt", func() {
-		err := repo.Create(fakeBlockNumber, fakeBlockHash, vat.DebtMetadata, fakeUint256)
+	Describe("vat debt", func() {
+		It("persists conflicting header", func() {
+			headerRepository := repositories.NewHeaderRepository(db)
+			header := fakes.GetFakeHeader(int64(fakeBlockNumber))
+			headerId, err := headerRepository.CreateOrUpdateHeader(header)
+			Expect(err).NotTo(HaveOccurred())
+			err = repo.Create(fakeBlockNumber, fakeBlockHash, vat.DebtMetadata, fakeUint256)
 
-		Expect(err).NotTo(HaveOccurred())
+			Expect(err).NotTo(HaveOccurred())
 
-		var result VariableRes
-		err = db.Get(&result, `SELECT block_number, block_hash, debt AS value FROM maker.vat_debt`)
-		Expect(err).NotTo(HaveOccurred())
-		AssertVariable(result, fakeBlockNumber, fakeBlockHash, fakeUint256)
+			var result MappingRes
+			err = db.Get(&result, `SELECT block_number, block_hash, debt AS key, conflicting_header_id AS value FROM maker.vat_debt`)
+			Expect(err).NotTo(HaveOccurred())
+			AssertMapping(result, fakeBlockNumber, fakeBlockHash, fakeUint256, strconv.Itoa(int(headerId)))
+		})
+
+		It("persists corresponding header", func() {
+			headerRepository := repositories.NewHeaderRepository(db)
+			header := fakes.GetFakeHeader(int64(fakeBlockNumber))
+			headerId, err := headerRepository.CreateOrUpdateHeader(header)
+			Expect(err).NotTo(HaveOccurred())
+			err = repo.Create(fakeBlockNumber, header.Hash, vat.DebtMetadata, fakeUint256)
+
+			Expect(err).NotTo(HaveOccurred())
+
+			var result MappingRes
+			err = db.Get(&result, `SELECT block_number, block_hash, debt AS key, confirmed_header_id AS value FROM maker.vat_debt`)
+			Expect(err).NotTo(HaveOccurred())
+			AssertMapping(result, fakeBlockNumber, header.Hash, fakeUint256, strconv.Itoa(int(headerId)))
+		})
+
+		It("persist when there's neither a corresponding nor conflicting header", func() {
+			err := repo.Create(fakeBlockNumber, fakeBlockHash, vat.DebtMetadata, fakeUint256)
+			Expect(err).NotTo(HaveOccurred())
+
+			var debtResult VariableRes
+			err = db.Get(&debtResult, `SELECT block_number, block_hash, debt AS value FROM maker.vat_debt`)
+			Expect(err).NotTo(HaveOccurred())
+			AssertVariable(debtResult, fakeBlockNumber, fakeBlockHash, fakeUint256)
+
+			type Res struct {
+				BlockMetadata
+				ConfirmedHeaderId sql.NullInt64 `db:"confirmed_header_id"`
+				ConflictingHeaderId sql.NullInt64 `db:"conflicting_header_id"`
+			}
+			var result Res
+			err = db.Get(&result, `SELECT block_number, block_hash, confirmed_header_id, conflicting_header_id FROM maker.vat_debt`)
+			Expect(err).NotTo(HaveOccurred())
+
+			Expect(result.ConfirmedHeaderId).To(Equal(sql.NullInt64{}))
+			Expect(result.ConflictingHeaderId).To(Equal(sql.NullInt64{}))
+		})
+
+		It("handles a reorg for a confirmed header", func() {
+			headerRepository := repositories.NewHeaderRepository(db)
+			header := fakes.GetFakeHeader(int64(fakeBlockNumber))
+			headerId, err := headerRepository.CreateOrUpdateHeader(header)
+			Expect(err).NotTo(HaveOccurred())
+			err = repo.Create(fakeBlockNumber, header.Hash, vat.DebtMetadata, fakeUint256)
+
+			Expect(err).NotTo(HaveOccurred())
+
+			var result MappingRes
+			err = db.Get(&result, `SELECT block_number, block_hash, debt AS key, confirmed_header_id AS value FROM maker.vat_debt`)
+			Expect(err).NotTo(HaveOccurred())
+			AssertMapping(result, fakeBlockNumber, header.Hash, fakeUint256, strconv.Itoa(int(headerId)))
+
+			_, err = db.Exec(`DELETE from headers where id = $1`, headerId)
+			Expect(err).NotTo(HaveOccurred())
+
+			type Res struct {
+				BlockMetadata
+				ConfirmedHeaderId sql.NullInt64 `db:"confirmed_header_id"`
+				ConflictingHeaderId sql.NullInt64 `db:"conflicting_header_id"`
+			}
+
+			var res Res
+			err = db.Get(&res, `SELECT block_number, block_hash, confirmed_header_id, conflicting_header_id FROM maker.vat_debt`)
+			Expect(err).NotTo(HaveOccurred())
+			Expect(res.ConfirmedHeaderId).To(Equal(sql.NullInt64{}))
+			Expect(res.ConflictingHeaderId).To(Equal(sql.NullInt64{}))
+		})
+
+		It("handles a reorg for a conflicting header", func() {
+			headerRepository := repositories.NewHeaderRepository(db)
+			header := fakes.GetFakeHeader(int64(fakeBlockNumber))
+			headerId, err := headerRepository.CreateOrUpdateHeader(header)
+			Expect(err).NotTo(HaveOccurred())
+			err = repo.Create(fakeBlockNumber, fakeBlockHash, vat.DebtMetadata, fakeUint256)
+
+			Expect(err).NotTo(HaveOccurred())
+
+			var result MappingRes
+			err = db.Get(&result, `SELECT block_number, block_hash, debt AS key, conflicting_header_id AS value FROM maker.vat_debt`)
+			Expect(err).NotTo(HaveOccurred())
+			AssertMapping(result, fakeBlockNumber, fakeBlockHash, fakeUint256, strconv.Itoa(int(headerId)))
+
+			_, err = db.Exec(`DELETE from headers where id = $1`, headerId)
+			Expect(err).NotTo(HaveOccurred())
+
+			type Res struct {
+				BlockMetadata
+				ConfirmedHeaderId sql.NullInt64 `db:"confirmed_header_id"`
+				ConflictingHeaderId sql.NullInt64 `db:"conflicting_header_id"`
+			}
+
+			var res Res
+			err = db.Get(&res, `SELECT block_number, block_hash, confirmed_header_id, conflicting_header_id FROM maker.vat_debt`)
+			Expect(err).NotTo(HaveOccurred())
+			Expect(res.ConfirmedHeaderId).To(Equal(sql.NullInt64{}))
+			Expect(res.ConflictingHeaderId).To(Equal(sql.NullInt64{}))
+		})
 	})
 
-	It("persists vat vice", func() {
-		err := repo.Create(fakeBlockNumber, fakeBlockHash, vat.ViceMetadata, fakeUint256)
 
-		Expect(err).NotTo(HaveOccurred())
+	FDescribe("vat vice", func() {
+		It("persists vat vice", func() {
+			err := repo.Create(fakeBlockNumber, fakeBlockHash, vat.ViceMetadata, fakeUint256)
 
-		var result VariableRes
-		err = db.Get(&result, `SELECT block_number, block_hash, vice AS value FROM maker.vat_vice`)
-		Expect(err).NotTo(HaveOccurred())
-		AssertVariable(result, fakeBlockNumber, fakeBlockHash, fakeUint256)
+			Expect(err).NotTo(HaveOccurred())
+
+			var result VariableRes
+			err = db.Get(&result, `SELECT block_number, block_hash, vice AS value FROM maker.vat_vice`)
+			Expect(err).NotTo(HaveOccurred())
+			AssertVariable(result, fakeBlockNumber, fakeBlockHash, fakeUint256)
+
+			type JoinResult struct {
+				ConfirmedHeaderId sql.NullInt64 `db:"confirmed_header_id"`
+				ConflictingHeaderId sql.NullInt64 `db:"conflicting_header_id"`
+				VatViceId sql.NullInt64 `db:"vat_vice_id"`
+			}
+
+			var joinResult JoinResult
+			err = db.Get(&joinResult, `SELECT confirmed_header_id, conflicting_header_id, vat_vice_id FROM maker.vat_vice_header`)
+			Expect(err).NotTo(HaveOccurred())
+			Expect(joinResult.ConfirmedHeaderId).To(Equal(sql.NullInt64{}))
+			Expect(joinResult.ConflictingHeaderId).To(Equal(sql.NullInt64{}))
+		})
+
+		It("persists conflicting header", func() {
+			headerRepository := repositories.NewHeaderRepository(db)
+			header := fakes.GetFakeHeader(int64(fakeBlockNumber))
+			headerId, err := headerRepository.CreateOrUpdateHeader(header)
+			Expect(err).NotTo(HaveOccurred())
+			err = repo.Create(fakeBlockNumber, fakeBlockHash, vat.ViceMetadata, fakeUint256)
+
+			Expect(err).NotTo(HaveOccurred())
+
+			var result VariableRes
+			err = db.Get(&result, `SELECT block_number, block_hash, vice AS value FROM maker.vat_vice`)
+			Expect(err).NotTo(HaveOccurred())
+			AssertVariable(result, fakeBlockNumber, fakeBlockHash, fakeUint256)
+
+			type JoinResult struct {
+				ConfirmedHeaderId sql.NullInt64 `db:"confirmed_header_id"`
+				ConflictingHeaderId sql.NullInt64 `db:"conflicting_header_id"`
+				VatViceId sql.NullInt64 `db:"vat_vice_id"`
+			}
+
+			var joinResult JoinResult
+			err = db.Get(&joinResult, `SELECT confirmed_header_id, conflicting_header_id, vat_vice_id FROM maker.vat_vice_header`)
+			Expect(err).NotTo(HaveOccurred())
+			Expect(joinResult.ConflictingHeaderId).To(Equal(sql.NullInt64{Valid: true, Int64: headerId}))
+			Expect(joinResult.ConfirmedHeaderId).To(Equal(sql.NullInt64{}))
+
+		})
+
+		FIt("persists confirmed header", func() {
+			headerRepository := repositories.NewHeaderRepository(db)
+			header := fakes.GetFakeHeader(int64(fakeBlockNumber))
+			headerId, err := headerRepository.CreateOrUpdateHeader(header)
+			Expect(err).NotTo(HaveOccurred())
+			err = repo.Create(fakeBlockNumber, header.Hash, vat.ViceMetadata, fakeUint256)
+
+			Expect(err).NotTo(HaveOccurred())
+
+			var result VariableRes
+			err = db.Get(&result, `SELECT block_number, block_hash, vice AS value FROM maker.vat_vice`)
+			Expect(err).NotTo(HaveOccurred())
+			AssertVariable(result, fakeBlockNumber, header.Hash, fakeUint256)
+
+			type JoinResult struct {
+				ConfirmedHeaderId sql.NullInt64 `db:"confirmed_header_id"`
+				ConflictingHeaderId sql.NullInt64 `db:"conflicting_header_id"`
+				VatViceId sql.NullInt64 `db:"vat_vice_id"`
+			}
+
+			var joinResult JoinResult
+			err = db.Get(&joinResult, `SELECT confirmed_header_id, conflicting_header_id, vat_vice_id FROM maker.vat_vice_header`)
+			Expect(err).NotTo(HaveOccurred())
+			Expect(joinResult.ConfirmedHeaderId).To(Equal(sql.NullInt64{Valid: true, Int64: headerId}))
+			Expect(joinResult.ConflictingHeaderId).To(Equal(sql.NullInt64{}))
+		})
+
+
+		It("handles a reorg for a confirmed header", func() {
+			headerRepository := repositories.NewHeaderRepository(db)
+			header := fakes.GetFakeHeader(int64(fakeBlockNumber))
+			headerId, err := headerRepository.CreateOrUpdateHeader(header)
+			Expect(err).NotTo(HaveOccurred())
+			err = repo.Create(fakeBlockNumber, header.Hash, vat.ViceMetadata, fakeUint256)
+
+			Expect(err).NotTo(HaveOccurred())
+
+			var result VariableRes
+			err = db.Get(&result, `SELECT block_number, block_hash, vice AS value FROM maker.vat_vice`)
+			Expect(err).NotTo(HaveOccurred())
+			AssertVariable(result, fakeBlockNumber, header.Hash, fakeUint256)
+
+			type JoinResult struct {
+				ConfirmedHeaderId sql.NullInt64 `db:"confirmed_header_id"`
+				ConflictingHeaderId sql.NullInt64 `db:"conflicting_header_id"`
+				VatViceId sql.NullInt64 `db:"vat_vice_id"`
+			}
+
+			var joinResult JoinResult
+			err = db.Get(&joinResult, `SELECT confirmed_header_id, conflicting_header_id, vat_vice_id FROM maker.vat_vice_header`)
+			Expect(err).NotTo(HaveOccurred())
+			Expect(joinResult.ConfirmedHeaderId).To(Equal(sql.NullInt64{Valid: true, Int64: headerId}))
+			Expect(joinResult.ConflictingHeaderId).To(Equal(sql.NullInt64{}))
+
+			_, err = db.Exec(`DELETE from headers where id = $1`, headerId)
+			Expect(err).NotTo(HaveOccurred())
+
+			type Res struct {
+				BlockMetadata
+				ConfirmedHeaderId sql.NullInt64 `db:"confirmed_header_id"`
+				ConflictingHeaderId sql.NullInt64 `db:"conflicting_header_id"`
+			}
+
+			var res Res
+			err = db.Get(&res, `SELECT confirmed_header_id, conflicting_header_id FROM maker.vat_vice_header`)
+			Expect(err).NotTo(HaveOccurred())
+			Expect(res.ConfirmedHeaderId).To(Equal(sql.NullInt64{}))
+			Expect(res.ConflictingHeaderId).To(Equal(sql.NullInt64{}))
+		})
+
 	})
 
 	It("persists vat Line", func() {

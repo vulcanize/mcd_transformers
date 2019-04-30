@@ -24,6 +24,8 @@ import (
 
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
+	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres/repositories"
+	"database/sql"
 )
 
 const (
@@ -37,10 +39,12 @@ const (
 	insertSinQuery     = `INSERT INTO maker.vat_sin (block_number, block_hash, guy, sin) VALUES ($1, $2, $3, $4)`
 	insertUrnArtQuery  = `INSERT INTO maker.vat_urn_art (block_number, block_hash, urn_id, art) VALUES ($1, $2, $3, $4)`
 	insertUrnInkQuery  = `INSERT INTO maker.vat_urn_ink (block_number, block_hash, urn_id, ink) VALUES ($1, $2, $3, $4)`
-	insertVatDebtQuery = `INSERT INTO maker.vat_debt (block_number, block_hash, debt) VALUES ($1, $2, $3)`
+	insertVatDebtNoHeaderQuery = `INSERT INTO maker.vat_debt (block_number, block_hash, debt) VALUES ($1, $2, $3)`
+	insertVatDebtConflictingHeaderQuery = `INSERT INTO maker.vat_debt (block_number, block_hash, debt, conflicting_header_id) VALUES ($1, $2, $3, $4)`
+	insertVatDebtConfirmedHeaderQuery = `INSERT INTO maker.vat_debt (block_number, block_hash, debt, confirmed_header_id) VALUES ($1, $2, $3, $4)`
 	insertVatLineQuery = `INSERT INTO maker.vat_line (block_number, block_hash, line) VALUES ($1, $2, $3)`
 	insertVatLiveQuery = `INSERT INTO maker.vat_live (block_number, block_hash, live) VALUES ($1, $2, $3)`
-	insertVatViceQuery = `INSERT INTO maker.vat_vice (block_number, block_hash, vice) VALUES ($1, $2, $3)`
+	insertVatViceQuery = `INSERT INTO maker.vat_vice (block_number, block_hash, vice) VALUES ($1, $2, $3) RETURNING id`
 )
 
 type VatStorageRepository struct {
@@ -201,7 +205,18 @@ func (repository *VatStorageRepository) insertUrnInk(blockNumber int, blockHash 
 }
 
 func (repository *VatStorageRepository) insertVatDebt(blockNumber int, blockHash, debt string) error {
-	_, err := repository.db.Exec(insertVatDebtQuery, blockNumber, blockHash, debt)
+	headerRepository := repositories.NewHeaderRepository(repository.db)
+	header, err := headerRepository.GetHeader(int64(blockNumber))
+	if header.Hash == "" {
+		_, err := repository.db.Exec(insertVatDebtNoHeaderQuery, blockNumber, blockHash, debt)
+		return err
+	}
+
+	if header.Hash == blockHash {
+		_, err = repository.db.Exec(insertVatDebtConfirmedHeaderQuery, blockNumber, blockHash, debt, header.Id)
+	} else {
+		_, err = repository.db.Exec(insertVatDebtConflictingHeaderQuery, blockNumber, blockHash, debt, header.Id)
+	}
 	return err
 }
 
@@ -216,7 +231,29 @@ func (repository *VatStorageRepository) insertVatLive(blockNumber int, blockHash
 }
 
 func (repository *VatStorageRepository) insertVatVice(blockNumber int, blockHash, vice string) error {
-	_, err := repository.db.Exec(insertVatViceQuery, blockNumber, blockHash, vice)
+	var vatViceId int64
+	err := repository.db.QueryRow(insertVatViceQuery, blockNumber, blockHash, vice).Scan(&vatViceId)
+	if err != nil {
+		return err
+	}
+	headerRepository := repositories.NewHeaderRepository(repository.db)
+	header, err := headerRepository.GetHeader(int64(blockNumber))
+	if err != nil && err != sql.ErrNoRows{
+		return err
+	}
+
+	if header.Hash == "" {
+		_, err = repository.db.Exec(`INSERT INTO maker.vat_vice_header (vat_vice_id) VALUES ($1)`, vatViceId)
+		return err
+	}
+
+	if header.Hash != blockHash {
+		_, err = repository.db.Exec(`INSERT INTO maker.vat_vice_header (vat_vice_id, conflicting_header_id) VALUES ($1, $2)`, vatViceId, header.Id)
+	}
+
+	if header.Hash == blockHash {
+		_, err = repository.db.Exec(`INSERT INTO maker.vat_vice_header (vat_vice_id, confirmed_header_id) VALUES ($1, $2)`, vatViceId, header.Id)
+	}
 	return err
 }
 

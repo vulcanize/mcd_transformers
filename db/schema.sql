@@ -2,8 +2,8 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 10.6
--- Dumped by pg_dump version 10.6
+-- Dumped from database version 11.2
+-- Dumped by pg_dump version 11.2
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -20,20 +20,6 @@ SET row_security = off;
 --
 
 CREATE SCHEMA maker;
-
-
---
--- Name: plpgsql; Type: EXTENSION; Schema: -; Owner: -
---
-
-CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
-
-
---
--- Name: EXTENSION plpgsql; Type: COMMENT; Schema: -; Owner: -
---
-
-COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
 
 
 --
@@ -1987,7 +1973,9 @@ CREATE TABLE maker.vat_debt (
     id integer NOT NULL,
     block_number bigint,
     block_hash text,
-    debt numeric NOT NULL
+    debt numeric NOT NULL,
+    confirmed_header_id integer,
+    conflicting_header_id integer
 );
 
 
@@ -2744,6 +2732,38 @@ CREATE TABLE maker.vat_vice (
     block_hash text,
     vice numeric NOT NULL
 );
+
+
+--
+-- Name: vat_vice_header; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.vat_vice_header (
+    id integer NOT NULL,
+    vat_vice_id integer,
+    confirmed_header_id integer,
+    conflicting_header_id integer
+);
+
+
+--
+-- Name: vat_vice_header_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.vat_vice_header_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: vat_vice_header_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.vat_vice_header_id_seq OWNED BY maker.vat_vice_header.id;
 
 
 --
@@ -4133,6 +4153,13 @@ ALTER TABLE ONLY maker.vat_vice ALTER COLUMN id SET DEFAULT nextval('maker.vat_v
 
 
 --
+-- Name: vat_vice_header id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vat_vice_header ALTER COLUMN id SET DEFAULT nextval('maker.vat_vice_header_id_seq'::regclass);
+
+
+--
 -- Name: vow_ash id; Type: DEFAULT; Schema: maker; Owner: -
 --
 
@@ -4987,6 +5014,22 @@ ALTER TABLE ONLY maker.vat_urn_ink
 
 
 --
+-- Name: vat_vice_header vat_vice_header_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vat_vice_header
+    ADD CONSTRAINT vat_vice_header_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: vat_vice_header vat_vice_header_vat_vice_id_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vat_vice_header
+    ADD CONSTRAINT vat_vice_header_vat_vice_id_key UNIQUE (vat_vice_id);
+
+
+--
 -- Name: vat_vice vat_vice_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
@@ -5540,6 +5583,22 @@ ALTER TABLE ONLY maker.urns
 
 
 --
+-- Name: vat_debt vat_debt_confirmed_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vat_debt
+    ADD CONSTRAINT vat_debt_confirmed_header_id_fkey FOREIGN KEY (confirmed_header_id) REFERENCES public.headers(id) ON DELETE SET NULL;
+
+
+--
+-- Name: vat_debt vat_debt_conflicting_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vat_debt
+    ADD CONSTRAINT vat_debt_conflicting_header_id_fkey FOREIGN KEY (conflicting_header_id) REFERENCES public.headers(id) ON DELETE SET NULL;
+
+
+--
 -- Name: vat_file_debt_ceiling vat_file_debt_ceiling_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
 --
 
@@ -5737,6 +5796,30 @@ ALTER TABLE ONLY maker.vat_urn_art
 
 ALTER TABLE ONLY maker.vat_urn_ink
     ADD CONSTRAINT vat_urn_ink_urn_id_fkey FOREIGN KEY (urn_id) REFERENCES maker.urns(id);
+
+
+--
+-- Name: vat_vice_header vat_vice_header_confirmed_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vat_vice_header
+    ADD CONSTRAINT vat_vice_header_confirmed_header_id_fkey FOREIGN KEY (confirmed_header_id) REFERENCES public.headers(id) ON DELETE SET NULL;
+
+
+--
+-- Name: vat_vice_header vat_vice_header_conflicting_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vat_vice_header
+    ADD CONSTRAINT vat_vice_header_conflicting_header_id_fkey FOREIGN KEY (conflicting_header_id) REFERENCES public.headers(id) ON DELETE SET NULL;
+
+
+--
+-- Name: vat_vice_header vat_vice_header_vat_vice_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vat_vice_header
+    ADD CONSTRAINT vat_vice_header_vat_vice_id_fkey FOREIGN KEY (vat_vice_id) REFERENCES maker.vat_vice(id);
 
 
 --

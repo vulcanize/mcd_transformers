@@ -3,7 +3,9 @@ CREATE TABLE maker.vat_debt (
   id            SERIAL PRIMARY KEY,
   block_number  BIGINT,
   block_hash    TEXT,
-  debt          NUMERIC NOT NULL
+  debt          NUMERIC NOT NULL,
+  confirmed_header_id INT REFERENCES public.headers (id) ON DELETE SET NULL,
+  conflicting_header_id INT REFERENCES public.headers (id) ON DELETE SET NULL
 );
 
 CREATE TABLE maker.vat_vice (
@@ -11,6 +13,13 @@ CREATE TABLE maker.vat_vice (
   block_number  BIGINT,
   block_hash    TEXT,
   vice          NUMERIC NOT NULL
+);
+
+CREATE TABLE maker.vat_vice_header (
+  id            SERIAL PRIMARY KEY,
+  vat_vice_id   INT REFERENCES maker.vat_vice (id) UNIQUE,
+  confirmed_header_id INT REFERENCES public.headers (id) ON DELETE SET NULL,
+  conflicting_header_id INT REFERENCES public.headers (id) ON DELETE SET NULL
 );
 
 CREATE TABLE maker.vat_ilk_art (
