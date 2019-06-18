@@ -379,7 +379,7 @@
   revision = "b001fa50d6b27f3f0bb175a87d0cb55426d0a0ae"
 
 [[projects]]
-  digest = "1:01be77b9f1c6ca4c20f2a37c3f96f652bdf0cb41a28004957ca49871c6b140de"
+  digest = "1:05f555f90f53211a7bf3d92eda5555d92d9ff1a37265fa8876418e566b36060c"
   name = "github.com/vulcanize/vulcanizedb"
   packages = [
     "libraries/shared/chunker",
@@ -417,8 +417,8 @@
     "pkg/plugin/writer",
   ]
   pruneopts = ""
-  revision = "3b531950f2e1ab99c9ad7c15fc9c3c35cbabee18"
-  version = "v0.0.2"
+  revision = "f0a7a7d999c3b1633aa2ef628ef9aaf93559b966"
+  version = "v0.0.3"
 
 [[projects]]
   branch = "master"
@@ -570,6 +570,7 @@
     "github.com/vulcanize/vulcanizedb/pkg/geth/node",
     "github.com/vulcanize/vulcanizedb/pkg/plugin",
     "github.com/vulcanize/vulcanizedb/pkg/plugin/helpers",
+    "golang.org/x/crypto/sha3",
   ]
   solver-name = "gps-cdcl"
   solver-version = 1
