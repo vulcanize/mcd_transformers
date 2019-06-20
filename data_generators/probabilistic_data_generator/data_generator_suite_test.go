@@ -1,4 +1,4 @@
-package main
+package probabilistic_data_generator
 
 import (
 	"github.com/sirupsen/logrus"

@@ -1,4 +1,4 @@
-package main
+package probabilistic_data_generator
 
 import (
 	"fmt"
@@ -14,7 +14,7 @@ var _ = Describe("data generator", func() {
 	Describe("with a given seed", func() {
 		var (
 			db    *postgres.DB
-			state GeneratorState
+			state ProbabilisticDataGeneratorState
 			seed  int64
 		)
 
@@ -23,7 +23,7 @@ var _ = Describe("data generator", func() {
 			rand.Seed(int64(seed))
 			db = test_config.NewTestDB(test_config.NewTestNode())
 			test_config.CleanTestDB(db)
-			state = NewGenerator(db)
+			state = NewProbabilisticDataGeneratorState(db)
 		})
 
 		// Runs twice with the same seed, dumps the DB data, repeats and compares results
@@ -37,7 +37,7 @@ var _ = Describe("data generator", func() {
 			test_config.CleanTestDB(db)
 			resetIdColumnSequences(db)
 			rand.Seed(int64(seed))
-			newState := NewGenerator(db)
+			newState := NewProbabilisticDataGeneratorState(db)
 			runErr = newState.Run(30)
 			Expect(runErr).NotTo(HaveOccurred())
 			state2 := dumpTables()
