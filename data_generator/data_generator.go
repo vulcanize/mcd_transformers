@@ -344,7 +344,6 @@ func (state *GeneratorState) insertIlk(hexIlk, name string) (int64, error) {
 	if err != nil {
 		return -1, fmt.Errorf("error inserting ilk: %v", err)
 	}
-	state.ilks = append(state.ilks, id)
 	return id, nil
 }
 
