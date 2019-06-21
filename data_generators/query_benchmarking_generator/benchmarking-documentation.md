@@ -5,7 +5,7 @@ _These instructions assume that you are inserting data and benchmarking a local 
 ## Generating the data
 1. `cd` into the `data_generators/query_benchmarking_genrator` directory
 1. run `go run data_generator.go` with the following flags:
-    `-pg-connection-string postgres://<YOUR database role and password>@localhost:5432/vulcanize_private?sslmode=disable`
+    `-pg-connection-string postgres://<your database role and password>@localhost:5432/vulcanize_private?sslmode=disable`
     `-generator-type benchmark`
 
 ## Running `pgbench`

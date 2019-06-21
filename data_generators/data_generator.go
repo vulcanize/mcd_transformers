@@ -49,14 +49,16 @@ func main() {
 	var runErr error
 	switch *generatorType {
 	case "probabilistic":
-		fmt.Println("probabilistic")
+		fmt.Println("Running the Probabilistic data generator.")
 		generatorState := probabilistic_data_generator.NewProbabilisticDataGeneratorState(&pg)
 		runErr = generatorState.Run(*stepsPtr)
 
 	case "benchmark":
-		fmt.Println("benchmark")
+		fmt.Println("Running the Benchmark data generator.")
+		numberOfIlks := 5
+		numberOfBlocksAfterGenesis := *stepsPtr
 		generatorState := query_benchmarking_generator.NewBenchmarkingDataGeneratorState(&pg)
-		runErr = generatorState.GenerateDataForIlkQueryTesting(1, *stepsPtr)
+		runErr = generatorState.GenerateDataForIlkQueryTesting(numberOfIlks, numberOfBlocksAfterGenesis)
 	}
 
 	if runErr != nil {
