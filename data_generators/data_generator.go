@@ -49,11 +49,14 @@ func main() {
 	var runErr error
 	switch *generatorType {
 	case "probabilistic":
-		generatorState := probabilistic_data_generator.NewRandomDataGeneratorState(&pg)
+		fmt.Println("probabilistic")
+		generatorState := probabilistic_data_generator.NewProbabilisticDataGeneratorState(&pg)
 		runErr = generatorState.Run(*stepsPtr)
 
 	case "benchmark":
-		fmt.Println("this generator has not yet been implemented")
+		fmt.Println("benchmark")
+		generatorState := query_benchmarking_generator.NewBenchmarkingDataGeneratorState(&pg)
+		runErr = generatorState.GenerateDataForIlkQueryTesting(1, *stepsPtr)
 	}
 
 	if runErr != nil {
@@ -68,7 +71,7 @@ func main() {
 		*stepsPtr, duration.Round(time.Duration(time.Second)).String(), speed)
 }
 
-func dbSetup(connectionString string) *sqlx.DB{
+func dbSetup(connectionString string) *sqlx.DB {
 	db, connectErr := sqlx.Connect("postgres", connectionString)
 	if connectErr != nil {
 		fmt.Println("Could not connect to DB: ", connectErr)
