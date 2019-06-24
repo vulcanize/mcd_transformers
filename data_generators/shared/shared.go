@@ -9,6 +9,7 @@ import (
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	"github.com/vulcanize/mcd_transformers/transformers/storage/cat"
 	"github.com/vulcanize/mcd_transformers/transformers/storage/jug"
+	"github.com/vulcanize/mcd_transformers/transformers/storage/spot"
 	"github.com/vulcanize/mcd_transformers/transformers/storage/vat"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
 	"github.com/vulcanize/vulcanizedb/pkg/core"
@@ -65,7 +66,7 @@ func (state *GeneratorState) InsertEthNode() (core.Node, error) {
 	if nodeErr != nil {
 		return core.Node{}, fmt.Errorf("could not insert initial node: %v", nodeErr)
 	}
-	 return node, nil
+	return node, nil
 }
 
 // Creates a new ilk, or updates a random one
@@ -132,24 +133,44 @@ func (state *GeneratorState) updateIlk() error {
 func (state *GeneratorState) TouchUrns() error {
 	p := rand.Float32()
 	if p < 0.1 {
-		return state.CreateUrn()
+		return state.CreateUrnAssociatedWithRandomIlk()
 	} else {
 		return state.updateUrn()
 	}
 }
 
-// Creates a new urn associated with a random ilk
-func (state *GeneratorState) CreateUrn() error {
-	randomIlkId := state.Ilks[rand.Intn(len(state.Ilks))]
+// Creates a new urn associated with the given ilk
+func (state *GeneratorState) CreateUrn(ilkId int64) error {
 	guy := GetRandomAddress()
-	urnId, insertUrnErr := state.insertUrn(randomIlkId, guy)
+	urnId, insertUrnErr := state.insertUrn(ilkId, guy)
 	if insertUrnErr != nil {
 		return insertUrnErr
 	}
 
+	insertUrnInitialErr := state.InsertInitialUrnData(urnId, guy)
+	if insertUrnInitialErr != nil {
+		return insertUrnInitialErr
+	}
+
+	state.Urns = append(state.Urns, urnId)
+	return nil
+}
+
+// Creates a new urn associated with a random ilk
+func (state *GeneratorState) CreateUrnAssociatedWithRandomIlk() error {
+	randomIlkId := state.Ilks[rand.Intn(len(state.Ilks))]
+
+	err := state.CreateUrn(randomIlkId)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (state *GeneratorState) InsertInitialUrnData(urnId int64, guy string) error {
 	blockNumber := state.CurrentHeader.BlockNumber
 	blockHash := state.CurrentHeader.Hash
-
 	ink := rand.Int()
 	art := rand.Int()
 	_, artErr := state.PgTx.Exec(vat.InsertUrnArtQuery, blockNumber, blockHash, urnId, art)
@@ -165,8 +186,6 @@ func (state *GeneratorState) CreateUrn() error {
 	if txErr != nil {
 		return fmt.Errorf("error creating matching tx: %v", txErr)
 	}
-
-	state.Urns = append(state.Urns, urnId)
 	return nil
 }
 
@@ -217,7 +236,6 @@ func (state *GeneratorState) insertUrn(ilkId int64, guy string) (int64, error) {
 	if err != nil {
 		return -1, fmt.Errorf("error inserting urn: %v", err)
 	}
-	state.Urns = append(state.Urns, id)
 	return id, nil
 }
 
@@ -244,6 +262,8 @@ func (state *GeneratorState) InsertInitialIlkData(ilkId int64) error {
 		jug.InsertJugIlkRhoQuery,
 		cat.InsertCatIlkChopQuery,
 		cat.InsertCatIlkLumpQuery,
+		spot.InsertSpotIlkMatQuery,
+		spot.InsertSpotIlkPipQuery,
 	}
 
 	for _, intInsertSql := range intInsertions {

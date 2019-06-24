@@ -9,8 +9,7 @@ import (
 	"math/rand"
 )
 
-
-type ProbabilisticDataGeneratorState struct{
+type ProbabilisticDataGeneratorState struct {
 	shared.GeneratorState
 }
 
@@ -78,7 +77,7 @@ func (state *ProbabilisticDataGeneratorState) doInitialSetup() error {
 	if ilkErr != nil {
 		return fmt.Errorf("could not create initial ilk: %v", ilkErr)
 	}
-	urnErr := state.CreateUrn()
+	urnErr := state.CreateUrnAssociatedWithRandomIlk()
 	if urnErr != nil {
 		return fmt.Errorf("could not create initial urn: %v", urnErr)
 	}

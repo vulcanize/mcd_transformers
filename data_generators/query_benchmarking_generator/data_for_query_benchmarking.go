@@ -34,9 +34,8 @@ func NewBenchmarkingDataGeneratorState(db *postgres.DB) BenchmarkingDataGenerato
 	return generatorState
 }
 
-// GenerateDataForIlkQueryTesting creates as many ilks as you want, and updates the related storage records
-//for each ilk for the given number of blocks
-func (state *BenchmarkingDataGeneratorState) GenerateDataForIlkQueryTesting(numberOfIlks int, numberOfAdditionalBlocks int) error {
+
+func (state *BenchmarkingDataGeneratorState) GenerateDataForQueryTesting(numberOfIlks, numberOfUrns, numberOfAdditionalBlocks int) error {
 	pgTx, txErr := state.DB.Beginx()
 	if txErr != nil {
 		return txErr
@@ -46,48 +45,20 @@ func (state *BenchmarkingDataGeneratorState) GenerateDataForIlkQueryTesting(numb
 
 	_, nodeErr := state.InsertEthNode()
 	if nodeErr != nil {
-		rollbackErr := state.PgTx.Rollback()
-		if rollbackErr != nil {
-			return rollbackErr
-		}
-		return nodeErr
+		return state.handleErrorWithRollback(nodeErr)
 	}
 
 	ilkErr := state.generateIlks(numberOfIlks)
 	if ilkErr != nil {
-		rollbackErr := state.PgTx.Rollback()
-		if rollbackErr != nil {
-			return rollbackErr
-		}
-		return ilkErr
+		return state.handleErrorWithRollback(ilkErr)
 	}
 
-	for _, ilkID := range state.Ilks {
-		storageErr := state.generateStorageRecordsForIlks(ilkID, numberOfAdditionalBlocks)
-		if storageErr != nil {
-			rollbackErr := state.PgTx.Rollback()
-			if rollbackErr != nil {
-				return rollbackErr
-			}
-			return storageErr
-		}
+	urnErr := state.generateUrns(numberOfUrns)
+	if urnErr != nil {
+		return state.handleErrorWithRollback(urnErr)
 	}
 
-	return state.PgTx.Commit()
-}
-
-func (state *BenchmarkingDataGeneratorState) generateIlks(numberOfIlks int) error {
-	for i := 1; i <= numberOfIlks; i++ {
-		err := state.CreateIlk()
-		if err != nil{
-			return err
-		}
-	}
-	return nil
-}
-
-func (state *BenchmarkingDataGeneratorState) generateStorageRecordsForIlks(ilkID int64, numberOfBlocks int) error {
-	for i := 1; i <= numberOfBlocks; i++ {
+	for i := 1; i <= numberOfAdditionalBlocks; i++ {
 		state.CurrentHeader = fakes.GetFakeHeaderWithTimestamp(int64(i), int64(i))
 		state.CurrentHeader.Hash = test_data.AlreadySeededRandomString(10)
 		headerErr := state.InsertCurrentHeader()
@@ -95,6 +66,55 @@ func (state *BenchmarkingDataGeneratorState) generateStorageRecordsForIlks(ilkID
 			return fmt.Errorf("error inserting current header: %v", headerErr)
 		}
 
+		storageErr := state.generateStorageRecordsForIlks()
+		if storageErr != nil {
+			return state.handleErrorWithRollback(storageErr)
+		}
+
+		urnStorageErr := state.generateStorageRecordsForUrns()
+		if urnStorageErr != nil {
+			return state.handleErrorWithRollback(urnStorageErr)
+		}
+
+	}
+
+	return state.PgTx.Commit()
+}
+
+// creates n ilks
+func (state *BenchmarkingDataGeneratorState) generateIlks(numberOfIlks int) error {
+	for i := 1; i <= numberOfIlks; i++ {
+		err := state.CreateIlk()
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+// creates n urns per ilk
+func (state *BenchmarkingDataGeneratorState) generateUrns(numberOfUrns int) error {
+	for i := 1; i <= numberOfUrns; i++ {
+		state.CurrentHeader = fakes.GetFakeHeaderWithTimestamp(int64(i), int64(i))
+		state.CurrentHeader.Hash = test_data.AlreadySeededRandomString(10)
+		headerErr := state.InsertCurrentHeader()
+		if headerErr != nil {
+			return fmt.Errorf("error inserting current header: %v", headerErr)
+		}
+		for _, ilkId := range state.Ilks {
+			createUrnErr := state.CreateUrn(ilkId)
+			if createUrnErr != nil {
+				return createUrnErr
+			}
+		}
+	}
+
+	return nil
+}
+
+//generates storage records for each ilk
+func (state *BenchmarkingDataGeneratorState) generateStorageRecordsForIlks() error {
+	for _, ilkID := range state.Ilks {
 		err := state.InsertInitialIlkData(ilkID)
 		if err != nil {
 			return err
@@ -103,3 +123,23 @@ func (state *BenchmarkingDataGeneratorState) generateStorageRecordsForIlks(ilkID
 	return nil
 }
 
+//generates storage records for each urn
+func (state *BenchmarkingDataGeneratorState) generateStorageRecordsForUrns() error {
+		for _, urnId := range state.Urns {
+			guy := shared.GetRandomAddress()
+			err := state.InsertInitialUrnData(urnId, guy)
+			if err != nil {
+				return err
+			}
+		}
+
+	return nil
+}
+
+func (state *BenchmarkingDataGeneratorState) handleErrorWithRollback(err error) error {
+	rollbackErr := state.PgTx.Rollback()
+	if rollbackErr != nil {
+		return rollbackErr
+	}
+	return err
+}

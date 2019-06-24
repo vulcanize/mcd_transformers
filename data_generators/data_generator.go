@@ -56,9 +56,10 @@ func main() {
 	case "benchmark":
 		fmt.Println("Running the Benchmark data generator.")
 		numberOfIlks := 5
+		numberOfUrnsPerIlk := 10
 		numberOfBlocksAfterGenesis := *stepsPtr
 		generatorState := query_benchmarking_generator.NewBenchmarkingDataGeneratorState(&pg)
-		runErr = generatorState.GenerateDataForIlkQueryTesting(numberOfIlks, numberOfBlocksAfterGenesis)
+		runErr = generatorState.GenerateDataForQueryTesting(numberOfIlks, numberOfUrnsPerIlk, numberOfBlocksAfterGenesis)
 	}
 
 	if runErr != nil {
