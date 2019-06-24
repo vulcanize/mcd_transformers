@@ -3,7 +3,7 @@
 
 #### Data Generation 
 Created 5 ilks and 500 additional blocks on on a fresh database:
-- `go run data_generator.go -pg-connection-string postgres://elizabethengelman@localhost:5432/vulcanize_private?sslmode=disable -generator-type benchmark -steps 500`
+- `go run data_generator.go -pg-connection-string postgres://<your local postgres user and password>@localhost:5432/vulcanize_private?sslmode=disable -generator-type benchmark -steps 500`
 - seed: `1561152359659541000`
 
 ### Revision: `9044467ebbb91f717f90f68a973e135cb8fbdff3`
@@ -47,6 +47,3 @@ latency average = 15.590 ms
 tps = 64.145548 (including connections establishing)
 tps = 65.920751 (excluding connections establishing)
 ```
-
-### Revision: `9044467ebbb91f717f90f68a973e135cb8fbdff3`
-
