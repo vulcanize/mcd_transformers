@@ -27,7 +27,9 @@ func main() {
 	seedPtr := flag.Int64("seed", -1,
 		"optional seed for repeatability. Running same seed several times will lead to database constraint violations.")
 	const defaultGeneratorType = "probabilistic"
-	generatorType := flag.String("generator-type", defaultGeneratorType, "type of data generator to run")
+	generatorType := flag.String("generator-type", defaultGeneratorType, "type of data generator to run:\n"+
+		"\"probabilistic\" which creates/updates records on chance\n"+
+		"\"benchmark\" which creates a fixed number of each storage record")
 	const defaultConnectionString = "postgres://vulcanize:vulcanize@localhost:5432/vulcanize_private?sslmode=disable"
 	connectionStringPtr := flag.String("pg-connection-string", defaultConnectionString,
 		"postgres connection string")

@@ -34,7 +34,6 @@ func NewBenchmarkingDataGeneratorState(db *postgres.DB) BenchmarkingDataGenerato
 	return generatorState
 }
 
-
 func (state *BenchmarkingDataGeneratorState) GenerateDataForQueryTesting(numberOfIlks, numberOfUrns, numberOfAdditionalBlocks int) error {
 	pgTx, txErr := state.DB.Beginx()
 	if txErr != nil {
@@ -125,13 +124,13 @@ func (state *BenchmarkingDataGeneratorState) generateStorageRecordsForIlks() err
 
 //generates storage records for each urn
 func (state *BenchmarkingDataGeneratorState) generateStorageRecordsForUrns() error {
-		for _, urnId := range state.Urns {
-			guy := shared.GetRandomAddress()
-			err := state.InsertInitialUrnData(urnId, guy)
-			if err != nil {
-				return err
-			}
+	for _, urnId := range state.Urns {
+		guy := shared.GetRandomAddress()
+		err := state.InsertInitialUrnData(urnId, guy)
+		if err != nil {
+			return err
 		}
+	}
 
 	return nil
 }
