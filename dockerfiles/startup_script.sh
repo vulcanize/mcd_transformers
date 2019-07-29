@@ -9,15 +9,15 @@ if test -z "$VDB_PG_CONNECT"; then
   set -e
 
   # Check the database variables are set
-  test $VDB_PG_NAME
-  test $VDB_PG_HOSTNAME
-  test $VDB_PG_PORT
-  test $VDB_PG_USER
-  test $VDB_PG_PASSWORD
+  test $DATABASE_NAME
+  test $DATABASE_HOSTNAME
+  test $DATABASE_PORT
+  test $DATABASE_USER
+  test $DATABASE_PASSWORD
   set +e
 
   # Construct the connection string for postgres
-  VDB_PG_CONNECT=postgresql://$VDB_PG_USER:$VDB_PG_PASSWORD@$VDB_PG_HOSTNAME:$VDB_PG_PORT/$VDB_PG_NAME?sslmode=disable
+  VDB_PG_CONNECT=postgresql://$DATABASE_USER:$DATABASE_PASSWORD@$DATABASE_HOSTNAME:$DATABASE_PORT/$DATABASE_NAME?sslmode=disable
 fi
 
 # Run the DB migrations
