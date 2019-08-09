@@ -19,6 +19,7 @@ package vat
 import (
 	"errors"
 	"fmt"
+	"github.com/ethereum/go-ethereum/crypto"
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/storage"
@@ -90,16 +91,16 @@ type VatMappings struct {
 	mappings          map[common.Hash]utils.StorageValueMetadata
 }
 
-func (mappings VatMappings) Lookup(key common.Hash) (utils.StorageValueMetadata, error) {
-	metadata, ok := mappings.mappings[key]
+func (mappings VatMappings) Lookup(diff utils.StorageDiff) (utils.StorageValueMetadata, error) {
+	metadata, ok := mappings.getStorageValueMetadata(diff)
 	if !ok {
 		err := mappings.loadMappings()
 		if err != nil {
 			return metadata, err
 		}
-		metadata, ok = mappings.mappings[key]
+		metadata, ok = mappings.getStorageValueMetadata(diff)
 		if !ok {
-			return metadata, utils.ErrStorageKeyNotFound{Key: key.Hex()}
+			return metadata, utils.ErrStorageKeyNotFound{Key: diff.StorageKey.Hex()}
 		}
 	}
 	return metadata, nil
@@ -108,6 +109,43 @@ func (mappings VatMappings) Lookup(key common.Hash) (utils.StorageValueMetadata,
 func (mappings *VatMappings) SetDB(db *postgres.DB) {
 	mappings.StorageRepository.SetDB(db)
 }
+
+
+type StorageKeyFormat int
+const (
+	NotHashed StorageKeyFormat = iota
+	KeccakHashed
+)
+
+func (mappings VatMappings) getStorageValueMetadata(diff utils.StorageDiff) (utils.StorageValueMetadata, bool) {
+	switch getStorageKeyFormat(diff) {
+	case KeccakHashed:
+		for storageKey, metadata := range mappings.mappings {
+			keccakOfMappingKey := common.BytesToHash(
+				crypto.Keccak256(storageKey[:]),
+			)
+			if keccakOfMappingKey == diff.StorageKey {
+				return metadata, true
+			}
+		}
+		return utils.StorageValueMetadata{}, false
+	default:
+		metadata, ok := mappings.mappings[diff.StorageKey]
+		return metadata, ok
+	}
+}
+
+func getStorageKeyFormat(diff utils.StorageDiff) StorageKeyFormat {
+	// if the diff's KeccakOfContractAddress field is populated, then we're assuming this is from Geth
+	// and therefore the storage key is also hashed
+	emptyHash := common.Hash{}
+	if diff.KeccakOfContractAddress != emptyHash {
+		return KeccakHashed
+	} else {
+		return NotHashed
+	}
+}
+
 
 func (mappings *VatMappings) loadMappings() error {
 	mappings.mappings = loadStaticMappings()
