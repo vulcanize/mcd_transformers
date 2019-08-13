@@ -55,7 +55,7 @@ var _ = Describe("Flap bid event computed columns", func() {
 	})
 
 	Describe("flap_bid_event_bid", func() {
-		It("returns flap bid for a flap_bid_event", func() {
+		It("returns flap bid for a bid_event", func() {
 			flapStorageValues := test_helpers.GetFlapStorageValues(1, fakeBidId)
 			test_helpers.CreateFlap(db, header, flapStorageValues, test_helpers.GetFlapMetadatas(strconv.Itoa(fakeBidId)), contractAddress)
 
@@ -65,7 +65,8 @@ var _ = Describe("Flap bid event computed columns", func() {
 			err := db.Get(&actualBid, `
 				SELECT bid_id, guy, tic, "end", lot, bid, gal, dealt, created, updated
 				FROM api.flap_bid_event_bid(
-					(SELECT (bid_id, lot, bid_amount, act, block_height, tx_idx)::api.flap_bid_event FROM api.all_flap_bid_events())
+					(SELECT (bid_id, lot, bid_amount, act, block_height, tx_idx, contract_address)::api.flap_bid_event
+					FROM api.all_flap_bid_events())
 				)`)
 
 			Expect(err).NotTo(HaveOccurred())
@@ -92,7 +93,8 @@ var _ = Describe("Flap bid event computed columns", func() {
 			var actualTx Tx
 			queryErr := db.Get(&actualTx, `
 				SELECT * FROM api.flap_bid_event_tx(
-					(SELECT (bid_id, lot, bid_amount, act, block_height, tx_idx)::api.flap_bid_event FROM api.all_flap_bid_events()))`)
+					(SELECT (bid_id, lot, bid_amount, act, block_height, tx_idx, contract_address)::api.flap_bid_event 
+					FROM api.all_flap_bid_events()))`)
 
 			Expect(queryErr).NotTo(HaveOccurred())
 			Expect(actualTx).To(Equal(expectedTx))
@@ -119,7 +121,8 @@ var _ = Describe("Flap bid event computed columns", func() {
 			var actualTx []Tx
 			queryErr := db.Select(&actualTx, `
 				SELECT * FROM api.flap_bid_event_tx(
-					(SELECT (bid_id, lot, bid_amount, act, block_height, tx_idx)::api.flap_bid_event FROM api.all_flap_bid_events()))`)
+					(SELECT (bid_id, lot, bid_amount, act, block_height, tx_idx, contract_address)::api.flap_bid_event 
+					FROM api.all_flap_bid_events()))`)
 
 			Expect(queryErr).NotTo(HaveOccurred())
 			Expect(actualTx).To(BeZero())

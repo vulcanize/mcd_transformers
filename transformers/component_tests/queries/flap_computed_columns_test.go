@@ -55,14 +55,15 @@ var _ = Describe("Flap computed columns", func() {
 			Expect(flapKickErr).NotTo(HaveOccurred())
 
 			expectedBidEvents := test_helpers.BidEvent{
-				BidId:     strconv.Itoa(fakeBidId),
-				Lot:       flapKickEvent.Lot,
-				BidAmount: flapKickEvent.Bid,
-				Act:       "kick",
+				BidId:           strconv.Itoa(fakeBidId),
+				Lot:             flapKickEvent.Lot,
+				BidAmount:       flapKickEvent.Bid,
+				Act:             "kick",
+				ContractAddress: contractAddress,
 			}
 			var actualBidEvents test_helpers.BidEvent
 			queryErr := db.Get(&actualBidEvents,
-				`SELECT bid_id, bid_amount, lot, act FROM api.flap_bid_events(
+				`SELECT bid_id, bid_amount, lot, act, contract_address FROM api.flap_bid_events(
     					(SELECT (bid_id, guy, tic, "end", lot, bid, gal, dealt, created, updated)::api.flap 
     					FROM api.all_flaps()))`)
 			Expect(queryErr).NotTo(HaveOccurred())
@@ -100,15 +101,16 @@ var _ = Describe("Flap computed columns", func() {
 			Expect(flapKickErr).NotTo(HaveOccurred())
 
 			expectedBidEvents := test_helpers.BidEvent{
-				BidId:     strconv.Itoa(fakeBidId),
-				Lot:       flapKickEvent.Lot,
-				BidAmount: flapKickEvent.Bid,
-				Act:       "kick",
+				BidId:           strconv.Itoa(fakeBidId),
+				Lot:             flapKickEvent.Lot,
+				BidAmount:       flapKickEvent.Bid,
+				Act:             "kick",
+				ContractAddress: contractAddress,
 			}
 
 			var actualBidEvents []test_helpers.BidEvent
 			queryErr := db.Select(&actualBidEvents,
-				`SELECT bid_id, bid_amount, lot, act FROM api.flap_bid_events(
+				`SELECT bid_id, bid_amount, lot, act, contract_address FROM api.flap_bid_events(
     					(SELECT (bid_id, guy, tic, "end", lot, bid, gal, dealt, created, updated)::api.flap
     					FROM api.all_flaps() WHERE bid_id = $1))`, fakeBidId)
 

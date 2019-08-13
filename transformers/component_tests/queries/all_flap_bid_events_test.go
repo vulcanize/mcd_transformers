@@ -104,7 +104,7 @@ var _ = Describe("Flap bid events query", func() {
 			))
 		})
 
-		It("returns bid events from multiple flappers", func() {
+		It("returns bid events for multiple bid ids", func() {
 			bidIdOne := rand.Int()
 			lotOne := rand.Int()
 			bidAmountOne := rand.Int()
