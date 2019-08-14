@@ -2,8 +2,10 @@
 CREATE TABLE maker.flap
 (
     id SERIAL PRIMARY KEY,
-    block_number BIGINT,
-    bid_id NUMERIC,
+    block_number BIGINT DEFAULT 0,
+    block_hash TEXT DEFAULT '',
+    contract_address TEXT DEFAULT '',
+    bid_id NUMERIC DEFAULT 0,
     guy TEXT DEFAULT '',
     tic BIGINT DEFAULT 0,
     "end" BIGINT DEFAULT 0,
@@ -20,7 +22,7 @@ CREATE TABLE maker.flap
 CREATE OR REPLACE FUNCTION maker.flap_bid() RETURNS TRIGGER
 AS $$
     BEGIN
-        INSERT INTO maker.flap(bid_id, block_number, bid) VALUES(NEW.bid_id, NEW.block_number, NEW.bid)
+        INSERT INTO maker.flap(bid_id, contract_address, block_number, block_hash, bid) VALUES(NEW.bid_id, NEW.contract_address, NEW.block_number, NEW.block_hash, NEW.bid)
             ON CONFLICT (bid_id, block_number) DO UPDATE SET bid = NEW.bid;
         return NEW;
     END
@@ -32,7 +34,7 @@ LANGUAGE plpgsql;
 CREATE OR REPLACE FUNCTION maker.flap_lot() RETURNS TRIGGER
 AS $$
 BEGIN
-    INSERT INTO maker.flap(bid_id, block_number, lot) VALUES(NEW.bid_id, NEW.block_number, NEW.lot)
+    INSERT INTO maker.flap(bid_id, contract_address, block_number, block_hash, lot) VALUES(NEW.bid_id, NEW.contract_address, NEW.block_number, NEW.block_hash, NEW.lot)
         ON CONFLICT (bid_id, block_number) DO UPDATE SET lot = NEW.lot;
     return NEW;
 END
@@ -44,7 +46,7 @@ $$
 CREATE OR REPLACE FUNCTION maker.flap_guy() RETURNS TRIGGER
 AS $$
 BEGIN
-    INSERT INTO maker.flap(bid_id, block_number, guy) VALUES(NEW.bid_id, NEW.block_number, NEW.guy)
+    INSERT INTO maker.flap(bid_id, contract_address, block_number, block_hash, guy) VALUES(NEW.bid_id, NEW.contract_address, NEW.block_number, NEW.block_hash, NEW.guy)
     ON CONFLICT (bid_id, block_number) DO UPDATE SET guy = NEW.guy;
     return NEW;
 END
@@ -56,7 +58,7 @@ $$
 CREATE OR REPLACE FUNCTION maker.flap_tic() RETURNS TRIGGER
 AS $$
 BEGIN
-    INSERT INTO maker.flap(bid_id, block_number, tic) VALUES(NEW.bid_id, NEW.block_number, NEW.tic)
+    INSERT INTO maker.flap(bid_id, contract_address, block_number, block_hash, tic) VALUES(NEW.bid_id, NEW.contract_address, NEW.block_number, NEW.block_hash, NEW.tic)
     ON CONFLICT (bid_id, block_number) DO UPDATE SET tic = NEW.tic;
     return NEW;
 END
@@ -68,7 +70,7 @@ $$
 CREATE OR REPLACE FUNCTION maker.flap_gal() RETURNS TRIGGER
 AS $$
 BEGIN
-    INSERT INTO maker.flap(bid_id, block_number, gal) VALUES(NEW.bid_id, NEW.block_number, NEW.gal)
+    INSERT INTO maker.flap(bid_id, contract_address, block_number, block_hash, gal) VALUES(NEW.bid_id, NEW.contract_address, NEW.block_number, NEW.block_hash, NEW.gal)
     ON CONFLICT (bid_id, block_number) DO UPDATE SET gal = NEW.gal;
     return NEW;
 END
@@ -80,7 +82,7 @@ $$
 CREATE OR REPLACE FUNCTION maker.flap_end() RETURNS TRIGGER
 AS $$
 BEGIN
-    INSERT INTO maker.flap(bid_id, block_number, "end") VALUES(NEW.bid_id, NEW.block_number, NEW."end")
+    INSERT INTO maker.flap(bid_id, contract_address, block_number, block_hash, "end") VALUES(NEW.bid_id, NEW.contract_address, NEW.block_number, NEW.block_hash, NEW."end")
     ON CONFLICT (bid_id, block_number) DO UPDATE SET "end" = NEW."end";
     return NEW;
 END
