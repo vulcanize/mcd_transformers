@@ -2427,15 +2427,55 @@ CREATE FUNCTION maker.flap_bid() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
     BEGIN
-        RAISE NOTICE 'TRIGGER called on %', TG_TABLE_NAME;
-        RAISE NOTICE 'TG_OP %', TG_OP;
-        RAISE NOTICE 'flap bid NEW %', NEW;
-        RAISE NOTICE 'flap bid OLD %', NEW;
-        -- somehow need to get value for lot...
         INSERT INTO maker.flap(bid_id, block_number, bid) VALUES(NEW.bid_id, NEW.block_number, NEW.bid)
             ON CONFLICT (bid_id, block_number) DO UPDATE SET bid = NEW.bid;
         return NEW;
     END
+$$;
+
+
+--
+-- Name: flap_end(); Type: FUNCTION; Schema: maker; Owner: -
+--
+
+CREATE FUNCTION maker.flap_end() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+    INSERT INTO maker.flap(bid_id, block_number, "end") VALUES(NEW.bid_id, NEW.block_number, NEW."end")
+    ON CONFLICT (bid_id, block_number) DO UPDATE SET "end" = NEW."end";
+    return NEW;
+END
+$$;
+
+
+--
+-- Name: flap_gal(); Type: FUNCTION; Schema: maker; Owner: -
+--
+
+CREATE FUNCTION maker.flap_gal() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+    INSERT INTO maker.flap(bid_id, block_number, gal) VALUES(NEW.bid_id, NEW.block_number, NEW.gal)
+    ON CONFLICT (bid_id, block_number) DO UPDATE SET gal = NEW.gal;
+    return NEW;
+END
+$$;
+
+
+--
+-- Name: flap_guy(); Type: FUNCTION; Schema: maker; Owner: -
+--
+
+CREATE FUNCTION maker.flap_guy() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+    INSERT INTO maker.flap(bid_id, block_number, guy) VALUES(NEW.bid_id, NEW.block_number, NEW.guy)
+    ON CONFLICT (bid_id, block_number) DO UPDATE SET guy = NEW.guy;
+    return NEW;
+END
 $$;
 
 
@@ -2447,12 +2487,23 @@ CREATE FUNCTION maker.flap_lot() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
 BEGIN
-    RAISE NOTICE 'TRIGGER called on %', TG_TABLE_NAME;
-    RAISE NOTICE 'flap lot NEW %', NEW;
-    -- somehow need to get value for bid...
-    -- maybe check if bid_id + block_number is the same?
     INSERT INTO maker.flap(bid_id, block_number, lot) VALUES(NEW.bid_id, NEW.block_number, NEW.lot)
         ON CONFLICT (bid_id, block_number) DO UPDATE SET lot = NEW.lot;
+    return NEW;
+END
+$$;
+
+
+--
+-- Name: flap_tic(); Type: FUNCTION; Schema: maker; Owner: -
+--
+
+CREATE FUNCTION maker.flap_tic() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+    INSERT INTO maker.flap(bid_id, block_number, tic) VALUES(NEW.bid_id, NEW.block_number, NEW.tic)
+    ON CONFLICT (bid_id, block_number) DO UPDATE SET tic = NEW.tic;
     return NEW;
 END
 $$;
@@ -2904,8 +2955,12 @@ CREATE TABLE maker.flap (
     id integer NOT NULL,
     block_number bigint,
     bid_id numeric,
+    guy text DEFAULT ''::text,
+    tic bigint DEFAULT 0,
+    "end" bigint DEFAULT 0,
     lot numeric DEFAULT 0,
-    bid numeric DEFAULT 0
+    bid numeric DEFAULT 0,
+    gal text DEFAULT ''::text
 );
 
 
@@ -11142,10 +11197,38 @@ CREATE TRIGGER flap_bid_bid AFTER INSERT OR UPDATE ON maker.flap_bid_bid FOR EAC
 
 
 --
+-- Name: flap_bid_end flap_bid_end; Type: TRIGGER; Schema: maker; Owner: -
+--
+
+CREATE TRIGGER flap_bid_end AFTER INSERT OR UPDATE ON maker.flap_bid_end FOR EACH ROW EXECUTE PROCEDURE maker.flap_end();
+
+
+--
+-- Name: flap_bid_gal flap_bid_gal; Type: TRIGGER; Schema: maker; Owner: -
+--
+
+CREATE TRIGGER flap_bid_gal AFTER INSERT OR UPDATE ON maker.flap_bid_gal FOR EACH ROW EXECUTE PROCEDURE maker.flap_gal();
+
+
+--
+-- Name: flap_bid_guy flap_bid_guy; Type: TRIGGER; Schema: maker; Owner: -
+--
+
+CREATE TRIGGER flap_bid_guy AFTER INSERT OR UPDATE ON maker.flap_bid_guy FOR EACH ROW EXECUTE PROCEDURE maker.flap_guy();
+
+
+--
 -- Name: flap_bid_lot flap_bid_lot; Type: TRIGGER; Schema: maker; Owner: -
 --
 
 CREATE TRIGGER flap_bid_lot AFTER INSERT OR UPDATE ON maker.flap_bid_lot FOR EACH ROW EXECUTE PROCEDURE maker.flap_lot();
+
+
+--
+-- Name: flap_bid_tic flap_bid_tic; Type: TRIGGER; Schema: maker; Owner: -
+--
+
+CREATE TRIGGER flap_bid_tic AFTER INSERT OR UPDATE ON maker.flap_bid_tic FOR EACH ROW EXECUTE PROCEDURE maker.flap_tic();
 
 
 --
