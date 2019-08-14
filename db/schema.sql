@@ -2419,6 +2419,45 @@ ORDER BY block_number DESC
 $$;
 
 
+--
+-- Name: flap_bid(); Type: FUNCTION; Schema: maker; Owner: -
+--
+
+CREATE FUNCTION maker.flap_bid() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+    BEGIN
+        RAISE NOTICE 'TRIGGER called on %', TG_TABLE_NAME;
+        RAISE NOTICE 'TG_OP %', TG_OP;
+        RAISE NOTICE 'flap bid NEW %', NEW;
+        RAISE NOTICE 'flap bid OLD %', NEW;
+        -- somehow need to get value for lot...
+        INSERT INTO maker.flap(bid_id, block_number, bid) VALUES(NEW.bid_id, NEW.block_number, NEW.bid)
+            ON CONFLICT (bid_id, block_number) DO UPDATE SET bid = NEW.bid;
+        return NEW;
+    END
+$$;
+
+
+--
+-- Name: flap_lot(); Type: FUNCTION; Schema: maker; Owner: -
+--
+
+CREATE FUNCTION maker.flap_lot() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+    RAISE NOTICE 'TRIGGER called on %', TG_TABLE_NAME;
+    RAISE NOTICE 'flap lot NEW %', NEW;
+    -- somehow need to get value for bid...
+    -- maybe check if bid_id + block_number is the same?
+    INSERT INTO maker.flap(bid_id, block_number, lot) VALUES(NEW.bid_id, NEW.block_number, NEW.lot)
+        ON CONFLICT (bid_id, block_number) DO UPDATE SET lot = NEW.lot;
+    return NEW;
+END
+$$;
+
+
 SET default_tablespace = '';
 
 SET default_with_oids = false;
@@ -2858,6 +2897,19 @@ ALTER SEQUENCE maker.dent_id_seq OWNED BY maker.dent.id;
 
 
 --
+-- Name: flap; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.flap (
+    id integer NOT NULL,
+    block_number bigint,
+    bid_id numeric,
+    lot numeric DEFAULT 0,
+    bid numeric DEFAULT 0
+);
+
+
+--
 -- Name: flap_beg; Type: TABLE; Schema: maker; Owner: -
 --
 
@@ -3125,6 +3177,26 @@ CREATE SEQUENCE maker.flap_gem_id_seq
 --
 
 ALTER SEQUENCE maker.flap_gem_id_seq OWNED BY maker.flap_gem.id;
+
+
+--
+-- Name: flap_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.flap_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: flap_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.flap_id_seq OWNED BY maker.flap.id;
 
 
 --
@@ -7057,6 +7129,13 @@ ALTER TABLE ONLY maker.dent ALTER COLUMN id SET DEFAULT nextval('maker.dent_id_s
 
 
 --
+-- Name: flap id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flap ALTER COLUMN id SET DEFAULT nextval('maker.flap_id_seq'::regclass);
+
+
+--
 -- Name: flap_beg id; Type: DEFAULT; Schema: maker; Owner: -
 --
 
@@ -8180,6 +8259,14 @@ ALTER TABLE ONLY maker.flap_bid_tic
 
 
 --
+-- Name: flap flap_block_number_bid_id_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flap
+    ADD CONSTRAINT flap_block_number_bid_id_key UNIQUE (block_number, bid_id);
+
+
+--
 -- Name: flap_gem flap_gem_block_number_block_hash_contract_address_gem_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
@@ -8241,6 +8328,14 @@ ALTER TABLE ONLY maker.flap_live
 
 ALTER TABLE ONLY maker.flap_live
     ADD CONSTRAINT flap_live_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: flap flap_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flap
+    ADD CONSTRAINT flap_pkey PRIMARY KEY (id);
 
 
 --
@@ -11037,6 +11132,20 @@ CREATE INDEX tx_from_index ON public.full_sync_transactions USING btree (tx_from
 --
 
 CREATE INDEX tx_to_index ON public.full_sync_transactions USING btree (tx_to);
+
+
+--
+-- Name: flap_bid_bid flap_bid_bid; Type: TRIGGER; Schema: maker; Owner: -
+--
+
+CREATE TRIGGER flap_bid_bid AFTER INSERT OR UPDATE ON maker.flap_bid_bid FOR EACH ROW EXECUTE PROCEDURE maker.flap_bid();
+
+
+--
+-- Name: flap_bid_lot flap_bid_lot; Type: TRIGGER; Schema: maker; Owner: -
+--
+
+CREATE TRIGGER flap_bid_lot AFTER INSERT OR UPDATE ON maker.flap_bid_lot FOR EACH ROW EXECUTE PROCEDURE maker.flap_lot();
 
 
 --
