@@ -38,7 +38,7 @@ var _ = Describe("Executing the transformer", func() {
 
 	It("reads in a Cat Live storage diff row and persists it", func() {
 		blockNumber := 10980005
-		catLineRow := utils.StorageDiffRow{
+		catLineRow := utils.StorageDiff{
 			Contract:     common.HexToAddress("81f7aa9c1570de564eb511b3a1e57dae558c65b5"),
 			BlockHeight:  blockNumber,
 			BlockHash:    common.HexToHash("82755877daf87d6eb8a228ee757450890f4b9b7bef96b749d8831fcfa466e6d7"),
@@ -56,7 +56,7 @@ var _ = Describe("Executing the transformer", func() {
 
 	It("reads in a Cat Vat storage diff row and persists it", func() {
 		blockNumber := 10980005
-		catLineRow := utils.StorageDiffRow{
+		catLineRow := utils.StorageDiff{
 			Contract:     common.HexToAddress("81f7aa9c1570de564eb511b3a1e57dae558c65b5"),
 			BlockHeight:  blockNumber,
 			BlockHash:    common.HexToHash("82755877daf87d6eb8a228ee757450890f4b9b7bef96b749d8831fcfa466e6d7"),
@@ -74,7 +74,7 @@ var _ = Describe("Executing the transformer", func() {
 
 	It("reads in a Cat Vow storage diff row and persists it", func() {
 		blockNumber := 10980005
-		catLineRow := utils.StorageDiffRow{
+		catLineRow := utils.StorageDiff{
 			Contract:     common.HexToAddress("81f7aa9c1570de564eb511b3a1e57dae558c65b5"),
 			BlockHeight:  blockNumber,
 			BlockHash:    common.HexToHash("82755877daf87d6eb8a228ee757450890f4b9b7bef96b749d8831fcfa466e6d7"),
@@ -105,7 +105,7 @@ var _ = Describe("Executing the transformer", func() {
 
 		It("reads in a Cat Ilk Flip storage diff row and persists it", func() {
 			blockNumber := 10980036
-			catLineRow := utils.StorageDiffRow{
+			catLineRow := utils.StorageDiff{
 				Contract:     common.HexToAddress("81f7aa9c1570de564eb511b3a1e57dae558c65b5"),
 				BlockHeight:  blockNumber,
 				BlockHash:    common.HexToHash("88aa77e1bdd6f06c304b8f674a10689c8b96e48deccb2e358597198e8a96a3ef"),
@@ -123,7 +123,7 @@ var _ = Describe("Executing the transformer", func() {
 
 		It("reads in a Cat Ilk Chop storage diff row and persists it", func() {
 			blockNumber := 10980036
-			catLineRow := utils.StorageDiffRow{
+			catLineRow := utils.StorageDiff{
 				Contract:     common.HexToAddress("81f7aa9c1570de564eb511b3a1e57dae558c65b5"),
 				BlockHeight:  blockNumber,
 				BlockHash:    common.HexToHash("88aa77e1bdd6f06c304b8f674a10689c8b96e48deccb2e358597198e8a96a3ef"),
@@ -141,7 +141,7 @@ var _ = Describe("Executing the transformer", func() {
 
 		It("reads in a Cat Ilk Lump storage diff row and persists it", func() {
 			blockNumber := 10980036
-			catLineRow := utils.StorageDiffRow{
+			catLineRow := utils.StorageDiff{
 				Contract:     common.HexToAddress("81f7aa9c1570de564eb511b3a1e57dae558c65b5"),
 				BlockHeight:  blockNumber,
 				BlockHash:    common.HexToHash("88aa77e1bdd6f06c304b8f674a10689c8b96e48deccb2e358597198e8a96a3ef"),

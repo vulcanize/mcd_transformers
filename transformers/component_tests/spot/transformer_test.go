@@ -42,7 +42,7 @@ var _ = Describe("Executing the transformer", func() {
 
 	It("reads in a Spot Vat storage diff row and persists it", func() {
 		blockNumber := 11257169
-		spotVatRow := utils.StorageDiffRow{
+		spotVatRow := utils.StorageDiff{
 			Contract:     common.HexToAddress("25a008bf942ce6d5b362f91ed7ae3e4104286a12"),
 			BlockHeight:  blockNumber,
 			BlockHash:    common.HexToHash("d39fe1598fad020726983eeb76bdca943d2757dc3be91864ab00f2cb0931628a"),
@@ -60,7 +60,7 @@ var _ = Describe("Executing the transformer", func() {
 
 	It("reads in a Spot Par storage diff row and persists it", func() {
 		blockNumber := 11257169
-		spotParRow := utils.StorageDiffRow{
+		spotParRow := utils.StorageDiff{
 			Contract:     common.HexToAddress("25a008bf942ce6d5b362f91ed7ae3e4104286a12"),
 			BlockHeight:  blockNumber,
 			BlockHash:    common.HexToHash("d39fe1598fad020726983eeb76bdca943d2757dc3be91864ab00f2cb0931628a"),
@@ -78,7 +78,7 @@ var _ = Describe("Executing the transformer", func() {
 
 	It("reads in a Spot Ilk Pip storage diff row and persists it", func() {
 		blockNumber := 11257255
-		spotIlkPipRow := utils.StorageDiffRow{
+		spotIlkPipRow := utils.StorageDiff{
 			Contract:     common.HexToAddress("a57d4123c8a80ac410e924df9d5e47765ffd1375"),
 			BlockHeight:  blockNumber,
 			BlockHash:    common.HexToHash("8c57727c0e057bd603e27304762c7144df161fc96990a573fddf23916b64c7df"),
@@ -96,7 +96,7 @@ var _ = Describe("Executing the transformer", func() {
 
 	It("reads in a Spot Ilk Mat storage diff row and persists it", func() {
 		blockNumber := 11257407
-		spotIlkMatRow := utils.StorageDiffRow{
+		spotIlkMatRow := utils.StorageDiff{
 			Contract:     common.HexToAddress("a57d4123c8a80ac410e924df9d5e47765ffd1375"),
 			BlockHeight:  blockNumber,
 			BlockHash:    common.HexToHash("d95e007739c8451f5e7b73fa1139b450aae37a6bf7735bcdb1f858cd32873726"),

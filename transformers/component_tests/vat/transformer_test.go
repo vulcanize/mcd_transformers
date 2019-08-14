@@ -60,7 +60,7 @@ var _ = Describe("Executing the transformer", func() {
 	It("reads in a Vat debt storage diff row and persists it", func() {
 		blockNumber := 10616394
 		blockHash := "0xd10b838e10cc3c6f30df25bf25beb1a94cb5d4d4752c795f3e8f5ee8aecbb37c"
-		vatDebtRow := utils.StorageDiffRow{
+		vatDebtRow := utils.StorageDiff{
 			Contract:     common.HexToAddress("48f749bd988caafacd7b951abbecc1aa31488690"),
 			BlockHeight:  blockNumber,
 			BlockHash:    common.HexToHash(blockHash[2:]),
@@ -79,7 +79,7 @@ var _ = Describe("Executing the transformer", func() {
 	It("reads in a Vat Line storage diff row and persists it", func() {
 		blockNumber := 10590469
 		blockHash := "0x29ff622ea764035385c003fc1587a39fd38937c673f732651f8caaee0244c0f0"
-		vatLineRow := utils.StorageDiffRow{
+		vatLineRow := utils.StorageDiff{
 			Contract:     common.HexToAddress("48f749bd988caafacd7b951abbecc1aa31488690"),
 			BlockHeight:  blockNumber,
 			BlockHash:    common.HexToHash(blockHash[2:]),
@@ -97,7 +97,7 @@ var _ = Describe("Executing the transformer", func() {
 
 	It("reads in a Vat live storage diff row and persists it", func() {
 		blockNumber := 10501122
-		vatLiveRow := utils.StorageDiffRow{
+		vatLiveRow := utils.StorageDiff{
 			Contract:     common.HexToAddress("67fd6c3575fc2dbe2cb596bd3bebc9edb5571fa1"),
 			BlockHeight:  blockNumber,
 			BlockHash:    common.HexToHash("1622e1531ade0154465dd99a9d25e3b4e4b8b9338edae51b71961446158f177b"),
@@ -128,7 +128,7 @@ var _ = Describe("Executing the transformer", func() {
 		It("reads in a Vat ilk Art storage diff row and persists it", func() {
 			blockNumber := 10616678
 			blockHash := "0xdde583e958e23ef32e7074a47d9610b074cabbbe764bb6f251143e8c6e7a43b1"
-			ilkArtRow := utils.StorageDiffRow{
+			ilkArtRow := utils.StorageDiff{
 				Contract:     common.HexToAddress("48f749bd988caafacd7b951abbecc1aa31488690"),
 				BlockHeight:  blockNumber,
 				BlockHash:    common.HexToHash(blockHash[2:]),
@@ -147,7 +147,7 @@ var _ = Describe("Executing the transformer", func() {
 		It("reads in a Vat ilk rate storage diff row and persists it", func() {
 			blockNumber := 10590340
 			blockHash := "0xe922c1abedf4f253ba83f3bd3a4fb044955b0919c483781895e99c60cfc193c7"
-			ilkRateRow := utils.StorageDiffRow{
+			ilkRateRow := utils.StorageDiff{
 				Contract:     common.HexToAddress("48f749bd988caafacd7b951abbecc1aa31488690"),
 				BlockHeight:  blockNumber,
 				BlockHash:    common.HexToHash(blockHash[2:]),
@@ -166,7 +166,7 @@ var _ = Describe("Executing the transformer", func() {
 		It("reads in a Vat ilk spot storage diff row and persists it", func() {
 			blockNumber := 10590525
 			blockHash := "0xf855d1467a1881418ab0739b63fdf91ad08d352e9683ad199338dbe430ec6b0c"
-			ilkSpotRow := utils.StorageDiffRow{
+			ilkSpotRow := utils.StorageDiff{
 				Contract:     common.HexToAddress("48f749bd988caafacd7b951abbecc1aa31488690"),
 				BlockHeight:  blockNumber,
 				BlockHash:    common.HexToHash(blockHash[2:]),
@@ -182,10 +182,34 @@ var _ = Describe("Executing the transformer", func() {
 			test_helpers.AssertMapping(spotResult, blockNumber, blockHash, strconv.Itoa(ilkId), "89550000000000000000000000000")
 		})
 
+		It("reads in a Vat ilk spot storage diff with a hashed storage key", func() {
+			anotherIlk := "0x474e542d41000000000000000000000000000000000000000000000000000000"
+			anotherIlkID, err := shared.GetOrCreateIlk(anotherIlk, db)
+			Expect(err).NotTo(HaveOccurred())
+
+			blockNumber := 8291257
+			blockHash := "0x3705dd630d53e29926dc58d4934ba6e0703774f6f4b04ccab8d54b40841712e8"
+			ilkSpotRow := utils.StorageDiff{
+				Contract:                common.HexToAddress("0x26A5C505c5B8558834483d1322B5305F61b0160D"),
+				KeccakOfContractAddress: common.HexToHash("566a25b3783536f0201b71c63b5ed42f79c651fe"),
+				BlockHash:               common.HexToHash(blockHash),
+				BlockHeight:             blockNumber,
+				StorageKey:              common.HexToHash("2165edb4e1c37b99b60fa510d84f939dd35d5cd1d1c8f299d6456ea09df65a76"),
+				StorageValue:            common.HexToHash("00000000000000000000000000000000000000008b1bb2b1a88f91522d765555"),
+			}
+			err = transformer.Execute(ilkSpotRow)
+			Expect(err).NotTo(HaveOccurred())
+
+			var spotResult test_helpers.MappingRes
+			err = db.Get(&spotResult, `SELECT block_number, block_hash, ilk_id AS key, spot AS value FROM maker.vat_ilk_spot`)
+			Expect(err).NotTo(HaveOccurred())
+			test_helpers.AssertMapping(spotResult, blockNumber, blockHash, strconv.Itoa(anotherIlkID), "43051901220750297886077900117")
+		})
+
 		It("reads in a Vat ilk line storage diff row and persists it", func() {
 			blockNumber := 10616268
 			blockHash := "0xdbd54f92401ed20cb3d9ba192c451b2357c9f6052b765891813f7438cb706744"
-			ilkLineRow := utils.StorageDiffRow{
+			ilkLineRow := utils.StorageDiff{
 				Contract:     common.HexToAddress("48f749bd988caafacd7b951abbecc1aa31488690"),
 				BlockHeight:  blockNumber,
 				BlockHash:    common.HexToHash(blockHash[2:]),
@@ -218,7 +242,7 @@ var _ = Describe("Executing the transformer", func() {
 		It("reads in a Vat urn ink storage diff row and persists it", func() {
 			blockNumber := 10953378
 			blockHash := "0x9f88e10734cafabe8e68647e554f74fcb4ce304732072c3ddad1896cae1345eb"
-			urnInkRow := utils.StorageDiffRow{
+			urnInkRow := utils.StorageDiff{
 				Contract:     common.HexToAddress("40c55ac74d2f43a0d9ea0709428629cfae21419c"),
 				BlockHeight:  blockNumber,
 				BlockHash:    common.HexToHash(blockHash[2:]),
@@ -237,7 +261,7 @@ var _ = Describe("Executing the transformer", func() {
 		It("reads in a Vat urn art storage diff row and persists it", func() {
 			blockNumber := 10953378
 			blockHash := "0x9f88e10734cafabe8e68647e554f74fcb4ce304732072c3ddad1896cae1345eb"
-			urnInkRow := utils.StorageDiffRow{
+			urnInkRow := utils.StorageDiff{
 				Contract:     common.HexToAddress("40c55ac74d2f43a0d9ea0709428629cfae21419c"),
 				BlockHeight:  blockNumber,
 				BlockHash:    common.HexToHash(blockHash[2:]),
@@ -276,7 +300,7 @@ var _ = Describe("Executing the transformer", func() {
 		It("reads in a Vat gem storage diff row and persists it", func() {
 			blockNumber := 10953378
 			blockHash := "0x9f88e10734cafabe8e68647e554f74fcb4ce304732072c3ddad1896cae1345eb"
-			urnInkRow := utils.StorageDiffRow{
+			urnInkRow := utils.StorageDiff{
 				Contract:     common.HexToAddress("40c55ac74d2f43a0d9ea0709428629cfae21419c"),
 				BlockHeight:  blockNumber,
 				BlockHash:    common.HexToHash(blockHash[2:]),
@@ -315,7 +339,7 @@ var _ = Describe("Executing the transformer", func() {
 		It("reads in a Vat dai storage diff row and persists it", func() {
 			blockNumber := 10953378
 			blockHash := "0x9f88e10734cafabe8e68647e554f74fcb4ce304732072c3ddad1896cae1345eb"
-			urnInkRow := utils.StorageDiffRow{
+			urnInkRow := utils.StorageDiff{
 				Contract:     common.HexToAddress("40c55ac74d2f43a0d9ea0709428629cfae21419c"),
 				BlockHeight:  blockNumber,
 				BlockHash:    common.HexToHash(blockHash[2:]),

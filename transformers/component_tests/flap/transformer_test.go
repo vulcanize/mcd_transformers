@@ -38,7 +38,7 @@ var _ = Describe("Executing the flap transformer", func() {
 	It("reads in a vat storage diff and persists it", func() {
 		blockNumber := 11579860
 		blockHash := common.HexToHash("3d8fd744457d476c3a1a9e4cbbaa0d951e0280416988fe87528a0aaac50186a8")
-		diff := utils.StorageDiffRow{
+		diff := utils.StorageDiff{
 			Contract:     transformer.Address,
 			BlockHash:    blockHash,
 			BlockHeight:  blockNumber,
@@ -58,7 +58,7 @@ var _ = Describe("Executing the flap transformer", func() {
 	It("reads in a gem storage diff and persists it", func() {
 		blockNumber := 11579860
 		blockHash := common.HexToHash("3d8fd744457d476c3a1a9e4cbbaa0d951e0280416988fe87528a0aaac50186a8")
-		diff := utils.StorageDiffRow{
+		diff := utils.StorageDiff{
 			Contract:     transformer.Address,
 			BlockHash:    blockHash,
 			BlockHeight:  blockNumber,
@@ -78,7 +78,7 @@ var _ = Describe("Executing the flap transformer", func() {
 	It("reads in a beg storage diff and persists it", func() {
 		blockNumber := 11579860
 		blockHash := common.HexToHash("3d8fd744457d476c3a1a9e4cbbaa0d951e0280416988fe87528a0aaac50186a8")
-		diff := utils.StorageDiffRow{
+		diff := utils.StorageDiff{
 			Contract:     transformer.Address,
 			BlockHash:    blockHash,
 			BlockHeight:  blockNumber,
@@ -98,7 +98,7 @@ var _ = Describe("Executing the flap transformer", func() {
 	It("reads in a ttl storage diff and persists it", func() {
 		blockNumber := 11579860
 		blockHash := common.HexToHash("3d8fd744457d476c3a1a9e4cbbaa0d951e0280416988fe87528a0aaac50186a8")
-		diff := utils.StorageDiffRow{
+		diff := utils.StorageDiff{
 			Contract:     transformer.Address,
 			BlockHash:    blockHash,
 			BlockHeight:  blockNumber,
@@ -118,7 +118,7 @@ var _ = Describe("Executing the flap transformer", func() {
 	It("reads in a tau storage diff and persists it", func() {
 		blockNumber := 11579860
 		blockHash := common.HexToHash("3d8fd744457d476c3a1a9e4cbbaa0d951e0280416988fe87528a0aaac50186a8")
-		diff := utils.StorageDiffRow{
+		diff := utils.StorageDiff{
 			Contract:     transformer.Address,
 			BlockHash:    blockHash,
 			BlockHeight:  blockNumber,
@@ -142,7 +142,7 @@ var _ = Describe("Executing the flap transformer", func() {
 	It("reads in a live storage diff and persists it", func() {
 		blockNumber := 11579860
 		blockHash := common.HexToHash("3d8fd744457d476c3a1a9e4cbbaa0d951e0280416988fe87528a0aaac50186a8")
-		diff := utils.StorageDiffRow{
+		diff := utils.StorageDiff{
 			Contract:     transformer.Address,
 			BlockHash:    blockHash,
 			BlockHeight:  blockNumber,
@@ -165,7 +165,7 @@ var _ = Describe("Executing the flap transformer", func() {
 			bidId := 1
 			blockNumber := 11579891
 			blockHash := common.HexToHash("5f2be3f6566f39dddfcfcf29784866280399ed9070af0b4fccd465509260349d")
-			diff := utils.StorageDiffRow{
+			diff := utils.StorageDiff{
 				Contract:     transformer.Address,
 				BlockHash:    blockHash,
 				BlockHeight:  blockNumber,

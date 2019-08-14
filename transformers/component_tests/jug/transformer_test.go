@@ -40,7 +40,7 @@ var _ = Describe("Executing the transformer", func() {
 
 	It("reads in a Jug Vat storage diff row and persists it", func() {
 		blockNumber := 10501125
-		jugVatRow := utils.StorageDiffRow{
+		jugVatRow := utils.StorageDiff{
 			Contract:     common.HexToAddress("25a008bf942ce6d5b362f91ed7ae3e4104286a12"),
 			BlockHeight:  blockNumber,
 			BlockHash:    common.HexToHash("1822bb271ce246212f0d097e59b3b04e0302819da3a2bd80e85b91e8c89fc883"),
@@ -58,7 +58,7 @@ var _ = Describe("Executing the transformer", func() {
 
 	It("reads in a Jug Vow storage diff row and persists it", func() {
 		blockNumber := 10501125
-		jugVowRow := utils.StorageDiffRow{
+		jugVowRow := utils.StorageDiff{
 			Contract:     common.HexToAddress("25a008bf942ce6d5b362f91ed7ae3e4104286a12"),
 			BlockHeight:  blockNumber,
 			BlockHash:    common.HexToHash("1822bb271ce246212f0d097e59b3b04e0302819da3a2bd80e85b91e8c89fc883"),
@@ -76,7 +76,7 @@ var _ = Describe("Executing the transformer", func() {
 
 	It("reads in a Jug Ilk Duty storage diff row and persists it", func() {
 		blockNumber := 10501138
-		jugIlkDutyRow := utils.StorageDiffRow{
+		jugIlkDutyRow := utils.StorageDiff{
 			Contract:     common.HexToAddress("25a008bf942ce6d5b362f91ed7ae3e4104286a12"),
 			BlockHeight:  blockNumber,
 			BlockHash:    common.HexToHash("3f58749d3956984c2b03a84d5c02105a06efa1ad048d8aa97cf8f59aafa8f08b"),
@@ -94,7 +94,7 @@ var _ = Describe("Executing the transformer", func() {
 
 	It("reads in a Jug Ilk Rho storage diff row and persists it", func() {
 		blockNumber := 10501138
-		jugIlkRhoRow := utils.StorageDiffRow{
+		jugIlkRhoRow := utils.StorageDiff{
 			Contract:     common.HexToAddress("25a008bf942ce6d5b362f91ed7ae3e4104286a12"),
 			BlockHeight:  blockNumber,
 			BlockHash:    common.HexToHash("3f58749d3956984c2b03a84d5c02105a06efa1ad048d8aa97cf8f59aafa8f08b"),

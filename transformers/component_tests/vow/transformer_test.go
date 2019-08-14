@@ -33,7 +33,7 @@ var _ = Describe("Executing the transformer", func() {
 
 	It("reads in a Vow.vat storage diff row and persists it", func() {
 		blockNumber := 10501125
-		vowVat := utils.StorageDiffRow{
+		vowVat := utils.StorageDiff{
 			Contract:     common.HexToAddress("17560834075da3db54f737db74377e799c865821"),
 			BlockHeight:  blockNumber,
 			BlockHash:    common.HexToHash("1822bb271ce246212f0d097e59b3b04e0302819da3a2bd80e85b91e8c89fc883"),
@@ -51,7 +51,7 @@ var _ = Describe("Executing the transformer", func() {
 
 	It("reads in a Vow.flapper storage diff row and persists it", func() {
 		blockNumber := 10980004
-		vowFlapper := utils.StorageDiffRow{
+		vowFlapper := utils.StorageDiff{
 			Contract:     common.HexToAddress("21444ac712ccd21ce82af24ea1aec64cf07361d2"),
 			BlockHeight:  blockNumber,
 			BlockHash:    common.HexToHash("44c07814be2cd81491f4d815ac922cc6590184e8777a5f0e3982c3b9ea83600e"),
@@ -69,7 +69,7 @@ var _ = Describe("Executing the transformer", func() {
 
 	It("reads in a Vow.flopper storage diff row and persists it", func() {
 		blockNumber := 10980004
-		vowFlopper := utils.StorageDiffRow{
+		vowFlopper := utils.StorageDiff{
 			Contract:     common.HexToAddress("21444ac712ccd21ce82af24ea1aec64cf07361d2"),
 			BlockHeight:  blockNumber,
 			BlockHash:    common.HexToHash("44c07814be2cd81491f4d815ac922cc6590184e8777a5f0e3982c3b9ea83600e"),
@@ -87,7 +87,7 @@ var _ = Describe("Executing the transformer", func() {
 
 	It("reads in a Vow.sump storage diff row and persists it", func() {
 		blockNumber := 10869770
-		vowSump := utils.StorageDiffRow{
+		vowSump := utils.StorageDiff{
 			Contract:     common.HexToAddress("4afcab85f27dd2e1a5ec1008b5b294e44e487f90"),
 			BlockHeight:  blockNumber,
 			BlockHash:    common.HexToHash("fe124bd8436290c364692b928a59f02f4d458c642b40398cbae173252b54093c"),
@@ -105,7 +105,7 @@ var _ = Describe("Executing the transformer", func() {
 
 	It("reads in a Vow.bump storage diff row and persists it", func() {
 		blockNumber := 10869768
-		vowBump := utils.StorageDiffRow{
+		vowBump := utils.StorageDiff{
 			Contract:     common.HexToAddress("4afcab85f27dd2e1a5ec1008b5b294e44e487f90"),
 			BlockHeight:  blockNumber,
 			BlockHash:    common.HexToHash("a750d8cf2317bb6d65b43b96ff24a179ed8c3a237f874c0e867987180b2527a8"),

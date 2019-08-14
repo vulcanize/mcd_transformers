@@ -305,7 +305,7 @@ var _ = Describe("Plugin test", func() {
 
 				tailer := fs.FileTailer{Path: viper.GetString("filesystem.storageDiffsPath")}
 				storageFetcher := fetcher.NewCsvTailStorageFetcher(tailer)
-				w := watcher.NewStorageWatcher(storageFetcher, db)
+				w := watcher.NewCsvStorageWatcher(storageFetcher, db)
 				w.AddTransformers(storageTransformerInitializers)
 				// This blocks right now, need to make test file to read from
 				//err = w.Execute()
@@ -389,7 +389,7 @@ var _ = Describe("Plugin test", func() {
 
 				tailer := fs.FileTailer{Path: viper.GetString("filesystem.storageDiffsPath")}
 				storageFetcher := fetcher.NewCsvTailStorageFetcher(tailer)
-				sw := watcher.NewStorageWatcher(storageFetcher, db)
+				sw := watcher.NewCsvStorageWatcher(storageFetcher, db)
 				sw.AddTransformers(storageInitializers)
 				// This blocks right now, need to make test file to read from
 				//err = w.Execute()

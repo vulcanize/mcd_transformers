@@ -55,7 +55,7 @@ var _ = Describe("Executing the flip transformer", func() {
 	It("reads in a vat storage diff and persists it", func() {
 		blockNumber := 11579891
 		blockHash := common.HexToHash("5f2be3f6566f39dddfcfcf29784866280399ed9070af0b4fccd465509260349d")
-		diff := utils.StorageDiffRow{
+		diff := utils.StorageDiff{
 			Contract:     transformer.Address,
 			BlockHash:    blockHash,
 			BlockHeight:  blockNumber,
@@ -76,7 +76,7 @@ var _ = Describe("Executing the flip transformer", func() {
 		blockNumber := 11579891
 		blockHash := common.HexToHash("5f2be3f6566f39dddfcfcf29784866280399ed9070af0b4fccd465509260349d")
 		ilk := "4554482d41000000000000000000000000000000000000000000000000000000"
-		diff := utils.StorageDiffRow{
+		diff := utils.StorageDiff{
 			Contract:     transformer.Address,
 			BlockHash:    blockHash,
 			BlockHeight:  blockNumber,
@@ -98,7 +98,7 @@ var _ = Describe("Executing the flip transformer", func() {
 	It("reads in a beg storage diff and persists it", func() {
 		blockNumber := 11579891
 		blockHash := common.HexToHash("5f2be3f6566f39dddfcfcf29784866280399ed9070af0b4fccd465509260349d")
-		diff := utils.StorageDiffRow{
+		diff := utils.StorageDiff{
 			Contract:     transformer.Address,
 			BlockHash:    blockHash,
 			BlockHeight:  blockNumber,
@@ -118,7 +118,7 @@ var _ = Describe("Executing the flip transformer", func() {
 	It("reads in a ttl storage diff and persists it", func() {
 		blockNumber := 11579891
 		blockHash := common.HexToHash("5f2be3f6566f39dddfcfcf29784866280399ed9070af0b4fccd465509260349d")
-		diff := utils.StorageDiffRow{
+		diff := utils.StorageDiff{
 			Contract:     transformer.Address,
 			BlockHash:    blockHash,
 			BlockHeight:  blockNumber,
@@ -138,7 +138,7 @@ var _ = Describe("Executing the flip transformer", func() {
 	It("reads in a tau storage diff and persists it", func() {
 		blockNumber := 11579891
 		blockHash := common.HexToHash("5f2be3f6566f39dddfcfcf29784866280399ed9070af0b4fccd465509260349d")
-		diff := utils.StorageDiffRow{
+		diff := utils.StorageDiff{
 			Contract:     transformer.Address,
 			BlockHash:    blockHash,
 			BlockHeight:  blockNumber,
@@ -165,7 +165,7 @@ var _ = Describe("Executing the flip transformer", func() {
 			bidId := 1
 			blockNumber := 11579891
 			blockHash := common.HexToHash("5f2be3f6566f39dddfcfcf29784866280399ed9070af0b4fccd465509260349d")
-			diff := utils.StorageDiffRow{
+			diff := utils.StorageDiff{
 				Contract:     transformer.Address,
 				BlockHash:    blockHash,
 				BlockHeight:  blockNumber,
