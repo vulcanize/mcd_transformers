@@ -80,7 +80,7 @@ var _ = Describe("Get flap query", func() {
 		Expect(expectedBid).To(Equal(actualBid))
 	})
 
-	It("gets created and updated blocks", func() {
+	It("gets the correct created and updated timestamps based on the requested block", func() {
 		_, headerOneErr := headerRepo.CreateOrUpdateHeader(blockOneHeader)
 		Expect(headerOneErr).NotTo(HaveOccurred())
 
@@ -101,6 +101,13 @@ var _ = Describe("Get flap query", func() {
 
 		flapStorageValuesTwo := test_helpers.GetFlapStorageValues(2, fakeBidId)
 		test_helpers.CreateFlap(db, blockTwoHeader, flapStorageValuesTwo, test_helpers.GetFlapMetadatas(strconv.Itoa(fakeBidId)), contractAddress)
+
+		// creating another block + updated storage values to ensure that get_flap uses the specified block
+		blockThree := blockTwo + 1
+		timestampThree := timestampTwo + 1000
+		blockThreeHeader := fakes.GetFakeHeaderWithTimestamp(int64(timestampThree), int64(blockThree))
+		flapStorageValuesThree := test_helpers.GetFlapStorageValues(3, fakeBidId)
+		test_helpers.CreateFlap(db, blockThreeHeader, flapStorageValuesThree, test_helpers.GetFlapMetadatas(strconv.Itoa(fakeBidId)), contractAddress)
 
 		expectedBid := test_helpers.FlapBidFromValues(strconv.Itoa(fakeBidId), "true", blockTwoHeader.Timestamp, blockOneHeader.Timestamp, flapStorageValuesTwo)
 

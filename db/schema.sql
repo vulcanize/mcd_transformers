@@ -2330,22 +2330,6 @@ $$;
 
 
 --
--- Name: get_tx_data(bigint, integer); Type: FUNCTION; Schema: public; Owner: -
---
-
-CREATE FUNCTION public.get_tx_data(block_height bigint, tx_idx integer) RETURNS SETOF api.tx
-    LANGUAGE sql STABLE
-    AS $$
-SELECT txs.hash, txs.tx_index, headers.block_number, headers.hash, tx_from, tx_to
-FROM header_sync_transactions txs
-         LEFT JOIN headers ON txs.header_id = headers.id
-WHERE block_number <= block_height
-  AND txs.tx_index <= tx_idx
-ORDER BY block_number DESC
-$$;
-
-
---
 -- Name: flap_bid(); Type: FUNCTION; Schema: maker; Owner: -
 --
 
@@ -2432,6 +2416,22 @@ BEGIN
     ON CONFLICT (bid_id, block_number) DO UPDATE SET tic = NEW.tic;
     return NEW;
 END
+$$;
+
+
+--
+-- Name: get_tx_data(bigint, integer); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION public.get_tx_data(block_height bigint, tx_idx integer) RETURNS SETOF api.tx
+    LANGUAGE sql STABLE
+    AS $$
+SELECT txs.hash, txs.tx_index, headers.block_number, headers.hash, tx_from, tx_to
+FROM header_sync_transactions txs
+         LEFT JOIN headers ON txs.header_id = headers.id
+WHERE block_number <= block_height
+  AND txs.tx_index <= tx_idx
+ORDER BY block_number DESC
 $$;
 
 

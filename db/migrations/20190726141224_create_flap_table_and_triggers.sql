@@ -12,7 +12,6 @@ CREATE TABLE maker.flap
     lot NUMERIC DEFAULT 0,
     bid NUMERIC DEFAULT 0,
     gal TEXT DEFAULT '',
---     dealt BOOLEAN, -- not sure how to populate this with triggers but get flap can figure it out
 --     created TIMESTAMP, -- would be nice to include this here instead of figuring it out in get_flap
 --     updated TIMESTAMP
     UNIQUE (block_number, bid_id)
