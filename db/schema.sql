@@ -2336,11 +2336,49 @@ $$;
 CREATE FUNCTION maker.flap_bid() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
-    BEGIN
-        INSERT INTO maker.flap(bid_id, contract_address, block_number, block_hash, bid) VALUES(NEW.bid_id, NEW.contract_address, NEW.block_number, NEW.block_hash, NEW.bid)
-            ON CONFLICT (bid_id, block_number) DO UPDATE SET bid = NEW.bid;
-        return NEW;
-    END
+BEGIN
+    WITH lot AS (
+        SELECT lot
+        FROM maker.flap
+        WHERE lot IS NOT NULL
+        ORDER BY block_number
+        LIMIT 1
+    ),
+         "end" AS (
+             SELECT "end"
+             FROM maker.flap
+             WHERE "end" IS NOT NULL
+             ORDER BY block_number
+             LIMIT 1
+         ),
+         tic AS (
+             SELECT tic
+             FROM maker.flap
+             WHERE tic IS NOT NULL
+             ORDER BY block_number
+             LIMIT 1
+         ),
+         guy AS (
+             SELECT guy
+             FROM maker.flap
+             WHERE guy IS NOT NULL
+             ORDER BY block_number
+             LIMIT 1
+         ),
+         gal AS (
+             SELECT gal
+             FROM maker.flap
+             WHERE gal IS NOT NULL
+             ORDER BY block_number
+             LIMIT 1
+         )
+    INSERT
+    INTO maker.flap(bid_id, contract_address, block_number, block_hash, bid, lot, "end", tic, guy, gal)
+    VALUES (NEW.bid_id, NEW.contract_address, NEW.block_number, NEW.block_hash, NEW.bid, (SELECT lot FROM lot),
+            (SELECT "end" FROM "end"), (SELECT tic FROM tic), (SELECT guy FROM guy), (SELECT gal FROM gal))
+    ON CONFLICT (bid_id, block_number) DO UPDATE SET bid = NEW.bid;
+    return NEW;
+END
 $$;
 
 
@@ -2352,7 +2390,45 @@ CREATE FUNCTION maker.flap_end() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
 BEGIN
-    INSERT INTO maker.flap(bid_id, contract_address, block_number, block_hash, "end") VALUES(NEW.bid_id, NEW.contract_address, NEW.block_number, NEW.block_hash, NEW."end")
+    WITH bid AS (
+        SELECT bid
+        FROM maker.flap
+        WHERE bid IS NOT NULL
+        ORDER BY block_number
+        LIMIT 1
+    ),
+         lot AS (
+             SELECT lot
+             FROM maker.flap
+             WHERE lot IS NOT NULL
+             ORDER BY block_number
+             LIMIT 1
+         ),
+         guy AS (
+             SELECT guy
+             FROM maker.flap
+             WHERE guy IS NOT NULL
+             ORDER BY block_number
+             LIMIT 1
+         ),
+         gal AS (
+             SELECT gal
+             FROM maker.flap
+             WHERE gal IS NOT NULL
+             ORDER BY block_number
+             LIMIT 1
+         ),
+         tic AS (
+             SELECT tic
+             FROM maker.flap
+             WHERE tic IS NOT NULL
+             ORDER BY block_number
+             LIMIT 1
+         )
+    INSERT
+    INTO maker.flap(bid_id, contract_address, block_number, block_hash, "end", bid, lot, guy, gal, tic)
+    VALUES (NEW.bid_id, NEW.contract_address, NEW.block_number, NEW.block_hash, NEW."end", (SELECT bid FROM bid),
+            (SELECT lot FROM lot), (SELECT guy FROM guy), (SELECT gal FROM gal), (SELECT tic FROM tic))
     ON CONFLICT (bid_id, block_number) DO UPDATE SET "end" = NEW."end";
     return NEW;
 END
@@ -2367,7 +2443,45 @@ CREATE FUNCTION maker.flap_gal() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
 BEGIN
-    INSERT INTO maker.flap(bid_id, contract_address, block_number, block_hash, gal) VALUES(NEW.bid_id, NEW.contract_address, NEW.block_number, NEW.block_hash, NEW.gal)
+    WITH bid AS (
+        SELECT bid
+        FROM maker.flap
+        WHERE bid IS NOT NULL
+        ORDER BY block_number
+        LIMIT 1
+    ),
+         lot AS (
+             SELECT lot
+             FROM maker.flap
+             WHERE lot IS NOT NULL
+             ORDER BY block_number
+             LIMIT 1
+         ),
+         guy AS (
+             SELECT guy
+             FROM maker.flap
+             WHERE guy IS NOT NULL
+             ORDER BY block_number
+             LIMIT 1
+         ),
+         "end" AS (
+             SELECT "end"
+             FROM maker.flap
+             WHERE "end" IS NOT NULL
+             ORDER BY block_number
+             LIMIT 1
+         ),
+         tic AS (
+             SELECT tic
+             FROM maker.flap
+             WHERE tic IS NOT NULL
+             ORDER BY block_number
+             LIMIT 1
+         )
+    INSERT
+    INTO maker.flap(bid_id, contract_address, block_number, block_hash, gal, bid, lot, guy, "end", tic)
+    VALUES (NEW.bid_id, NEW.contract_address, NEW.block_number, NEW.block_hash, NEW.gal, (SELECT bid FROM bid),
+            (SELECT lot FROM lot), (SELECT guy FROM guy), (SELECT "end" FROM "end"), (SELECT tic FROM tic))
     ON CONFLICT (bid_id, block_number) DO UPDATE SET gal = NEW.gal;
     return NEW;
 END
@@ -2382,7 +2496,45 @@ CREATE FUNCTION maker.flap_guy() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
 BEGIN
-    INSERT INTO maker.flap(bid_id, contract_address, block_number, block_hash, guy) VALUES(NEW.bid_id, NEW.contract_address, NEW.block_number, NEW.block_hash, NEW.guy)
+    WITH bid AS (
+        SELECT bid
+        FROM maker.flap
+        WHERE bid IS NOT NULL
+        ORDER BY block_number
+        LIMIT 1
+    ),
+         lot AS (
+             SELECT lot
+             FROM maker.flap
+             WHERE lot IS NOT NULL
+             ORDER BY block_number
+             LIMIT 1
+         ),
+         "end" AS (
+             SELECT "end"
+             FROM maker.flap
+             WHERE "end" IS NOT NULL
+             ORDER BY block_number
+             LIMIT 1
+         ),
+         tic AS (
+             SELECT tic
+             FROM maker.flap
+             WHERE tic IS NOT NULL
+             ORDER BY block_number
+             LIMIT 1
+         ),
+         gal AS (
+             SELECT gal
+             FROM maker.flap
+             WHERE gal IS NOT NULL
+             ORDER BY block_number
+             LIMIT 1
+         )
+    INSERT
+    INTO maker.flap(bid_id, contract_address, block_number, block_hash, guy, bid, lot, "end", tic, gal)
+    VALUES (NEW.bid_id, NEW.contract_address, NEW.block_number, NEW.block_hash, NEW.guy, (SELECT bid FROM bid),
+            (SELECT lot FROM lot), (SELECT "end" FROM "end"), (SELECT tic FROM tic), (SELECT gal FROM gal))
     ON CONFLICT (bid_id, block_number) DO UPDATE SET guy = NEW.guy;
     return NEW;
 END
@@ -2397,8 +2549,46 @@ CREATE FUNCTION maker.flap_lot() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
 BEGIN
-    INSERT INTO maker.flap(bid_id, contract_address, block_number, block_hash, lot) VALUES(NEW.bid_id, NEW.contract_address, NEW.block_number, NEW.block_hash, NEW.lot)
-        ON CONFLICT (bid_id, block_number) DO UPDATE SET lot = NEW.lot;
+    WITH bid AS (
+        SELECT bid
+        FROM maker.flap
+        WHERE bid IS NOT NULL
+        ORDER BY block_number
+        LIMIT 1
+    ),
+         "end" AS (
+             SELECT "end"
+             FROM maker.flap
+             WHERE "end" IS NOT NULL
+             ORDER BY block_number
+             LIMIT 1
+         ),
+         tic AS (
+             SELECT tic
+             FROM maker.flap
+             WHERE tic IS NOT NULL
+             ORDER BY block_number
+             LIMIT 1
+         ),
+         guy AS (
+             SELECT guy
+             FROM maker.flap
+             WHERE guy IS NOT NULL
+             ORDER BY block_number
+             LIMIT 1
+         ),
+         gal AS (
+             SELECT gal
+             FROM maker.flap
+             WHERE gal IS NOT NULL
+             ORDER BY block_number
+             LIMIT 1
+         )
+    INSERT
+    INTO maker.flap(bid_id, contract_address, block_number, block_hash, lot, bid, "end", tic, guy, gal)
+    VALUES (NEW.bid_id, NEW.contract_address, NEW.block_number, NEW.block_hash, NEW.lot, (SELECT bid FROM bid),
+            (SELECT "end" FROM "end"), (SELECT tic FROM tic), (SELECT guy FROM guy), (SELECT gal FROM gal))
+    ON CONFLICT (bid_id, block_number) DO UPDATE SET lot = NEW.lot;
     return NEW;
 END
 $$;
@@ -2412,7 +2602,45 @@ CREATE FUNCTION maker.flap_tic() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
 BEGIN
-    INSERT INTO maker.flap(bid_id, contract_address, block_number, block_hash, tic) VALUES(NEW.bid_id, NEW.contract_address, NEW.block_number, NEW.block_hash, NEW.tic)
+    WITH bid AS (
+        SELECT bid
+        FROM maker.flap
+        WHERE bid IS NOT NULL
+        ORDER BY block_number
+        LIMIT 1
+    ),
+         lot AS (
+             SELECT lot
+             FROM maker.flap
+             WHERE lot IS NOT NULL
+             ORDER BY block_number
+             LIMIT 1
+         ),
+         guy AS (
+             SELECT guy
+             FROM maker.flap
+             WHERE guy IS NOT NULL
+             ORDER BY block_number
+             LIMIT 1
+         ),
+         "end" AS (
+             SELECT "end"
+             FROM maker.flap
+             WHERE "end" IS NOT NULL
+             ORDER BY block_number
+             LIMIT 1
+         ),
+         gal AS (
+             SELECT gal
+             FROM maker.flap
+             WHERE gal IS NOT NULL
+             ORDER BY block_number
+             LIMIT 1
+         )
+    INSERT
+    INTO maker.flap(bid_id, contract_address, block_number, block_hash, tic, bid, lot, guy, "end", gal)
+    VALUES (NEW.bid_id, NEW.contract_address, NEW.block_number, NEW.block_hash, NEW.tic, (SELECT bid FROM bid),
+            (SELECT lot FROM lot), (SELECT guy FROM guy), (SELECT "end" FROM "end"), (SELECT gal FROM gal))
     ON CONFLICT (bid_id, block_number) DO UPDATE SET tic = NEW.tic;
     return NEW;
 END
@@ -2879,16 +3107,16 @@ ALTER SEQUENCE maker.dent_id_seq OWNED BY maker.dent.id;
 
 CREATE TABLE maker.flap (
     id integer NOT NULL,
-    block_number bigint DEFAULT 0,
-    block_hash text DEFAULT ''::text,
-    contract_address text DEFAULT ''::text,
-    bid_id numeric DEFAULT 0,
-    guy text DEFAULT ''::text,
-    tic bigint DEFAULT 0,
-    "end" bigint DEFAULT 0,
-    lot numeric DEFAULT 0,
-    bid numeric DEFAULT 0,
-    gal text DEFAULT ''::text
+    block_number bigint,
+    block_hash text,
+    contract_address text,
+    bid_id numeric,
+    guy text,
+    tic bigint,
+    "end" bigint,
+    lot numeric,
+    bid numeric,
+    gal text
 );
 
 
