@@ -21,7 +21,7 @@ require (
 	github.com/spf13/afero v1.2.1 // indirect
 	github.com/spf13/viper v1.3.2
 	github.com/syndtr/goleveldb v0.0.0-20181128100959-b001fa50d6b2 // indirect
-	github.com/vulcanize/vulcanizedb v0.0.6-0.20190814005249-e6a6adb715bf
+	github.com/vulcanize/vulcanizedb v0.0.6-0.20190816213026-81930f4ec402
 	golang.org/x/crypto v0.0.0-20190605123033-f99c8df09eb5
 )
 

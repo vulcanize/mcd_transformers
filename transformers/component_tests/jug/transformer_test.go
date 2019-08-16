@@ -23,9 +23,9 @@ var _ = Describe("Executing the transformer", func() {
 		mappings    = jug.JugMappings{StorageRepository: &storage2.MakerStorageRepository{}}
 		repository  = jug.JugStorageRepository{}
 		transformer = storage.Transformer{
-			Address:    common.Address{},
-			Mappings:   &mappings,
-			Repository: &repository,
+			HashedAddress: common.Hash{},
+			Mappings:      &mappings,
+			Repository:    &repository,
 		}
 	)
 
@@ -41,11 +41,11 @@ var _ = Describe("Executing the transformer", func() {
 	It("reads in a Jug Vat storage diff row and persists it", func() {
 		blockNumber := 10501125
 		jugVatRow := utils.StorageDiff{
-			Contract:     common.HexToAddress("25a008bf942ce6d5b362f91ed7ae3e4104286a12"),
-			BlockHeight:  blockNumber,
-			BlockHash:    common.HexToHash("1822bb271ce246212f0d097e59b3b04e0302819da3a2bd80e85b91e8c89fc883"),
-			StorageKey:   common.HexToHash("0000000000000000000000000000000000000000000000000000000000000002"),
-			StorageValue: common.HexToHash("00000000000000000000000067fd6c3575fc2dbe2cb596bd3bebc9edb5571fa1"),
+			KeccakOfContractAddress: utils.HexToKeccak256Hash("25a008bf942ce6d5b362f91ed7ae3e4104286a12"),
+			BlockHeight:             blockNumber,
+			BlockHash:               common.HexToHash("1822bb271ce246212f0d097e59b3b04e0302819da3a2bd80e85b91e8c89fc883"),
+			StorageKey:              common.HexToHash("0000000000000000000000000000000000000000000000000000000000000002"),
+			StorageValue:            common.HexToHash("00000000000000000000000067fd6c3575fc2dbe2cb596bd3bebc9edb5571fa1"),
 		}
 		err := transformer.Execute(jugVatRow)
 		Expect(err).NotTo(HaveOccurred())
@@ -59,11 +59,11 @@ var _ = Describe("Executing the transformer", func() {
 	It("reads in a Jug Vow storage diff row and persists it", func() {
 		blockNumber := 10501125
 		jugVowRow := utils.StorageDiff{
-			Contract:     common.HexToAddress("25a008bf942ce6d5b362f91ed7ae3e4104286a12"),
-			BlockHeight:  blockNumber,
-			BlockHash:    common.HexToHash("1822bb271ce246212f0d097e59b3b04e0302819da3a2bd80e85b91e8c89fc883"),
-			StorageKey:   common.HexToHash("0000000000000000000000000000000000000000000000000000000000000003"),
-			StorageValue: common.HexToHash("17560834075da3db54f737db74377e799c865821000000000000000000000000"),
+			KeccakOfContractAddress: utils.HexToKeccak256Hash("25a008bf942ce6d5b362f91ed7ae3e4104286a12"),
+			BlockHeight:             blockNumber,
+			BlockHash:               common.HexToHash("1822bb271ce246212f0d097e59b3b04e0302819da3a2bd80e85b91e8c89fc883"),
+			StorageKey:              common.HexToHash("0000000000000000000000000000000000000000000000000000000000000003"),
+			StorageValue:            common.HexToHash("17560834075da3db54f737db74377e799c865821000000000000000000000000"),
 		}
 		err := transformer.Execute(jugVowRow)
 		Expect(err).NotTo(HaveOccurred())
@@ -77,11 +77,11 @@ var _ = Describe("Executing the transformer", func() {
 	It("reads in a Jug Ilk Duty storage diff row and persists it", func() {
 		blockNumber := 10501138
 		jugIlkDutyRow := utils.StorageDiff{
-			Contract:     common.HexToAddress("25a008bf942ce6d5b362f91ed7ae3e4104286a12"),
-			BlockHeight:  blockNumber,
-			BlockHash:    common.HexToHash("3f58749d3956984c2b03a84d5c02105a06efa1ad048d8aa97cf8f59aafa8f08b"),
-			StorageKey:   common.HexToHash("a27f5adbce3dcb790941ebd020e02078a61e6c9748376e52ec0929d58babf97a"),
-			StorageValue: common.HexToHash("0000000000000000000000000000000000000000033b2e3c9fd0803ce8000000"),
+			KeccakOfContractAddress: utils.HexToKeccak256Hash("25a008bf942ce6d5b362f91ed7ae3e4104286a12"),
+			BlockHeight:             blockNumber,
+			BlockHash:               common.HexToHash("3f58749d3956984c2b03a84d5c02105a06efa1ad048d8aa97cf8f59aafa8f08b"),
+			StorageKey:              common.HexToHash("a27f5adbce3dcb790941ebd020e02078a61e6c9748376e52ec0929d58babf97a"),
+			StorageValue:            common.HexToHash("0000000000000000000000000000000000000000033b2e3c9fd0803ce8000000"),
 		}
 		err := transformer.Execute(jugIlkDutyRow)
 		Expect(err).NotTo(HaveOccurred())
@@ -95,11 +95,11 @@ var _ = Describe("Executing the transformer", func() {
 	It("reads in a Jug Ilk Rho storage diff row and persists it", func() {
 		blockNumber := 10501138
 		jugIlkRhoRow := utils.StorageDiff{
-			Contract:     common.HexToAddress("25a008bf942ce6d5b362f91ed7ae3e4104286a12"),
-			BlockHeight:  blockNumber,
-			BlockHash:    common.HexToHash("3f58749d3956984c2b03a84d5c02105a06efa1ad048d8aa97cf8f59aafa8f08b"),
-			StorageKey:   common.HexToHash("a27f5adbce3dcb790941ebd020e02078a61e6c9748376e52ec0929d58babf97b"),
-			StorageValue: common.HexToHash("000000000000000000000000000000000000000000000000000000005c812808"),
+			KeccakOfContractAddress: utils.HexToKeccak256Hash("25a008bf942ce6d5b362f91ed7ae3e4104286a12"),
+			BlockHeight:             blockNumber,
+			BlockHash:               common.HexToHash("3f58749d3956984c2b03a84d5c02105a06efa1ad048d8aa97cf8f59aafa8f08b"),
+			StorageKey:              common.HexToHash("a27f5adbce3dcb790941ebd020e02078a61e6c9748376e52ec0929d58babf97b"),
+			StorageValue:            common.HexToHash("000000000000000000000000000000000000000000000000000000005c812808"),
 		}
 		err := transformer.Execute(jugIlkRhoRow)
 		Expect(err).NotTo(HaveOccurred())

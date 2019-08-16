@@ -45,9 +45,9 @@ var _ = Describe("Executing the flip transformer", func() {
 		db = test_config.NewTestDB(test_config.NewTestNode())
 		test_config.CleanTestDB(db)
 		transformer = storageFactory.Transformer{
-			Address:    common.HexToAddress(contractAddress),
-			Mappings:   &storageKeyLookup,
-			Repository: &repository,
+			HashedAddress: utils.HexToKeccak256Hash(contractAddress),
+			Mappings:      &storageKeyLookup,
+			Repository:    &repository,
 		}
 		transformer.NewTransformer(db)
 	})
@@ -56,11 +56,11 @@ var _ = Describe("Executing the flip transformer", func() {
 		blockNumber := 11579891
 		blockHash := common.HexToHash("5f2be3f6566f39dddfcfcf29784866280399ed9070af0b4fccd465509260349d")
 		diff := utils.StorageDiff{
-			Contract:     transformer.Address,
-			BlockHash:    blockHash,
-			BlockHeight:  blockNumber,
-			StorageKey:   common.HexToHash("0000000000000000000000000000000000000000000000000000000000000002"),
-			StorageValue: common.HexToHash("000000000000000000000000284ecb5880cdc3362d979d07d162bf1d8488975d"),
+			KeccakOfContractAddress: transformer.HashedAddress,
+			BlockHash:               blockHash,
+			BlockHeight:             blockNumber,
+			StorageKey:              common.HexToHash("0000000000000000000000000000000000000000000000000000000000000002"),
+			StorageValue:            common.HexToHash("000000000000000000000000284ecb5880cdc3362d979d07d162bf1d8488975d"),
 		}
 		err := transformer.Execute(diff)
 		Expect(err).NotTo(HaveOccurred())
@@ -77,11 +77,11 @@ var _ = Describe("Executing the flip transformer", func() {
 		blockHash := common.HexToHash("5f2be3f6566f39dddfcfcf29784866280399ed9070af0b4fccd465509260349d")
 		ilk := "4554482d41000000000000000000000000000000000000000000000000000000"
 		diff := utils.StorageDiff{
-			Contract:     transformer.Address,
-			BlockHash:    blockHash,
-			BlockHeight:  blockNumber,
-			StorageKey:   common.HexToHash("0000000000000000000000000000000000000000000000000000000000000003"),
-			StorageValue: common.HexToHash(ilk),
+			KeccakOfContractAddress: transformer.HashedAddress,
+			BlockHash:               blockHash,
+			BlockHeight:             blockNumber,
+			StorageKey:              common.HexToHash("0000000000000000000000000000000000000000000000000000000000000003"),
+			StorageValue:            common.HexToHash(ilk),
 		}
 		err := transformer.Execute(diff)
 		Expect(err).NotTo(HaveOccurred())
@@ -99,11 +99,11 @@ var _ = Describe("Executing the flip transformer", func() {
 		blockNumber := 11579891
 		blockHash := common.HexToHash("5f2be3f6566f39dddfcfcf29784866280399ed9070af0b4fccd465509260349d")
 		diff := utils.StorageDiff{
-			Contract:     transformer.Address,
-			BlockHash:    blockHash,
-			BlockHeight:  blockNumber,
-			StorageKey:   common.HexToHash("0000000000000000000000000000000000000000000000000000000000000004"),
-			StorageValue: common.HexToHash("000000000000000000000000000000000000000003648a260e3486a65a000000"),
+			KeccakOfContractAddress: transformer.HashedAddress,
+			BlockHash:               blockHash,
+			BlockHeight:             blockNumber,
+			StorageKey:              common.HexToHash("0000000000000000000000000000000000000000000000000000000000000004"),
+			StorageValue:            common.HexToHash("000000000000000000000000000000000000000003648a260e3486a65a000000"),
 		}
 		err := transformer.Execute(diff)
 		Expect(err).NotTo(HaveOccurred())
@@ -119,11 +119,11 @@ var _ = Describe("Executing the flip transformer", func() {
 		blockNumber := 11579891
 		blockHash := common.HexToHash("5f2be3f6566f39dddfcfcf29784866280399ed9070af0b4fccd465509260349d")
 		diff := utils.StorageDiff{
-			Contract:     transformer.Address,
-			BlockHash:    blockHash,
-			BlockHeight:  blockNumber,
-			StorageKey:   common.HexToHash("0000000000000000000000000000000000000000000000000000000000000005"),
-			StorageValue: common.HexToHash("000000000000000000000000000000000000000000000002a300000000002a30"),
+			KeccakOfContractAddress: transformer.HashedAddress,
+			BlockHash:               blockHash,
+			BlockHeight:             blockNumber,
+			StorageKey:              common.HexToHash("0000000000000000000000000000000000000000000000000000000000000005"),
+			StorageValue:            common.HexToHash("000000000000000000000000000000000000000000000002a300000000002a30"),
 		}
 		err := transformer.Execute(diff)
 		Expect(err).NotTo(HaveOccurred())
@@ -139,11 +139,11 @@ var _ = Describe("Executing the flip transformer", func() {
 		blockNumber := 11579891
 		blockHash := common.HexToHash("5f2be3f6566f39dddfcfcf29784866280399ed9070af0b4fccd465509260349d")
 		diff := utils.StorageDiff{
-			Contract:     transformer.Address,
-			BlockHash:    blockHash,
-			BlockHeight:  blockNumber,
-			StorageKey:   common.HexToHash("0000000000000000000000000000000000000000000000000000000000000005"),
-			StorageValue: common.HexToHash("000000000000000000000000000000000000000000000002a300000000002a30"),
+			KeccakOfContractAddress: transformer.HashedAddress,
+			BlockHash:               blockHash,
+			BlockHeight:             blockNumber,
+			StorageKey:              common.HexToHash("0000000000000000000000000000000000000000000000000000000000000005"),
+			StorageValue:            common.HexToHash("000000000000000000000000000000000000000000000002a300000000002a30"),
 		}
 		err := transformer.Execute(diff)
 		Expect(err).NotTo(HaveOccurred())
@@ -166,15 +166,15 @@ var _ = Describe("Executing the flip transformer", func() {
 			blockNumber := 11579891
 			blockHash := common.HexToHash("5f2be3f6566f39dddfcfcf29784866280399ed9070af0b4fccd465509260349d")
 			diff := utils.StorageDiff{
-				Contract:     transformer.Address,
-				BlockHash:    blockHash,
-				BlockHeight:  blockNumber,
-				StorageKey:   common.HexToHash("cc69885fda6bcc1a4ace058b4a62bf5e179ea78fd58a1ccd71c22cc9b6887931"),
-				StorageValue: common.HexToHash("00000002a300000000002a30284ecb5880cdc3362d979d07d162bf1d8488975d"),
+				KeccakOfContractAddress: transformer.HashedAddress,
+				BlockHash:               blockHash,
+				BlockHeight:             blockNumber,
+				StorageKey:              common.HexToHash("cc69885fda6bcc1a4ace058b4a62bf5e179ea78fd58a1ccd71c22cc9b6887931"),
+				StorageValue:            common.HexToHash("00000002a300000000002a30284ecb5880cdc3362d979d07d162bf1d8488975d"),
 			}
 
 			BeforeEach(func() {
-				_, writeErr := db.Exec(flip.InsertFlipKicksQuery, blockNumber, blockHash.Hex(), strings.ToLower(transformer.Address.Hex()), bidId)
+				_, writeErr := db.Exec(flip.InsertFlipKicksQuery, blockNumber, blockHash.Hex(), strings.ToLower(contractAddress), bidId)
 				Expect(writeErr).NotTo(HaveOccurred())
 
 				executeErr := transformer.Execute(diff)
