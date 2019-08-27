@@ -134,5 +134,11 @@ var _ = Describe("Shared utilities", func() {
 
 			Expect(actualIlkIdentifier).To(Equal(""))
 		})
+
+		It("handles a hex that represents an ilk with a hyphen", func() {
+			actualIlkIdentifier := shared.DecodeHexToText(test_helpers.FakeHyphenIlk.Hex)
+
+			Expect(actualIlkIdentifier).To(Equal("GNT-A"))
+		})
 	})
 })

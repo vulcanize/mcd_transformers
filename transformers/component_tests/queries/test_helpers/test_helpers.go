@@ -42,6 +42,11 @@ var (
 		Identifier: "FKE2",
 	}
 
+	FakeHyphenIlk = TestIlk{
+		Hex:        "0x474e542d41000000000000000000000000000000000000000000000000000000",
+		Identifier: "GNT-A",
+	}
+
 	EmptyMetadatas []utils.StorageValueMetadata
 
 	FakeIlkRateMetadata = utils.GetStorageValueMetadata(vat.IlkRate, map[utils.Key]string{constants.Ilk: FakeIlk.Hex}, utils.Uint256)
