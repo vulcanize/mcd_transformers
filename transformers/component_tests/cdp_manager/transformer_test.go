@@ -57,7 +57,7 @@ var _ = Describe("Executing the transformer", func() {
 		blockNumber := 12742181
 		blockHash := "0xf8af3a2ad18d05e83f10569ca0518c274c338cfe705c915a935b1d0e9248590a"
 		vatRow := utils.StorageDiff{
-			KeccakOfContractAddress: utils.HexToKeccak256Hash("7a4991c6bd1053c31f1678955ce839999d9841b1"), BlockHeight: blockNumber,
+			HashedAddress: utils.HexToKeccak256Hash("7a4991c6bd1053c31f1678955ce839999d9841b1"), BlockHeight: blockNumber,
 			BlockHash:    common.HexToHash(blockHash[2:]),
 			StorageKey:   common.HexToHash("0000000000000000000000000000000000000000000000000000000000000000"),
 			StorageValue: common.HexToHash("00000000000000000000000004c67ea772ebb467383772cb1b64c7a9b1e02bca"),
@@ -75,11 +75,11 @@ var _ = Describe("Executing the transformer", func() {
 		blockNumber := 12803649
 		blockHash := "0x569a5720420da0bd931f76c1cd69dbd09e45bd59e72d394aaea817944c11a0b1"
 		cdpiRow := utils.StorageDiff{
-			KeccakOfContractAddress: utils.HexToKeccak256Hash("7a4991c6bd1053c31f1678955ce839999d9841b1"),
-			BlockHeight:             blockNumber,
-			BlockHash:               common.HexToHash(blockHash[2:]),
-			StorageKey:              common.HexToHash("0000000000000000000000000000000000000000000000000000000000000001"),
-			StorageValue:            common.HexToHash("0000000000000000000000000000000000000000000000000000000000000003"),
+			HashedAddress: utils.HexToKeccak256Hash("7a4991c6bd1053c31f1678955ce839999d9841b1"),
+			BlockHeight:   blockNumber,
+			BlockHash:     common.HexToHash(blockHash[2:]),
+			StorageKey:    common.HexToHash("0000000000000000000000000000000000000000000000000000000000000001"),
+			StorageValue:  common.HexToHash("0000000000000000000000000000000000000000000000000000000000000003"),
 		}
 		err := transformer.Execute(cdpiRow)
 		Expect(err).NotTo(HaveOccurred())
@@ -102,11 +102,11 @@ var _ = Describe("Executing the transformer", func() {
 			blockNumber := 12803632
 			blockHash := "0xf5daa905de07c9d4b584534e1f35a6b43bfd5b112fffa9dc3edd991f1e5441fa"
 			urnsRow := utils.StorageDiff{
-				KeccakOfContractAddress: utils.HexToKeccak256Hash("7a4991c6bd1053c31f1678955ce839999d9841b1"),
-				BlockHeight:             blockNumber,
-				BlockHash:               common.HexToHash(blockHash[2:]),
-				StorageKey:              common.HexToHash("679795a0195a1b76cdebb7c51d74e058aee92919b8c3389af86ef24535e8a28c"),
-				StorageValue:            common.HexToHash("00000000000000000000000031f92649bf2d780be06bab1c5f591d0f1cc4b0d2"),
+				HashedAddress: utils.HexToKeccak256Hash("7a4991c6bd1053c31f1678955ce839999d9841b1"),
+				BlockHeight:   blockNumber,
+				BlockHash:     common.HexToHash(blockHash[2:]),
+				StorageKey:    common.HexToHash("679795a0195a1b76cdebb7c51d74e058aee92919b8c3389af86ef24535e8a28c"),
+				StorageValue:  common.HexToHash("00000000000000000000000031f92649bf2d780be06bab1c5f591d0f1cc4b0d2"),
 			}
 			err := transformer.Execute(urnsRow)
 			Expect(err).NotTo(HaveOccurred())
@@ -121,11 +121,11 @@ var _ = Describe("Executing the transformer", func() {
 			blockNumber := 12803632
 			blockHash := "0xf5daa905de07c9d4b584534e1f35a6b43bfd5b112fffa9dc3edd991f1e5441fa"
 			listPrevRow := utils.StorageDiff{
-				KeccakOfContractAddress: utils.HexToKeccak256Hash("7a4991c6bd1053c31f1678955ce839999d9841b1"),
-				BlockHeight:             blockNumber,
-				BlockHash:               common.HexToHash(blockHash[2:]),
-				StorageKey:              common.HexToHash("c3a24b0501bd2c13a7e57f2db4369ec4c223447539fc0724a9d55ac4a06ebd4d"),
-				StorageValue:            common.HexToHash("0000000000000000000000000000000000000000000000000000000000000001"),
+				HashedAddress: utils.HexToKeccak256Hash("7a4991c6bd1053c31f1678955ce839999d9841b1"),
+				BlockHeight:   blockNumber,
+				BlockHash:     common.HexToHash(blockHash[2:]),
+				StorageKey:    common.HexToHash("c3a24b0501bd2c13a7e57f2db4369ec4c223447539fc0724a9d55ac4a06ebd4d"),
+				StorageValue:  common.HexToHash("0000000000000000000000000000000000000000000000000000000000000001"),
 			}
 			err := transformer.Execute(listPrevRow)
 			Expect(err).NotTo(HaveOccurred())
@@ -140,11 +140,11 @@ var _ = Describe("Executing the transformer", func() {
 			blockNumber := 12803649
 			blockHash := "0x569a5720420da0bd931f76c1cd69dbd09e45bd59e72d394aaea817944c11a0b1"
 			listNextRow := utils.StorageDiff{
-				KeccakOfContractAddress: utils.HexToKeccak256Hash("7a4991c6bd1053c31f1678955ce839999d9841b1"),
-				BlockHeight:             blockNumber,
-				BlockHash:               common.HexToHash(blockHash[2:]),
-				StorageKey:              common.HexToHash("c3a24b0501bd2c13a7e57f2db4369ec4c223447539fc0724a9d55ac4a06ebd4e"),
-				StorageValue:            common.HexToHash("0000000000000000000000000000000000000000000000000000000000000003"),
+				HashedAddress: utils.HexToKeccak256Hash("7a4991c6bd1053c31f1678955ce839999d9841b1"),
+				BlockHeight:   blockNumber,
+				BlockHash:     common.HexToHash(blockHash[2:]),
+				StorageKey:    common.HexToHash("c3a24b0501bd2c13a7e57f2db4369ec4c223447539fc0724a9d55ac4a06ebd4e"),
+				StorageValue:  common.HexToHash("0000000000000000000000000000000000000000000000000000000000000003"),
 			}
 			err := transformer.Execute(listNextRow)
 			Expect(err).NotTo(HaveOccurred())
@@ -159,11 +159,11 @@ var _ = Describe("Executing the transformer", func() {
 			blockNumber := 12803632
 			blockHash := "0xf5daa905de07c9d4b584534e1f35a6b43bfd5b112fffa9dc3edd991f1e5441fa"
 			ownsRow := utils.StorageDiff{
-				KeccakOfContractAddress: utils.HexToKeccak256Hash("7a4991c6bd1053c31f1678955ce839999d9841b1"),
-				BlockHeight:             blockNumber,
-				BlockHash:               common.HexToHash(blockHash[2:]),
-				StorageKey:              common.HexToHash("91da3fd0782e51c6b3986e9e672fd566868e71f3dbc2d6c2cd6fbb3e361af2a7"),
-				StorageValue:            common.HexToHash("00000000000000000000000016fb96a5fa0427af0c8f7cf1eb4870231c8154b6"),
+				HashedAddress: utils.HexToKeccak256Hash("7a4991c6bd1053c31f1678955ce839999d9841b1"),
+				BlockHeight:   blockNumber,
+				BlockHash:     common.HexToHash(blockHash[2:]),
+				StorageKey:    common.HexToHash("91da3fd0782e51c6b3986e9e672fd566868e71f3dbc2d6c2cd6fbb3e361af2a7"),
+				StorageValue:  common.HexToHash("00000000000000000000000016fb96a5fa0427af0c8f7cf1eb4870231c8154b6"),
 			}
 			err := transformer.Execute(ownsRow)
 			Expect(err).NotTo(HaveOccurred())
@@ -179,11 +179,11 @@ var _ = Describe("Executing the transformer", func() {
 			ilk := "0x4554482d41000000000000000000000000000000000000000000000000000000"
 			blockHash := "0xf5daa905de07c9d4b584534e1f35a6b43bfd5b112fffa9dc3edd991f1e5441fa"
 			ilksRow := utils.StorageDiff{
-				KeccakOfContractAddress: utils.HexToKeccak256Hash("7a4991c6bd1053c31f1678955ce839999d9841b1"),
-				BlockHeight:             blockNumber,
-				BlockHash:               common.HexToHash(blockHash[2:]),
-				StorageKey:              common.HexToHash("89832631fb3c3307a103ba2c84ab569c64d6182a18893dcd163f0f1c2090733a"),
-				StorageValue:            common.HexToHash("4554482d41000000000000000000000000000000000000000000000000000000"),
+				HashedAddress: utils.HexToKeccak256Hash("7a4991c6bd1053c31f1678955ce839999d9841b1"),
+				BlockHeight:   blockNumber,
+				BlockHash:     common.HexToHash(blockHash[2:]),
+				StorageKey:    common.HexToHash("89832631fb3c3307a103ba2c84ab569c64d6182a18893dcd163f0f1c2090733a"),
+				StorageValue:  common.HexToHash("4554482d41000000000000000000000000000000000000000000000000000000"),
 			}
 			transformErr := transformer.Execute(ilksRow)
 			Expect(transformErr).NotTo(HaveOccurred())
@@ -209,11 +209,11 @@ var _ = Describe("Executing the transformer", func() {
 			blockNumber := 12803350
 			blockHash := "0xce95cb2e4e9d16b9feb2cdec0cbc2d7506a8ccdd897d6024f80e842e9d2bf1b0"
 			firstRow := utils.StorageDiff{
-				KeccakOfContractAddress: utils.HexToKeccak256Hash("7a4991c6bd1053c31f1678955ce839999d9841b1"),
-				BlockHeight:             blockNumber,
-				BlockHash:               common.HexToHash(blockHash[2:]),
-				StorageKey:              common.HexToHash("361ac87b78b4b96bd716b22773b802e3ec15c69f4ba42c6d6f8cb594e4914397"),
-				StorageValue:            common.HexToHash("0000000000000000000000000000000000000000000000000000000000000001"),
+				HashedAddress: utils.HexToKeccak256Hash("7a4991c6bd1053c31f1678955ce839999d9841b1"),
+				BlockHeight:   blockNumber,
+				BlockHash:     common.HexToHash(blockHash[2:]),
+				StorageKey:    common.HexToHash("361ac87b78b4b96bd716b22773b802e3ec15c69f4ba42c6d6f8cb594e4914397"),
+				StorageValue:  common.HexToHash("0000000000000000000000000000000000000000000000000000000000000001"),
 			}
 			err := transformer.Execute(firstRow)
 			Expect(err).NotTo(HaveOccurred())
@@ -228,11 +228,11 @@ var _ = Describe("Executing the transformer", func() {
 			blockNumber := 12803632
 			blockHash := "0xf5daa905de07c9d4b584534e1f35a6b43bfd5b112fffa9dc3edd991f1e5441fa"
 			lastRow := utils.StorageDiff{
-				KeccakOfContractAddress: utils.HexToKeccak256Hash("7a4991c6bd1053c31f1678955ce839999d9841b1"),
-				BlockHeight:             blockNumber,
-				BlockHash:               common.HexToHash(blockHash[2:]),
-				StorageKey:              common.HexToHash("4f62af9d63bc3c7d5e96c3d1083b2438d0fa9b6244cdfc09d00d09b1afbd7438"),
-				StorageValue:            common.HexToHash("0000000000000000000000000000000000000000000000000000000000000002"),
+				HashedAddress: utils.HexToKeccak256Hash("7a4991c6bd1053c31f1678955ce839999d9841b1"),
+				BlockHeight:   blockNumber,
+				BlockHash:     common.HexToHash(blockHash[2:]),
+				StorageKey:    common.HexToHash("4f62af9d63bc3c7d5e96c3d1083b2438d0fa9b6244cdfc09d00d09b1afbd7438"),
+				StorageValue:  common.HexToHash("0000000000000000000000000000000000000000000000000000000000000002"),
 			}
 			err := transformer.Execute(lastRow)
 			Expect(err).NotTo(HaveOccurred())
@@ -247,11 +247,11 @@ var _ = Describe("Executing the transformer", func() {
 			blockNumber := 12803632
 			blockHash := "0xf5daa905de07c9d4b584534e1f35a6b43bfd5b112fffa9dc3edd991f1e5441fa"
 			lastRow := utils.StorageDiff{
-				KeccakOfContractAddress: utils.HexToKeccak256Hash("7a4991c6bd1053c31f1678955ce839999d9841b1"),
-				BlockHeight:             blockNumber,
-				BlockHash:               common.HexToHash(blockHash[2:]),
-				StorageKey:              common.HexToHash("0b29a919802754cc12fe9af109d06c6ac93a8cac604ffa44ff5474c8c41bd5c0"),
-				StorageValue:            common.HexToHash("0000000000000000000000000000000000000000000000000000000000000002"),
+				HashedAddress: utils.HexToKeccak256Hash("7a4991c6bd1053c31f1678955ce839999d9841b1"),
+				BlockHeight:   blockNumber,
+				BlockHash:     common.HexToHash(blockHash[2:]),
+				StorageKey:    common.HexToHash("0b29a919802754cc12fe9af109d06c6ac93a8cac604ffa44ff5474c8c41bd5c0"),
+				StorageValue:  common.HexToHash("0000000000000000000000000000000000000000000000000000000000000002"),
 			}
 			err := transformer.Execute(lastRow)
 			Expect(err).NotTo(HaveOccurred())
