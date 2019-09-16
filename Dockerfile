@@ -4,14 +4,17 @@ RUN apk --update --no-cache add make git g++ linux-headers
 # DEBUG
 RUN apk add busybox-extras
 
+ENV GOPATH $HOME/go
 ENV GO111MODULE on
 
 # Build statically linked vDB binary (wonky path because of Dep)
 WORKDIR /go/src/github.com/vulcanize/mcd_transformers
 ADD . .
 
+WORKDIR /go
 RUN GO111MODULE=auto go get -u -d github.com/vulcanize/vulcanizedb
 WORKDIR /go/src/github.com/vulcanize/vulcanizedb
+RUN git checkout v0.0.5
 RUN go build
 
 WORKDIR /go/src/github.com/vulcanize/mcd_transformers
@@ -21,12 +24,13 @@ RUN go build
 
 WORKDIR /go/src/github.com/vulcanize/vulcanizedb
 # add mcd to go.mod
-RUN go mod edit -require=github.com/vulcanize/mcd_transformers@v0.2.10
+RUN go mod edit -require=github.com/vulcanize/mcd_transformers@v0.2.10-docker
 # use local mcd for build
 RUN go mod edit -replace=github.com/vulcanize/mcd_transformers=/go/src/github.com/vulcanize/mcd_transformers/
 RUN go build
 
 # Build migration tool
+WORKDIR /go
 RUN GO111MODULE=auto go get -u -d github.com/pressly/goose/cmd/goose
 WORKDIR /go/src/github.com/pressly/goose/cmd/goose
 RUN GO111MODULE=auto go build -a -ldflags '-s' -tags='no_mysql no_sqlite' -o goose
