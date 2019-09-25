@@ -25,7 +25,33 @@ require (
 	github.com/spf13/afero v1.2.1 // indirect
 	github.com/spf13/viper v1.3.2
 	github.com/vulcanize/vulcanizedb v0.0.7
-	golang.org/x/crypto v0.0.0-20190605123033-f99c8df09eb5
-	google.golang.org/appengine v1.6.2 // indirect
+	golang.org/x/crypto v0.0.0-20190923035154-9ee001bba392
+	golang.org/x/net v0.0.0-20190923162816-aa69164e4478 // indirect
+	golang.org/x/sync v0.0.0-20190911185100-cd5d95a43a6e // indirect
+	golang.org/x/sys v0.0.0-20190924154521-2837fb4f24fe // indirect
+	golang.org/x/tools v0.0.0-20190925164712-ae58c0ff6b32 // indirect
+	google.golang.org/appengine v1.6.0 // indirect
 	gopkg.in/natefinch/npipe.v2 v2.0.0-20160621034901-c1b8fa8bdcce // indirect
 )
+
+replace github.com/elastic/gosigar v0.10.5 => github.com/elastic/gosigar v0.10.4
+
+replace github.com/google/uuid v1.1.0 => github.com/google/uuid v1.0.0
+
+replace github.com/hashicorp/golang-lru v0.5.3 => github.com/hashicorp/golang-lru v0.5.1
+
+replace github.com/jmoiron/sqlx v1.2.0 => github.com/jmoiron/sqlx v0.0.0-20181024163419-82935fac6c1a
+
+replace github.com/konsorten/go-windows-terminal-sequences v1.0.2 => github.com/konsorten/go-windows-terminal-sequences v1.0.1
+
+replace github.com/magiconair/properties v1.8.1 => github.com/magiconair/properties v1.8.0
+
+replace github.com/spf13/afero v1.2.1 => github.com/spf13/afero v1.1.2
+
+replace golang.org/x/crypto v0.0.0-20190923035154-9ee001bba392 => golang.org/x/crypto v0.0.0-20190308221718-c2843e01d9a2
+
+replace golang.org/x/net v0.0.0-20190923162816-aa69164e4478 => golang.org/x/net v0.0.0-20190603091049-60506f45cf65
+
+replace golang.org/x/sync v0.0.0-20190911185100-cd5d95a43a6e => golang.org/x/sync v0.0.0-20190423024810-112230192c58
+
+replace golang.org/x/sys v0.0.0-20190924154521-2837fb4f24fe => golang.org/x/sys v0.0.0-20190813064441-fde4db37ae7a
