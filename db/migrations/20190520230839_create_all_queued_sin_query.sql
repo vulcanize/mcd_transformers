@@ -1,18 +1,21 @@
 -- +goose Up
 -- +goose StatementBegin
-CREATE FUNCTION api.all_queued_sin()
+CREATE FUNCTION api.all_queued_sin(max_results INTEGER DEFAULT NULL, result_offset INTEGER DEFAULT 0)
     RETURNS SETOF api.queued_sin AS
 $$
-DECLARE
-    _era NUMERIC;
 BEGIN
-    FOR _era IN
-        SELECT DISTINCT era FROM maker.vow_sin_mapping
-        LOOP
-            RETURN QUERY
-                SELECT * FROM api.get_queued_sin(_era);
-        END LOOP;
-END;
+    RETURN QUERY (
+        WITH eras AS (
+            SELECT DISTINCT era
+            FROM maker.vow_sin_mapping
+            ORDER BY era DESC
+            LIMIT all_queued_sin.max_results OFFSET all_queued_sin.result_offset
+        )
+        SELECT sin.*
+        FROM eras,
+             LATERAL api.get_queued_sin(eras.era) sin
+    );
+END
 $$
     LANGUAGE plpgsql
     STABLE;
@@ -20,4 +23,4 @@ $$
 
 
 -- +goose Down
-DROP FUNCTION api.all_queued_sin();
+DROP FUNCTION api.all_queued_sin(INTEGER, INTEGER);

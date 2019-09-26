@@ -1,26 +1,16 @@
 -- +goose Up
 -- +goose StatementBegin
-CREATE OR REPLACE FUNCTION api.all_flops()
-    RETURNS SETOF api.flop
+CREATE OR REPLACE FUNCTION api.all_flops(max_results INTEGER DEFAULT NULL, result_offset INTEGER DEFAULT 0)
+    RETURNS SETOF api.flop_state
 AS
 $BODY$
 BEGIN
     RETURN QUERY (
         WITH bid_ids AS (
-            SELECT DISTINCT flop_bid_guy.bid_id
-            FROM maker.flop_bid_guy
-            UNION
-            SELECT DISTINCT flop_bid_tic.bid_id
-            FROM maker.flop_bid_tic
-            UNION
-            SELECT DISTINCT flop_bid_bid.bid_id
-            FROM maker.flop_bid_bid
-            UNION
-            SELECT DISTINCT flop_bid_lot.bid_id
-            FROM maker.flop_bid_lot
-            UNION
-            SELECT DISTINCT flop_bid_end.bid_id
-            FROM maker.flop_bid_end
+            SELECT DISTINCT bid_id
+            FROM maker.flop
+            ORDER BY bid_id DESC
+            LIMIT all_flops.max_results OFFSET all_flops.result_offset
         )
         SELECT f.*
         FROM bid_ids,
@@ -29,8 +19,7 @@ BEGIN
 END
 $BODY$
     LANGUAGE plpgsql
-    STABLE;;
+    STABLE;
 -- +goose StatementEnd
 -- +goose Down
-DROP FUNCTION api.all_flops();
-
+DROP FUNCTION api.all_flops(INTEGER, INTEGER);

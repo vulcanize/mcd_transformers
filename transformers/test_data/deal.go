@@ -17,7 +17,8 @@
 package test_data
 
 import (
-	"encoding/json"
+	"github.com/vulcanize/vulcanizedb/pkg/core"
+	"math/rand"
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
@@ -28,7 +29,7 @@ import (
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 )
 
-var DealLogNote = types.Log{
+var rawDealLog = types.Log{
 	Address: common.HexToAddress(EthFlipAddress()),
 	Topics: []common.Hash{
 		common.HexToHash(constants.DealSignature()),
@@ -44,18 +45,25 @@ var DealLogNote = types.Log{
 	Index:       75,
 	Removed:     false,
 }
-var dealRawJson, _ = json.Marshal(DealLogNote)
+
+var DealHeaderSyncLog = core.HeaderSyncLog{
+	ID:          int64(rand.Int31()),
+	HeaderID:    int64(rand.Int31()),
+	Log:         rawDealLog,
+	Transformed: false,
+}
+
 var DealModel = shared.InsertionModel{
 	TableName: "deal",
 	OrderedColumns: []string{
-		"header_id", "bid_id", "contract_address", "log_idx", "tx_idx", "raw_log",
+		constants.HeaderFK, "bid_id", string(constants.AddressFK), constants.LogFK,
 	},
 	ColumnValues: shared.ColumnValues{
 		"bid_id":           "10000000000000000",
-		"contract_address": common.HexToAddress(EthFlipAddress()).Hex(),
-		"log_idx":          DealLogNote.Index,
-		"tx_idx":           DealLogNote.TxIndex,
-		"raw_log":          dealRawJson,
+		constants.HeaderFK: DealHeaderSyncLog.HeaderID,
+		constants.LogFK:    DealHeaderSyncLog.ID,
 	},
-	ForeignKeyValues: shared.ForeignKeyValues{},
+	ForeignKeyValues: shared.ForeignKeyValues{
+		constants.AddressFK: rawDealLog.Address.Hex(),
+	},
 }

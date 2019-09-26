@@ -16,18 +16,18 @@ import (
 	"strconv"
 )
 
-var _ = Describe("Flap bid event computed columns", func() {
+var _ = Describe("flap_bid_event computed columns", func() {
 	var (
 		db              *postgres.DB
 		blockNumber     = rand.Int()
-		timestamp       = int(rand.Int31())
 		header          core.Header
-		contractAddress = "contract address"
-		fakeBidId       = rand.Int()
-		flapKickRepo    flap_kick.FlapKickRepository
-		flapKickEvent   flap_kick.FlapKickModel
+		flapKickLog     core.HeaderSyncLog
 		headerId        int64
 		headerRepo      repositories.HeaderRepository
+		flapKickRepo    flap_kick.FlapKickRepository
+		flapKickEvent   flap_kick.FlapKickModel
+		contractAddress = "FlapAddress"
+		fakeBidId       = rand.Int()
 	)
 
 	BeforeEach(func() {
@@ -35,17 +35,21 @@ var _ = Describe("Flap bid event computed columns", func() {
 		test_config.CleanTestDB(db)
 
 		headerRepo = repositories.NewHeaderRepository(db)
-		header = fakes.GetFakeHeaderWithTimestamp(int64(timestamp), int64(blockNumber))
+		header = fakes.GetFakeHeader(int64(blockNumber))
 		var insertHeaderErr error
 		headerId, insertHeaderErr = headerRepo.CreateOrUpdateHeader(header)
 		Expect(insertHeaderErr).NotTo(HaveOccurred())
+		flapKickLog = test_data.CreateTestLog(headerId, db)
 
 		flapKickRepo = flap_kick.FlapKickRepository{}
 		flapKickRepo.SetDB(db)
+
 		flapKickEvent = test_data.FlapKickModel
 		flapKickEvent.BidId = strconv.Itoa(fakeBidId)
 		flapKickEvent.ContractAddress = contractAddress
-		insertFlapKickErr := flapKickRepo.Create(headerId, []interface{}{flapKickEvent})
+		flapKickEvent.HeaderID = headerId
+		flapKickEvent.LogID = flapKickLog.ID
+		insertFlapKickErr := flapKickRepo.Create([]interface{}{flapKickEvent})
 		Expect(insertFlapKickErr).NotTo(HaveOccurred())
 	})
 
@@ -55,7 +59,7 @@ var _ = Describe("Flap bid event computed columns", func() {
 	})
 
 	Describe("flap_bid_event_bid", func() {
-		It("returns flap bid for a flap_bid_event", func() {
+		It("returns flap_bid for a flap_bid_event", func() {
 			flapStorageValues := test_helpers.GetFlapStorageValues(1, fakeBidId)
 			test_helpers.CreateFlap(db, header, flapStorageValues, test_helpers.GetFlapMetadatas(strconv.Itoa(fakeBidId)), contractAddress)
 
@@ -63,9 +67,10 @@ var _ = Describe("Flap bid event computed columns", func() {
 
 			var actualBid test_helpers.FlapBid
 			err := db.Get(&actualBid, `
-				SELECT bid_id, guy, tic, "end", lot, bid, gal, dealt, created, updated
+				SELECT bid_id, guy, tic, "end", lot, bid, dealt, created, updated
 				FROM api.flap_bid_event_bid(
-					(SELECT (bid_id, lot, bid_amount, act, block_height, tx_idx)::api.flap_bid_event FROM api.all_flap_bid_events())
+					(SELECT (bid_id, lot, bid_amount, act, block_height, log_id, contract_address)::api.flap_bid_event
+					FROM api.all_flap_bid_events())
 				)`)
 
 			Expect(err).NotTo(HaveOccurred())
@@ -74,10 +79,10 @@ var _ = Describe("Flap bid event computed columns", func() {
 	})
 
 	Describe("flap_bid_event_tx", func() {
-		It("returns transaction for a flap bid event", func() {
+		It("returns transaction for a flap_bid_event", func() {
 			expectedTx := Tx{
 				TransactionHash:  test_helpers.GetValidNullString("txHash"),
-				TransactionIndex: sql.NullInt64{Int64: int64(flapKickEvent.TransactionIndex), Valid: true},
+				TransactionIndex: sql.NullInt64{Int64: int64(flapKickLog.Log.TxIndex), Valid: true},
 				BlockHeight:      sql.NullInt64{Int64: int64(blockNumber), Valid: true},
 				BlockHash:        test_helpers.GetValidNullString(header.Hash),
 				TxFrom:           test_helpers.GetValidNullString("fromAddress"),
@@ -92,7 +97,8 @@ var _ = Describe("Flap bid event computed columns", func() {
 			var actualTx Tx
 			queryErr := db.Get(&actualTx, `
 				SELECT * FROM api.flap_bid_event_tx(
-					(SELECT (bid_id, lot, bid_amount, act, block_height, tx_idx)::api.flap_bid_event FROM api.all_flap_bid_events()))`)
+					(SELECT (bid_id, lot, bid_amount, act, block_height, log_id, contract_address)::api.flap_bid_event
+					FROM api.all_flap_bid_events()))`)
 
 			Expect(queryErr).NotTo(HaveOccurred())
 			Expect(actualTx).To(Equal(expectedTx))
@@ -102,7 +108,7 @@ var _ = Describe("Flap bid event computed columns", func() {
 			wrongTx := Tx{
 				TransactionHash: test_helpers.GetValidNullString("wrongTxHash"),
 				TransactionIndex: sql.NullInt64{
-					Int64: int64(flapKickEvent.TransactionIndex) + 1,
+					Int64: int64(flapKickLog.Log.TxIndex) + 1,
 					Valid: true,
 				},
 				BlockHeight: sql.NullInt64{Int64: int64(blockNumber), Valid: true},
@@ -119,7 +125,8 @@ var _ = Describe("Flap bid event computed columns", func() {
 			var actualTx []Tx
 			queryErr := db.Select(&actualTx, `
 				SELECT * FROM api.flap_bid_event_tx(
-					(SELECT (bid_id, lot, bid_amount, act, block_height, tx_idx)::api.flap_bid_event FROM api.all_flap_bid_events()))`)
+					(SELECT (bid_id, lot, bid_amount, act, block_height, log_id, contract_address)::api.flap_bid_event
+					FROM api.all_flap_bid_events()))`)
 
 			Expect(queryErr).NotTo(HaveOccurred())
 			Expect(actualTx).To(BeZero())

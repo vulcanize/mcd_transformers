@@ -18,13 +18,12 @@ package tend_test
 
 import (
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/core/types"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-
 	"github.com/vulcanize/mcd_transformers/transformers/events/tend"
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
+	"github.com/vulcanize/vulcanizedb/pkg/core"
 )
 
 var _ = Describe("Tend TendConverter", func() {
@@ -32,27 +31,27 @@ var _ = Describe("Tend TendConverter", func() {
 
 	Describe("ToModels", func() {
 		It("converts an eth log to a db model", func() {
-			models, err := converter.ToModels([]types.Log{test_data.TendLogNote})
+			models, err := converter.ToModels([]core.HeaderSyncLog{test_data.TendHeaderSyncLog})
 
 			Expect(err).NotTo(HaveOccurred())
 			Expect(models).To(Equal([]shared.InsertionModel{test_data.TendModel}))
 		})
 
 		It("returns an error if the log data is empty", func() {
-			emptyDataLog := test_data.TendLogNote
-			emptyDataLog.Data = []byte{}
-			_, err := converter.ToModels([]types.Log{emptyDataLog})
+			emptyDataLog := test_data.TendHeaderSyncLog
+			emptyDataLog.Log.Data = []byte{}
+			_, err := converter.ToModels([]core.HeaderSyncLog{emptyDataLog})
 
 			Expect(err).To(HaveOccurred())
-			Expect(err).To(MatchError("tend log note data is empty"))
+			Expect(err).To(MatchError(shared.ErrLogMissingData))
 		})
 
 		It("returns an error if the expected amount of topics aren't in the log", func() {
-			invalidLog := test_data.TendLogNote
-			invalidLog.Topics = []common.Hash{}
-			_, err := converter.ToModels([]types.Log{invalidLog})
+			invalidLog := test_data.TendHeaderSyncLog
+			invalidLog.Log.Topics = []common.Hash{}
+			_, err := converter.ToModels([]core.HeaderSyncLog{invalidLog})
 
-			Expect(err).To(MatchError("tend log does not contain expected topics"))
+			Expect(err).To(MatchError(shared.ErrLogMissingTopics(4, 0)))
 		})
 	})
 })

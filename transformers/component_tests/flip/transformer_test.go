@@ -29,7 +29,6 @@ import (
 	"github.com/vulcanize/vulcanizedb/libraries/shared/storage/utils"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
 	"strconv"
-	"strings"
 )
 
 var _ = Describe("Executing the flip transformer", func() {
@@ -92,7 +91,7 @@ var _ = Describe("Executing the flip transformer", func() {
 		Expect(err).NotTo(HaveOccurred())
 		ilkID, ilkErr := shared.GetOrCreateIlk(ilk, db)
 		Expect(ilkErr).NotTo(HaveOccurred())
-		test_helpers.AssertVariable(ilkResult, blockNumber, blockHash.Hex(), strconv.Itoa(ilkID))
+		test_helpers.AssertVariable(ilkResult, blockNumber, blockHash.Hex(), strconv.FormatInt(ilkID, 10))
 	})
 
 	It("reads in a beg storage diff and persists it", func() {
@@ -174,7 +173,10 @@ var _ = Describe("Executing the flip transformer", func() {
 			}
 
 			BeforeEach(func() {
-				_, writeErr := db.Exec(flip.InsertFlipKicksQuery, blockNumber, blockHash.Hex(), strings.ToLower(contractAddress), bidId)
+				addressId, addressErr := shared.GetOrCreateAddress(transformer.HashedAddress.Hex(), db)
+				Expect(addressErr).NotTo(HaveOccurred())
+
+				_, writeErr := db.Exec(flip.InsertFlipKicksQuery, blockNumber, blockHash.Hex(), addressId, bidId)
 				Expect(writeErr).NotTo(HaveOccurred())
 
 				executeErr := transformer.Execute(diff)

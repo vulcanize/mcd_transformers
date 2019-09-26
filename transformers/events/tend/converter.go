@@ -17,65 +17,51 @@
 package tend
 
 import (
-	"encoding/json"
-	"errors"
-
 	"github.com/ethereum/go-ethereum/common/hexutil"
-	"github.com/ethereum/go-ethereum/core/types"
-
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
+	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
+	"github.com/vulcanize/vulcanizedb/pkg/core"
 )
 
 type TendConverter struct{}
 
-func (TendConverter) ToModels(ethLogs []types.Log) (results []shared.InsertionModel, err error) {
-	for _, ethLog := range ethLogs {
-		err := validateLog(ethLog)
+const (
+	logDataRequired   = true
+	numTopicsRequired = 4
+)
+
+func (TendConverter) ToModels(logs []core.HeaderSyncLog) (results []shared.InsertionModel, err error) {
+	for _, log := range logs {
+		err := shared.VerifyLog(log.Log, numTopicsRequired, logDataRequired)
 		if err != nil {
 			return nil, err
 		}
 
-		bidId := ethLog.Topics[2].Big()
-		lot := ethLog.Topics[3].Big().String()
-		rawBid, bidErr := shared.GetLogNoteArgumentAtIndex(2, ethLog.Data)
+		bidId := log.Log.Topics[2].Big()
+		lot := log.Log.Topics[3].Big().String()
+		rawBid, bidErr := shared.GetLogNoteArgumentAtIndex(2, log.Log.Data)
 		if bidErr != nil {
 			return nil, bidErr
 		}
 		bidValue := shared.ConvertUint256HexToBigInt(hexutil.Encode(rawBid)).String()
-		rawLog, err := json.Marshal(ethLog)
-		if err != nil {
-			return nil, err
-		}
 
 		model := shared.InsertionModel{
 			TableName: "tend",
 			OrderedColumns: []string{
-				"header_id", "bid_id", "lot", "bid", "contract_address", "log_idx", "tx_idx", "raw_log",
+				constants.HeaderFK, "bid_id", "lot", "bid", string(constants.AddressFK), constants.LogFK,
 			},
 			ColumnValues: shared.ColumnValues{
 				"bid_id":           bidId.String(),
 				"lot":              lot,
 				"bid":              bidValue,
-				"contract_address": ethLog.Address.Hex(),
-				"log_idx":          ethLog.Index,
-				"tx_idx":           ethLog.TxIndex,
-				"raw_log":          rawLog,
+				constants.HeaderFK: log.HeaderID,
+				constants.LogFK:    log.ID,
 			},
-			ForeignKeyValues: shared.ForeignKeyValues{},
+			ForeignKeyValues: shared.ForeignKeyValues{
+				constants.AddressFK: log.Log.Address.Hex(),
+			},
 		}
 		results = append(results, model)
 	}
 	return results, err
-}
-
-func validateLog(ethLog types.Log) error {
-	if len(ethLog.Data) <= 0 {
-		return errors.New("tend log note data is empty")
-	}
-
-	if len(ethLog.Topics) < 4 {
-		return errors.New("tend log does not contain expected topics")
-	}
-
-	return nil
 }

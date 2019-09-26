@@ -1,6 +1,7 @@
 package flap_test
 
 import (
+	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	"math/rand"
 	"strconv"
 
@@ -20,16 +21,19 @@ import (
 
 var _ = Describe("Flap storage repository", func() {
 	var (
-		db              *postgres.DB
-		repository      flap.FlapStorageRepository
-		fakeBlockNumber int
-		fakeHash        string
+		db                  *postgres.DB
+		repository          flap.FlapStorageRepository
+		fakeBlockNumber     int
+		fakeHash            string
+		flapContractAddress = "flapContractAddress"
 	)
 
 	BeforeEach(func() {
 		db = test_config.NewTestDB(test_config.NewTestNode())
 		test_config.CleanTestDB(db)
-		repository = flap.FlapStorageRepository{}
+		repository = flap.FlapStorageRepository{
+			ContractAddress: flapContractAddress,
+		}
 		repository.SetDB(db)
 		fakeBlockNumber = rand.Int()
 		fakeHash = fakes.FakeHash.Hex()
@@ -42,6 +46,50 @@ var _ = Describe("Flap storage repository", func() {
 		}
 
 		Expect(flapCreate).Should(Panic())
+	})
+
+	It("rolls back the record and address insertions if there's a failure", func() {
+		var begMetadata = utils.StorageValueMetadata{Name: storage.Beg}
+		err := repository.Create(fakeBlockNumber, fakeHash, begMetadata, "")
+		Expect(err).To(HaveOccurred())
+		Expect(err.Error()).To(MatchRegexp("pq: invalid input syntax for type numeric"))
+
+		var addressCount int
+		countErr := db.Get(&addressCount, `SELECT COUNT(*) FROM addresses`)
+		Expect(countErr).NotTo(HaveOccurred())
+		Expect(addressCount).To(Equal(0))
+	})
+
+	It("rolls back the records and address insertions for records with bid_ids if there's a failure", func() {
+		var bidBidMetadata = utils.StorageValueMetadata{
+			Name: storage.BidBid,
+			Keys: map[utils.Key]string{constants.BidId: strconv.Itoa(rand.Int())},
+			Type: utils.Uint256,
+		}
+
+		err := repository.Create(fakeBlockNumber, fakeHash, bidBidMetadata, "")
+		Expect(err).To(HaveOccurred())
+		Expect(err.Error()).To(MatchRegexp("pq: invalid input syntax for type numeric"))
+
+		var addressCount int
+		countErr := db.Get(&addressCount, `SELECT COUNT(*) FROM addresses`)
+		Expect(countErr).NotTo(HaveOccurred())
+		Expect(addressCount).To(Equal(0))
+	})
+
+	It("gets or creates the address record", func() {
+		var begMetadata = utils.StorageValueMetadata{Name: storage.Beg}
+		createErr := repository.Create(fakeBlockNumber, fakeHash, begMetadata, strconv.Itoa(rand.Int()))
+		Expect(createErr).NotTo(HaveOccurred())
+
+		addressId, addressErr := shared.GetOrCreateAddress(repository.ContractAddress, db)
+		Expect(addressErr).NotTo(HaveOccurred())
+
+		var ttlContractAddressId int64
+		query := "SELECT address_id FROM maker.flap_beg LIMIT 1"
+		getErr := db.Get(&ttlContractAddressId, query)
+		Expect(getErr).NotTo(HaveOccurred())
+		Expect(ttlContractAddressId).To(Equal(addressId))
 	})
 
 	Describe("vat", func() {
@@ -219,6 +267,19 @@ var _ = Describe("Flap storage repository", func() {
 			}
 
 			shared_behaviors.SharedStorageRepositoryVariableBehaviors(&inputs)
+
+			It("triggers an update to the flap table", func() {
+				err := repository.Create(fakeBlockNumber, fakeHash, bidBidMetadata, fakeBidValue)
+				Expect(err).NotTo(HaveOccurred())
+
+				var flap FlapRes
+				queryErr := db.Get(&flap, `SELECT block_number, block_hash, bid_id, bid FROM maker.flap`)
+				Expect(queryErr).NotTo(HaveOccurred())
+				Expect(flap.BlockNumber).To(Equal(fakeBlockNumber))
+				Expect(flap.BlockHash).To(Equal(fakeHash))
+				Expect(flap.BidId).To(Equal(fakeBidId))
+				Expect(flap.Bid).To(Equal(fakeBidValue))
+			})
 		})
 
 		Describe("bid_lot", func() {
@@ -240,6 +301,19 @@ var _ = Describe("Flap storage repository", func() {
 			}
 
 			shared_behaviors.SharedStorageRepositoryVariableBehaviors(&inputs)
+
+			It("triggers an update to the flap table", func() {
+				err := repository.Create(fakeBlockNumber, fakeHash, bidLotMetadata, fakeLotValue)
+				Expect(err).NotTo(HaveOccurred())
+
+				var flap FlapRes
+				queryErr := db.Get(&flap, `SELECT block_number, block_hash, bid_id, lot FROM maker.flap`)
+				Expect(queryErr).NotTo(HaveOccurred())
+				Expect(flap.BlockNumber).To(Equal(fakeBlockNumber))
+				Expect(flap.BlockHash).To(Equal(fakeHash))
+				Expect(flap.BidId).To(Equal(fakeBidId))
+				Expect(flap.Lot).To(Equal(fakeLotValue))
+			})
 		})
 
 		Describe("bid_guy, bid_tic and bid_end packed storage", func() {
@@ -287,6 +361,18 @@ var _ = Describe("Flap storage repository", func() {
 					Expect(selectErr).NotTo(HaveOccurred())
 					AssertMapping(endResult, fakeBlockNumber, fakeHash, fakeBidId, fakeEnd)
 				})
+
+				It("triggers an update to the flap table with the latest guy, tic, and end values", func() {
+					var flap FlapRes
+					queryErr := db.Get(&flap, `SELECT block_number, block_hash, bid_id, guy, tic, "end" FROM maker.flap`)
+					Expect(queryErr).NotTo(HaveOccurred())
+					Expect(flap.BlockNumber).To(Equal(fakeBlockNumber))
+					Expect(flap.BlockHash).To(Equal(fakeHash))
+					Expect(flap.BidId).To(Equal(fakeBidId))
+					Expect(flap.Guy).To(Equal(fakeGuy))
+					Expect(flap.Tic).To(Equal(fakeTic))
+					Expect(flap.End).To(Equal(fakeEnd))
+				})
 			})
 
 			It("returns an error if inserting fails", func() {
@@ -296,27 +382,6 @@ var _ = Describe("Flap storage repository", func() {
 				Expect(err).To(HaveOccurred())
 				Expect(err.Error()).To(MatchRegexp("pq: invalid input syntax for integer"))
 			})
-		})
-
-		Describe("bid_gal", func() {
-			var fakeGalValue = FakeAddress
-			var bidGalMetadata = utils.StorageValueMetadata{
-				Name: storage.BidGal,
-				Keys: map[utils.Key]string{constants.BidId: fakeBidId},
-				Type: utils.Address,
-			}
-			inputs := shared_behaviors.StorageVariableBehaviorInputs{
-				KeyFieldName:     string(constants.BidId),
-				ValueFieldName:   "gal",
-				Value:            fakeGalValue,
-				Key:              fakeBidId,
-				IsAMapping:       true,
-				StorageTableName: "maker.flap_bid_gal",
-				Repository:       &repository,
-				Metadata:         bidGalMetadata,
-			}
-
-			shared_behaviors.SharedStorageRepositoryVariableBehaviors(&inputs)
 		})
 	})
 })

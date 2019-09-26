@@ -17,51 +17,43 @@
 package deal
 
 import (
-	"encoding/json"
-	"errors"
-
-	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
+	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
+	"github.com/vulcanize/vulcanizedb/pkg/core"
 )
 
 type DealConverter struct{}
 
-func (DealConverter) ToModels(ethLogs []types.Log) (result []shared.InsertionModel, err error) {
-	for _, log := range ethLogs {
-		validationErr := validateLog(log)
+const (
+	logDataRequired   = true
+	numTopicsRequired = 3
+)
+
+func (DealConverter) ToModels(logs []core.HeaderSyncLog) (result []shared.InsertionModel, err error) {
+	for _, log := range logs {
+		validationErr := shared.VerifyLog(log.Log, numTopicsRequired, logDataRequired)
 		if validationErr != nil {
 			return nil, validationErr
 		}
 
-		bidId := log.Topics[2].Big()
-		raw, jsonErr := json.Marshal(log)
-		if jsonErr != nil {
-			return nil, jsonErr
-		}
+		bidId := log.Log.Topics[2].Big()
 
 		model := shared.InsertionModel{
 			TableName: "deal",
 			OrderedColumns: []string{
-				"header_id", "bid_id", "contract_address", "log_idx", "tx_idx", "raw_log",
+				constants.HeaderFK, "bid_id", string(constants.AddressFK), constants.LogFK,
 			},
 			ColumnValues: shared.ColumnValues{
 				"bid_id":           bidId.String(),
-				"contract_address": log.Address.String(),
-				"log_idx":          log.Index,
-				"tx_idx":           log.TxIndex,
-				"raw_log":          raw,
+				constants.HeaderFK: log.HeaderID,
+				constants.LogFK:    log.ID,
 			},
-			ForeignKeyValues: shared.ForeignKeyValues{},
+			ForeignKeyValues: shared.ForeignKeyValues{
+				constants.AddressFK: log.Log.Address.String(),
+			},
 		}
 		result = append(result, model)
 	}
 
 	return result, nil
-}
-
-func validateLog(ethLog types.Log) error {
-	if len(ethLog.Topics) < 3 {
-		return errors.New("deal log does not contain expected topics")
-	}
-	return nil
 }

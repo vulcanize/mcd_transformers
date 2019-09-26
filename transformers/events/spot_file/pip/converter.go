@@ -17,41 +17,39 @@
 package pip
 
 import (
-	"encoding/json"
-	"errors"
-
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/core/types"
-
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
+	"github.com/vulcanize/vulcanizedb/pkg/core"
 )
 
 type SpotFilePipConverter struct{}
 
-func (SpotFilePipConverter) ToModels(ethLogs []types.Log) ([]shared.InsertionModel, error) {
+const (
+	logDataRequired   = false
+	numTopicsRequired = 4
+)
+
+func (SpotFilePipConverter) ToModels(logs []core.HeaderSyncLog) ([]shared.InsertionModel, error) {
 	var models []shared.InsertionModel
-	for _, ethLog := range ethLogs {
-		err := verifyLog(ethLog)
+	for _, log := range logs {
+		err := shared.VerifyLog(log.Log, numTopicsRequired, logDataRequired)
 		if err != nil {
 			return nil, err
 		}
-		ilk := ethLog.Topics[2].Hex()
-		pip := common.BytesToAddress(ethLog.Topics[3].Bytes()).String()
-		raw, err := json.Marshal(ethLog)
-		if err != nil {
-			return nil, err
-		}
+
+		ilk := log.Log.Topics[2].Hex()
+		pip := common.BytesToAddress(log.Log.Topics[3].Bytes()).String()
+
 		model := shared.InsertionModel{
 			TableName: "spot_file_pip",
 			OrderedColumns: []string{
-				"header_id", string(constants.IlkFK), "pip", "log_idx", "tx_idx", "raw_log",
+				constants.HeaderFK, string(constants.IlkFK), "pip", constants.LogFK,
 			},
 			ColumnValues: shared.ColumnValues{
-				"pip":     pip,
-				"log_idx": ethLog.Index,
-				"tx_idx":  ethLog.TxIndex,
-				"raw_log": raw,
+				"pip":              pip,
+				constants.HeaderFK: log.HeaderID,
+				constants.LogFK:    log.ID,
 			},
 			ForeignKeyValues: shared.ForeignKeyValues{
 				constants.IlkFK: ilk,
@@ -60,11 +58,4 @@ func (SpotFilePipConverter) ToModels(ethLogs []types.Log) ([]shared.InsertionMod
 		models = append(models, model)
 	}
 	return models, nil
-}
-
-func verifyLog(log types.Log) error {
-	if len(log.Topics) < 4 {
-		return errors.New("log missing topics")
-	}
-	return nil
 }

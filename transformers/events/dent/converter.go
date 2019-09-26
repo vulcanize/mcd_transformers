@@ -17,69 +17,51 @@
 package dent
 
 import (
-	"encoding/json"
-	"errors"
-
 	"github.com/ethereum/go-ethereum/common/hexutil"
-	"github.com/ethereum/go-ethereum/core/types"
-
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
+	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
+	"github.com/vulcanize/vulcanizedb/pkg/core"
 )
 
 type DentConverter struct{}
 
-func (c DentConverter) ToModels(ethLogs []types.Log) (result []shared.InsertionModel, err error) {
-	for _, log := range ethLogs {
-		validateErr := validateLog(log)
+const (
+	logDataRequired   = true
+	numTopicsRequired = 4
+)
+
+func (c DentConverter) ToModels(logs []core.HeaderSyncLog) (result []shared.InsertionModel, err error) {
+	for _, log := range logs {
+		validateErr := shared.VerifyLog(log.Log, numTopicsRequired, logDataRequired)
 		if validateErr != nil {
 			return nil, validateErr
 		}
 
-		bidId := log.Topics[2].Big()
-		lot := log.Topics[3].Big()
-		bidBytes, dataErr := shared.GetLogNoteArgumentAtIndex(2, log.Data)
+		bidId := log.Log.Topics[2].Big()
+		lot := log.Log.Topics[3].Big()
+		bidBytes, dataErr := shared.GetLogNoteArgumentAtIndex(2, log.Log.Data)
 		if dataErr != nil {
 			return nil, dataErr
 		}
 		bid := shared.ConvertUint256HexToBigInt(hexutil.Encode(bidBytes))
 
-		logIndex := log.Index
-		transactionIndex := log.TxIndex
-
-		raw, err := json.Marshal(log)
-		if err != nil {
-			return nil, err
-		}
-
 		model := shared.InsertionModel{
 			TableName: "dent",
 			OrderedColumns: []string{
-				"header_id", "bid_id", "lot", "bid", "contract_address", "log_idx", "tx_idx", "raw_log",
+				constants.HeaderFK, "bid_id", "lot", "bid", string(constants.AddressFK), constants.LogFK,
 			},
 			ColumnValues: shared.ColumnValues{
 				"bid_id":           bidId.String(),
 				"lot":              lot.String(),
 				"bid":              bid.String(),
-				"contract_address": log.Address.Hex(),
-				"log_idx":          logIndex,
-				"tx_idx":           transactionIndex,
-				"raw_log":          raw,
+				constants.HeaderFK: log.HeaderID,
+				constants.LogFK:    log.ID,
 			},
-			ForeignKeyValues: shared.ForeignKeyValues{},
+			ForeignKeyValues: shared.ForeignKeyValues{
+				constants.AddressFK: log.Log.Address.String(),
+			},
 		}
 		result = append(result, model)
 	}
 	return result, err
-}
-
-func validateLog(ethLog types.Log) error {
-	if len(ethLog.Data) <= 0 {
-		return errors.New("dent log data is empty")
-	}
-
-	if len(ethLog.Topics) < 4 {
-		return errors.New("dent log does not contain expected topics")
-	}
-
-	return nil
 }

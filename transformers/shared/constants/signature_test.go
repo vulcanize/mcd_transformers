@@ -47,15 +47,15 @@ var _ = Describe("Signature constants", func() {
 	})
 
 	It("generates flap kick signature", func() {
-		Expect(FlapKickSignature()).To(Equal("0x7e8881001566f9f89aedb9c5dc3d856a2b81e5235a8196413ed484be91cc0df6"))
+		Expect(FlapKickSignature()).To(Equal("0xe6dde59cbc017becba89714a037778d234a84ce7f0a137487142a007e580d609"))
 	})
 
 	It("generates flip kick signature", func() {
 		Expect(FlipKickSignature()).To(Equal("0xc84ce3a1172f0dec3173f04caaa6005151a4bfe40d4c9f3ea28dba5f719b2a7a"))
 	})
 
-	It("generates flip tick signature", func() {
-		Expect(FlipTickSignature()).To(Equal("0xfc7b6aee00000000000000000000000000000000000000000000000000000000"))
+	It("generates tick signature", func() {
+		Expect(TickSignature()).To(Equal("0xfc7b6aee00000000000000000000000000000000000000000000000000000000"))
 	})
 
 	It("generates flop kick signature", func() {
@@ -80,6 +80,10 @@ var _ = Describe("Signature constants", func() {
 
 	It("generates jug init signature", func() {
 		Expect(JugInitSignature()).To(Equal("0x3b66319500000000000000000000000000000000000000000000000000000000"))
+	})
+
+	It("generates cdp manager new cdp signature", func() {
+		Expect(NewCdpSignature()).To(Equal("0xd6be0bc178658a382ff4f91c8c68b542aa6b71685b8fe427966b87745c3ea7a2"))
 	})
 
 	It("generates spot file mat signature", func() {

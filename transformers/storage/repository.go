@@ -21,6 +21,7 @@ import (
 	"strconv"
 
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
+	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres/repositories"
 )
 
 type Urn struct {
@@ -51,16 +52,20 @@ type MakerStorageRepository struct {
 
 func (repository *MakerStorageRepository) GetFlapBidIds(contractAddress string) ([]string, error) {
 	var bidIds []string
+	addressId, addressErr := repository.GetOrCreateAddress(contractAddress)
+	if addressErr != nil {
+		return []string{}, addressErr
+	}
 	err := repository.db.Select(&bidIds, `
-		SELECT bid_id FROM maker.flap_kick WHERE contract_address = $1
+		SELECT bid_id FROM maker.flap_kick WHERE address_id = $1
 		UNION
-		SELECT kicks FROM maker.flap_kicks WHERE contract_address = $1
+		SELECT kicks FROM maker.flap_kicks WHERE address_id = $1
 		UNION
-		SELECT bid_id from maker.tend WHERE contract_address = $1
+		SELECT bid_id from maker.tend WHERE address_id = $1
 		UNION
-		SELECT bid_id from maker.deal WHERE contract_address = $1
+		SELECT bid_id from maker.deal WHERE address_id = $1
 		UNION
-		SELECT bid_id from maker.yank WHERE contract_address = $1`, contractAddress)
+		SELECT bid_id from maker.yank WHERE address_id = $1`, addressId)
 	return bidIds, err
 }
 
@@ -77,7 +82,8 @@ func (repository *MakerStorageRepository) GetDaiKeys() ([]string, error) {
 		UNION
 		SELECT DISTINCT tx_from FROM public.header_sync_transactions AS transactions
 			LEFT JOIN maker.vat_heal ON vat_heal.header_id = transactions.header_id
-			WHERE vat_heal.tx_idx = transactions.tx_index
+			LEFT JOIN public.header_sync_logs ON header_sync_logs.id = vat_heal.log_id
+			WHERE header_sync_logs.tx_index = transactions.tx_index
 		UNION
 		SELECT DISTINCT urns.identifier FROM maker.vat_fold
 			INNER JOIN maker.urns on urns.id = maker.vat_fold.urn_id
@@ -128,7 +134,8 @@ func (repository *MakerStorageRepository) GetVatSinKeys() ([]string, error) {
 		UNION
 		SELECT DISTINCT tx_from FROM public.header_sync_transactions AS transactions
 			LEFT JOIN maker.vat_heal ON vat_heal.header_id = transactions.header_id
-			WHERE vat_heal.tx_idx = transactions.tx_index`)
+			LEFT JOIN public.header_sync_logs ON header_sync_logs.id = vat_heal.log_id
+			WHERE header_sync_logs.tx_index = transactions.tx_index`)
 	return sinKeys, err
 }
 
@@ -185,48 +192,60 @@ func (repository *MakerStorageRepository) GetOwners() ([]string, error) {
 
 func (repository *MakerStorageRepository) GetFlipBidIds(contractAddress string) ([]string, error) {
 	var bidIds []string
+	addressId, addressErr := repository.GetOrCreateAddress(contractAddress)
+	if addressErr != nil {
+		return []string{}, addressErr
+	}
 	err := repository.db.Select(&bidIds, `
-   		SELECT DISTINCT bid_id FROM maker.flip_tick
-		WHERE contract_address = $1
+   		SELECT DISTINCT bid_id FROM maker.tick
+		WHERE address_id = $1
 		UNION
    		SELECT DISTINCT bid_id FROM maker.flip_kick
-		WHERE contract_address = $1
+		WHERE address_id = $1
 		UNION
 		SELECT DISTINCT bid_id FROM maker.tend
-		WHERE contract_address = $1
+		WHERE address_id = $1
 		UNION
 		SELECT DISTINCT bid_id FROM maker.dent
-		WHERE contract_address = $1
+		WHERE address_id = $1
 		UNION
 		SELECT DISTINCT bid_id FROM maker.deal
-		WHERE contract_address = $1
+		WHERE address_id = $1
 		UNION
 		SELECT DISTINCT bid_id FROM maker.yank
-		WHERE contract_address = $1
+		WHERE address_id = $1
 		UNION
 		SELECT DISTINCT kicks FROM maker.flip_kicks
-		WHERE contract_address = $1`, contractAddress)
+		WHERE address_id = $1`, addressId)
 	return bidIds, err
 }
 
 func (repository *MakerStorageRepository) GetFlopBidIds(contractAddress string) ([]string, error) {
 	var bidIds []string
+	addressId, addressErr := repository.GetOrCreateAddress(contractAddress)
+	if addressErr != nil {
+		return []string{}, addressErr
+	}
 	err := repository.db.Select(&bidIds, `
 		SELECT bid_id FROM maker.flop_kick
-		WHERE contract_address = $1
+		WHERE address_id = $1
 		UNION
 		SELECT DISTINCT bid_id FROM maker.dent
-		WHERE contract_address = $1
+		WHERE address_id = $1
 		UNION
 		SELECT DISTINCT bid_id FROM maker.deal
-		WHERE contract_address = $1
+		WHERE address_id = $1
 		UNION
 		SELECT DISTINCT bid_id FROM maker.yank
-		WHERE contract_address = $1
+		WHERE address_id = $1
 		UNION
 		SELECT DISTINCT kicks FROM maker.flop_kicks
-		WHERE contract_address = $1`, contractAddress)
+		WHERE address_id = $1`, addressId)
 	return bidIds, err
+}
+
+func (repository *MakerStorageRepository) GetOrCreateAddress(contractAddress string) (int64, error) {
+	return repositories.AddressRepository{}.GetOrCreateAddress(repository.db, contractAddress)
 }
 
 func (repository *MakerStorageRepository) SetDB(db *postgres.DB) {

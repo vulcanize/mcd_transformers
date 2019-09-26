@@ -17,18 +17,15 @@
 package flap_kick
 
 import (
-	"math/big"
-
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/core/types"
+	"math/big"
 )
 
 type FlapKickEntity struct {
-	Id               *big.Int
-	Lot              *big.Int
-	Bid              *big.Int
-	Gal              common.Address
-	Raw              types.Log
-	TransactionIndex uint
-	LogIndex         uint
+	Id              *big.Int
+	Lot             *big.Int
+	Bid             *big.Int
+	ContractAddress common.Address
+	HeaderID        int64
+	LogID           int64
 }
