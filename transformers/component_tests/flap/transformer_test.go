@@ -175,7 +175,7 @@ var _ = Describe("Executing the flap transformer", func() {
 			}
 
 			BeforeEach(func() {
-				addressId, addressErr := shared.GetOrCreateAddress(transformer.HashedAddress.Hex(), db)
+				addressId, addressErr := shared.GetOrCreateAddress(contractAddress, db)
 				Expect(addressErr).NotTo(HaveOccurred())
 
 				_, writeErr := db.Exec(flap.InsertKicksQuery, blockNumber, blockHash.Hex(), addressId, bidId)

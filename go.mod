@@ -11,8 +11,6 @@ require (
 	github.com/elastic/gosigar v0.10.5 // indirect
 	github.com/ethereum/go-ethereum v1.9.5
 	github.com/google/uuid v1.1.0 // indirect
-	github.com/hashicorp/golang-lru v0.5.3 // indirect
-	github.com/howeyc/fsnotify v0.9.0 // indirect
 	github.com/influxdata/influxdb v1.7.7 // indirect
 	github.com/jmoiron/sqlx v1.2.0
 	github.com/konsorten/go-windows-terminal-sequences v1.0.2 // indirect
@@ -31,6 +29,8 @@ require (
 	gopkg.in/urfave/cli.v1 v1.20.0 // indirect
 )
 
-replace github.com/ethereum/go-ethereum v1.9.1 => github.com/vulcanize/go-ethereum v0.0.0-20190731183759-8e20673bd101
+replace github.com/ethereum/go-ethereum => github.com/vulcanize/go-ethereum v1.5.10-0.20190910005838-ca79f6ef9877
 
 replace gopkg.in/urfave/cli.v1 => gopkg.in/urfave/cli.v1 v1.20.0
+
+replace github.com/vulcanize/vulcanizedb => github.com/vulcanize/vulcanizedb v0.0.8-0.20190925215242-5c0e5592abd2

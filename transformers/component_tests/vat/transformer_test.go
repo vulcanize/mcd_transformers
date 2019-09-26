@@ -201,7 +201,7 @@ var _ = Describe("Executing the transformer", func() {
 			var spotResult test_helpers.MappingRes
 			err = db.Get(&spotResult, `SELECT block_number, block_hash, ilk_id AS key, spot AS value FROM maker.vat_ilk_spot`)
 			Expect(err).NotTo(HaveOccurred())
-			test_helpers.AssertMapping(spotResult, blockNumber, blockHash, strconv.Itoa(anotherIlkID), "43051901220750297886077900117")
+			test_helpers.AssertMapping(spotResult, blockNumber, blockHash, strconv.FormatInt(anotherIlkID, 10), "43051901220750297886077900117")
 		})
 
 		It("reads in a Vat ilk line storage diff row and persists it", func() {

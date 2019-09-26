@@ -169,7 +169,7 @@ var _ = Describe("Executing the flop transformer", func() {
 			}
 
 			BeforeEach(func() {
-				addressId, addressErr := shared.GetOrCreateAddress(transformer.HashedAddress.Hex(), db)
+				addressId, addressErr := shared.GetOrCreateAddress(flopperContractAddress, db)
 				Expect(addressErr).NotTo(HaveOccurred())
 
 				_, writeErr := db.Exec(flop.InsertFlopKicksQuery, blockNumber, blockHash.Hex(), addressId, bidId)

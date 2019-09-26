@@ -173,7 +173,7 @@ var _ = Describe("Executing the flip transformer", func() {
 			}
 
 			BeforeEach(func() {
-				addressId, addressErr := shared.GetOrCreateAddress(transformer.HashedAddress.Hex(), db)
+				addressId, addressErr := shared.GetOrCreateAddress(contractAddress, db)
 				Expect(addressErr).NotTo(HaveOccurred())
 
 				_, writeErr := db.Exec(flip.InsertFlipKicksQuery, blockNumber, blockHash.Hex(), addressId, bidId)
