@@ -201,7 +201,8 @@ func (repository *MakerStorageRepository) GetFlipBidIds(contractAddress string) 
 		WHERE address_id = $1
 		UNION
    		SELECT DISTINCT bid_id FROM maker.flip_kick
-		WHERE address_id = $1
+   		JOIN header_sync_logs hsl on flip_kick.log_id = hsl.id
+		WHERE address = $1
 		UNION
 		SELECT DISTINCT bid_id FROM maker.tend
 		WHERE address_id = $1

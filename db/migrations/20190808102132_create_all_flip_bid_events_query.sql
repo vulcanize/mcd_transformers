@@ -20,8 +20,9 @@ CREATE FUNCTION api.all_flip_bid_events(max_results INTEGER DEFAULT NULL, result
     RETURNS SETOF api.flip_bid_event AS
 $$
 WITH address_ids AS (
-    SELECT distinct address_id
+    SELECT distinct address
     FROM maker.flip_kick
+             JOIN header_sync_logs hsl on flip_kick.log_id = hsl.id
 ),
      deals AS (
          SELECT deal.bid_id,
@@ -80,11 +81,16 @@ WITH address_ids AS (
 
 SELECT flip_kick.bid_id,
        lot,
-       bid                 AS                                          bid_amount,
-       'kick'::api.bid_act AS                                          act,
-       block_number        AS                                          block_height,
+       bid                 AS                    bid_amount,
+       'kick'::api.bid_act AS                    act,
+       block_number        AS                    block_height,
        log_id,
-       (SELECT address FROM addresses WHERE id = flip_kick.address_id) s
+       (SELECT address
+        FROM addresses
+        WHERE id = (SELECT address
+                    FROM maker.flip_kick fk
+                             JOIN header_sync_logs hsl on fk.log_id = hsl.id
+                    WHERE fk.id = flip_kick.id)) s
 FROM maker.flip_kick
          LEFT JOIN headers ON flip_kick.header_id = headers.id
 UNION

@@ -24,7 +24,6 @@ import (
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
 	"github.com/vulcanize/vulcanizedb/pkg/core"
 	"math/big"
-	"strings"
 )
 
 var _ = Describe("FlipKick Converter", func() {
@@ -76,7 +75,7 @@ var _ = Describe("FlipKick Converter", func() {
 			Expect(model.Tab).To(Equal(emptyString))
 			Expect(model.Usr).To(Equal(emptyAddressHex))
 			Expect(model.Gal).To(Equal(emptyAddressHex))
-			Expect(model.ContractAddress).To(Equal(emptyAddressHex))
+			//Expect(model.ContractAddress).To(Equal(emptyAddressHex))
 		})
 
 		It("returns an error if the flip kick event id is nil", func() {
@@ -103,6 +102,6 @@ func expectEqualModels(actual interface{}, expected flip_kick.FlipKickModel) {
 	Expect(actualFlipKick.Tab).To(Equal(expected.Tab))
 	Expect(actualFlipKick.Usr).To(Equal(expected.Usr))
 	Expect(actualFlipKick.Gal).To(Equal(expected.Gal))
-	Expect(strings.ToLower(actualFlipKick.ContractAddress)).To(Equal(strings.ToLower(expected.ContractAddress)))
+	//Expect(strings.ToLower(actualFlipKick.ContractAddress)).To(Equal(strings.ToLower(expected.ContractAddress)))
 	Expect(actualFlipKick.LogID).To(Equal(expected.LogID))
 }

@@ -161,7 +161,7 @@ var _ = Describe("Flip bid event computed columns", func() {
 			flipKickGethLog = flipKickHeaderSyncLog.Log
 
 			flipKickEvent := test_data.FlipKickModel
-			flipKickEvent.ContractAddress = contractAddress
+			//flipKickEvent.ContractAddress = contractAddress
 			flipKickEvent.BidId = strconv.Itoa(bidId)
 			flipKickEvent.HeaderID = headerId
 			flipKickEvent.LogID = flipKickHeaderSyncLog.ID

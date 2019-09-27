@@ -22,9 +22,9 @@ import (
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
 )
 
-var InsertFlipKickQuery = `INSERT into maker.flip_kick (header_id, bid_id, lot, bid, tab, usr, gal, address_id, log_id)
-				VALUES($1, $2::NUMERIC, $3::NUMERIC, $4::NUMERIC, $5::NUMERIC, $6, $7, $8, $9)
-				ON CONFLICT (header_id, log_id) DO UPDATE SET bid_id = $2, lot = $3, bid = $4, tab = $5, usr = $6, gal = $7, address_id = $8;`
+var InsertFlipKickQuery = `INSERT into maker.flip_kick (header_id, bid_id, lot, bid, tab, usr, gal, log_id)
+				VALUES($1, $2::NUMERIC, $3::NUMERIC, $4::NUMERIC, $5::NUMERIC, $6, $7, $8)
+				ON CONFLICT (header_id, log_id) DO UPDATE SET bid_id = $2, lot = $3, bid = $4, tab = $5, usr = $6, gal = $7;`
 
 type FlipKickRepository struct {
 	db *postgres.DB
@@ -42,17 +42,17 @@ func (repository FlipKickRepository) Create(models []interface{}) error {
 			return shared.FormatRollbackError("flip kick", wrongTypeErr.Error())
 		}
 
-		addressId, addressErr := shared.GetOrCreateAddressInTransaction(flipKickModel.ContractAddress, tx)
-		if addressErr != nil {
-			rollbackErr := tx.Rollback()
-			if rollbackErr != nil {
-				return shared.FormatRollbackError("flip address", addressErr.Error())
-			}
-			return addressErr
-		}
+		//addressId, addressErr := shared.GetOrCreateAddressInTransaction(flipKickModel.ContractAddress, tx)
+		//if addressErr != nil {
+		//	rollbackErr := tx.Rollback()
+		//	if rollbackErr != nil {
+		//		return shared.FormatRollbackError("flip address", addressErr.Error())
+		//	}
+		//	return addressErr
+		//}
 
 		_, execErr := tx.Exec(InsertFlipKickQuery, flipKickModel.HeaderID, flipKickModel.BidId, flipKickModel.Lot, flipKickModel.Bid,
-			flipKickModel.Tab, flipKickModel.Usr, flipKickModel.Gal, addressId, flipKickModel.LogID)
+			flipKickModel.Tab, flipKickModel.Usr, flipKickModel.Gal, flipKickModel.LogID)
 		if execErr != nil {
 			rollbackErr := tx.Rollback()
 			if rollbackErr != nil {

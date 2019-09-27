@@ -81,6 +81,6 @@ var _ = Describe("FlipKick Transformer", func() {
 		Expect(dbResult[0].Tab).To(Equal(""))
 		Expect(dbResult[0].Usr).To(Equal(""))
 		Expect(dbResult[0].Gal).To(Equal("0x3728e9777B2a0a611ee0F89e00E01044ce4736d1"))
-		Expect(dbResult[0].ContractAddress).To(Equal(""))
+		//	Expect(dbResult[0].ContractAddress).To(Equal(""))
 	})
 })

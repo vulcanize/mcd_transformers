@@ -40,8 +40,9 @@ WITH ilk_ids AS (SELECT id FROM maker.ilks WHERE ilks.identifier = get_flip.ilk)
                     LIMIT 1),
      kicks AS (SELECT usr
                FROM maker.flip_kick
+                JOIN header_sync_logs hsl on flip_kick.log_id = hsl.id
                WHERE flip_kick.bid_id = get_flip.bid_id
-                 AND address_id = (SELECT * FROM address_id)
+                 AND hsl.address = (SELECT * FROM address_id)
                LIMIT 1),
      urn_id AS (SELECT id
                 FROM maker.urns

@@ -325,11 +325,11 @@ BEGIN
         FROM public.headers
         WHERE headers.id = NEW.header_id
         LIMIT 1
-    )
+    ), address_id AS (SELECT address FROM header_sync_logs WHERE id = new.log_id)
     INSERT
     INTO maker.flip(bid_id, address_id, block_number, block_hash, created, updated, guy, tic, "end", lot, bid,
                     gal, tab)
-    VALUES (NEW.bid_id, NEW.address_id,
+    VALUES (NEW.bid_id, (SELECT * FROM address_id),
             (SELECT block_number FROM block_info),
             (SELECT hash FROM block_info),
             (SELECT datetime FROM block_info),
