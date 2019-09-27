@@ -9,7 +9,6 @@ CREATE TABLE maker.flip_kick
     tab        NUMERIC,
     usr        TEXT,
     gal        TEXT,
-    address_id INTEGER NOT NULL REFERENCES addresses (id) ON DELETE CASCADE,
     log_id     BIGINT NOT NULL REFERENCES header_sync_logs (id) ON DELETE CASCADE,
     UNIQUE (header_id, log_id)
 );
@@ -21,12 +20,9 @@ CREATE INDEX flip_kick_header_index
     ON maker.flip_kick (header_id);
 CREATE INDEX flip_kick_bid_id_index
     ON maker.flip_kick (bid_id);
-CREATE INDEX flip_kick_address_id_index
-    ON maker.flip_kick (address_id);
 
 
 -- +goose Down
-DROP INDEX maker.flip_kick_address_id_index;
 DROP INDEX maker.flip_kick_bid_id_index;
 DROP INDEX maker.flip_kick_header_index;
 

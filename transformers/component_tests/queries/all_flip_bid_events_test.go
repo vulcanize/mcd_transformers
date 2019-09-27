@@ -18,6 +18,7 @@ package queries
 
 import (
 	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/core/types"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/vulcanize/mcd_transformers/test_config"
@@ -78,13 +79,14 @@ var _ = Describe("All flip bid events query", func() {
 		headerOne = fakes.GetFakeHeader(1)
 		headerOneId, headerOneErr = headerRepo.CreateOrUpdateHeader(headerOne)
 		Expect(headerOneErr).NotTo(HaveOccurred())
-		flipKickLog := test_data.CreateTestLog(headerOneId, db)
+		//flipKickLog := test_data.CreateTestLog(headerOneId, db)
+		flipKickLog := test_data.CreateLogs(headerOneId, []types.Log{{Address: common.HexToAddress(contractAddress)}}, db)
 
 		flipKickEvent = test_data.FlipKickModel
-		flipKickEvent.ContractAddress = contractAddress
+		//flipKickEvent.ContractAddress = contractAddress
 		flipKickEvent.BidId = strconv.Itoa(bidId)
 		flipKickEvent.HeaderID = headerOneId
-		flipKickEvent.LogID = flipKickLog.ID
+		flipKickEvent.LogID = flipKickLog[0].ID
 		flipKickErr := flipKickRepo.Create([]interface{}{flipKickEvent})
 		Expect(flipKickErr).NotTo(HaveOccurred())
 	})
@@ -234,7 +236,9 @@ var _ = Describe("All flip bid events query", func() {
 				headerTwo := fakes.GetFakeHeader(2)
 				headerTwoId, headerTwoErr := headerRepo.CreateOrUpdateHeader(headerTwo)
 				Expect(headerTwoErr).NotTo(HaveOccurred())
-				logID := test_data.CreateTestLog(headerTwoId, db).ID
+				//	logID := test_data.CreateTestLog(headerTwoId, db).ID
+				fakeHeaderSyncLogs := test_data.CreateLogs(headerTwoId, []types.Log{{Address: common.HexToAddress(contractAddress)}}, db)
+				logID := fakeHeaderSyncLogs[0].ID
 
 				tickErr := test_helpers.CreateTick(test_helpers.TickCreationInput{
 					BidId:           bidId,
@@ -291,7 +295,7 @@ var _ = Describe("All flip bid events query", func() {
 			flipKickLogTwo := test_data.CreateTestLog(headerOneId, db)
 
 			flipKickEventTwo := test_data.FlipKickModel
-			flipKickEventTwo.ContractAddress = contractAddress
+			//flipKickEventTwo.ContractAddress = contractAddress
 			flipKickEventTwo.BidId = strconv.Itoa(differentBidId)
 			flipKickEventTwo.Lot = strconv.Itoa(differentLot)
 			flipKickEventTwo.HeaderID = headerOneId
@@ -310,13 +314,13 @@ var _ = Describe("All flip bid events query", func() {
 		})
 
 		It("returns bid events from different kinds of flips (flips with different contract addresses", func() {
-			anotherFlipContractAddress := "DifferentFlipAddress"
+			//anotherFlipContractAddress := "DifferentFlipAddress"
 			differentLot := rand.Int()
 			differentBidAmount := rand.Int()
 
 			flipKickLog := test_data.CreateTestLog(headerOneId, db)
 			flipKickEventTwo := test_data.FlipKickModel
-			flipKickEventTwo.ContractAddress = anotherFlipContractAddress
+			//flipKickEventTwo.ContractAddress = anotherFlipContractAddress
 			flipKickEventTwo.BidId = strconv.Itoa(bidId)
 			flipKickEventTwo.Lot = strconv.Itoa(differentLot)
 			flipKickEventTwo.Bid = strconv.Itoa(differentBidAmount)

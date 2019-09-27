@@ -577,7 +577,7 @@ func SetUpFlipBidContext(setupData FlipBidContextInput) (ilkId, urnId int64, err
 	}
 
 	flipKickLog := test_data.CreateTestLog(setupData.FlipKickHeaderId, setupData.Db)
-	flipKickErr := CreateFlipKick(setupData.ContractAddress, setupData.BidId, setupData.FlipKickHeaderId, flipKickLog.ID, setupData.UrnGuy, setupData.FlipKickRepo)
+	flipKickErr := CreateFlipKick(setupData.BidId, setupData.FlipKickHeaderId, flipKickLog.ID, setupData.UrnGuy, setupData.FlipKickRepo)
 	if flipKickErr != nil {
 		return 0, 0, flipKickErr
 	}
@@ -637,9 +637,8 @@ func CreateDeal(input DealCreationInput) (err error) {
 	return input.DealRepo.Create(deals)
 }
 
-func CreateFlipKick(contractAddress string, bidId int, headerId, logId int64, usr string, repo flip_kick.FlipKickRepository) error {
+func CreateFlipKick(bidId int, headerId, logId int64, usr string, repo flip_kick.FlipKickRepository) error {
 	flipKickModel := test_data.FlipKickModel
-	flipKickModel.ContractAddress = contractAddress
 	flipKickModel.BidId = strconv.Itoa(bidId)
 	flipKickModel.Usr = usr
 	flipKickModel.HeaderID = headerId

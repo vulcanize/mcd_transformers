@@ -194,7 +194,7 @@ var _ = Describe("Flip state computed columns", func() {
 
 			BeforeEach(func() {
 				flipKickEvent = test_data.FlipKickModel
-				flipKickEvent.ContractAddress = contractAddress
+				//flipKickEvent.ContractAddress = contractAddress
 				flipKickEvent.BidId = strconv.Itoa(fakeBidId)
 				flipKickEvent.HeaderID = headerId
 				flipKickEvent.LogID = logId

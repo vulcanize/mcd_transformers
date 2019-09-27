@@ -6,7 +6,7 @@
     port     = 5432
 
 [client]
-    ipcPath = ""
+    ipcPath = "https://kovan.infura.io/v3/acfee3cf4e40449a932f47b3dfaee6b7"
 
 
 [filesystem]

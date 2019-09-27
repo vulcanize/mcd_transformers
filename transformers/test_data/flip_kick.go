@@ -84,15 +84,15 @@ var FlipKickEntity = flip_kick.FlipKickEntity{
 }
 
 var FlipKickModel = flip_kick.FlipKickModel{
-	BidId:           flipID.String(),
-	Lot:             lot.String(),
-	Bid:             bid.String(),
-	Tab:             tab.String(),
-	Usr:             FakeUrn,
-	Gal:             gal,
-	ContractAddress: contractAddress,
-	HeaderID:        FlipKickEntity.HeaderID,
-	LogID:           FlipKickEntity.LogID,
+	BidId: flipID.String(),
+	Lot:   lot.String(),
+	Bid:   bid.String(),
+	Tab:   tab.String(),
+	Usr:   FakeUrn,
+	Gal:   gal,
+	//ContractAddress: contractAddress,
+	HeaderID: FlipKickEntity.HeaderID,
+	LogID:    FlipKickEntity.LogID,
 }
 
 type FlipKickDBRow struct {

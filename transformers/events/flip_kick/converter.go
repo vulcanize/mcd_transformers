@@ -70,18 +70,18 @@ func (FlipKickConverter) ToModels(entities []interface{}) ([]interface{}, error)
 		tab := shared.BigIntToString(flipKickEntity.Tab)
 		usr := flipKickEntity.Usr.String()
 		gal := flipKickEntity.Gal.String()
-		contractAddress := flipKickEntity.ContractAddress.String()
+		//contractAddress := flipKickEntity.ContractAddress.String()
 
 		model := FlipKickModel{
-			BidId:           id,
-			Lot:             lot,
-			Bid:             bid,
-			Tab:             tab,
-			Usr:             usr,
-			Gal:             gal,
-			ContractAddress: contractAddress,
-			HeaderID:        flipKickEntity.HeaderID,
-			LogID:           flipKickEntity.LogID,
+			BidId: id,
+			Lot:   lot,
+			Bid:   bid,
+			Tab:   tab,
+			Usr:   usr,
+			Gal:   gal,
+			//ContractAddress: contractAddress,
+			HeaderID: flipKickEntity.HeaderID,
+			LogID:    flipKickEntity.LogID,
 		}
 		models = append(models, model)
 	}

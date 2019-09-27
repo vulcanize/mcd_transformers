@@ -2,8 +2,8 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 11.4
--- Dumped by pg_dump version 11.4
+-- Dumped from database version 11.5
+-- Dumped by pg_dump version 11.5
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -633,8 +633,9 @@ CREATE FUNCTION api.all_flip_bid_events(max_results integer DEFAULT NULL::intege
     LANGUAGE sql STABLE
     AS $$
 WITH address_ids AS (
-    SELECT distinct address_id
+    SELECT distinct address
     FROM maker.flip_kick
+             JOIN header_sync_logs hsl on flip_kick.log_id = hsl.id
 ),
      deals AS (
          SELECT deal.bid_id,
@@ -693,11 +694,16 @@ WITH address_ids AS (
 
 SELECT flip_kick.bid_id,
        lot,
-       bid                 AS                                          bid_amount,
-       'kick'::api.bid_act AS                                          act,
-       block_number        AS                                          block_height,
+       bid                 AS                    bid_amount,
+       'kick'::api.bid_act AS                    act,
+       block_number        AS                    block_height,
        log_id,
-       (SELECT address FROM addresses WHERE id = flip_kick.address_id) s
+       (SELECT address
+        FROM addresses
+        WHERE id = (SELECT address
+                    FROM maker.flip_kick fk
+                             JOIN header_sync_logs hsl on fk.log_id = hsl.id
+                    WHERE fk.id = flip_kick.id)) s
 FROM maker.flip_kick
          LEFT JOIN headers ON flip_kick.header_id = headers.id
 UNION
@@ -1650,8 +1656,9 @@ WITH ilk_ids AS (SELECT id FROM maker.ilks WHERE ilks.identifier = get_flip.ilk)
                     LIMIT 1),
      kicks AS (SELECT usr
                FROM maker.flip_kick
+                JOIN header_sync_logs hsl on flip_kick.log_id = hsl.id
                WHERE flip_kick.bid_id = get_flip.bid_id
-                 AND address_id = (SELECT * FROM address_id)
+                 AND hsl.address = (SELECT * FROM address_id)
                LIMIT 1),
      urn_id AS (SELECT id
                 FROM maker.urns
@@ -2418,11 +2425,11 @@ BEGIN
         FROM public.headers
         WHERE headers.id = NEW.header_id
         LIMIT 1
-    )
+    ), address_id AS (SELECT address FROM header_sync_logs WHERE id = new.log_id)
     INSERT
     INTO maker.flip(bid_id, address_id, block_number, block_hash, created, updated, guy, tic, "end", lot, bid,
                     gal, tab)
-    VALUES (NEW.bid_id, NEW.address_id,
+    VALUES (NEW.bid_id, (SELECT * FROM address_id),
             (SELECT block_number FROM block_info),
             (SELECT hash FROM block_info),
             (SELECT datetime FROM block_info),
@@ -5060,7 +5067,6 @@ CREATE TABLE maker.flip_kick (
     tab numeric,
     usr text,
     gal text,
-    address_id integer NOT NULL,
     log_id bigint NOT NULL
 );
 
@@ -12239,13 +12245,6 @@ CREATE INDEX flip_ilk_ilk_id_index ON maker.flip_ilk USING btree (ilk_id);
 
 
 --
--- Name: flip_kick_address_id_index; Type: INDEX; Schema: maker; Owner: -
---
-
-CREATE INDEX flip_kick_address_id_index ON maker.flip_kick USING btree (address_id);
-
-
---
 -- Name: flip_kick_bid_id_index; Type: INDEX; Schema: maker; Owner: -
 --
 
@@ -13496,14 +13495,6 @@ ALTER TABLE ONLY maker.flip_ilk
 
 ALTER TABLE ONLY maker.flip_ilk
     ADD CONSTRAINT flip_ilk_ilk_id_fkey FOREIGN KEY (ilk_id) REFERENCES maker.ilks(id) ON DELETE CASCADE;
-
-
---
--- Name: flip_kick flip_kick_address_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
---
-
-ALTER TABLE ONLY maker.flip_kick
-    ADD CONSTRAINT flip_kick_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
 
 
 --

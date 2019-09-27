@@ -101,7 +101,7 @@ var _ = Describe("All flips view", func() {
 		Expect(expectedBid1).To(Equal(actualBid1))
 
 		flipKickLog := test_data.CreateTestLog(headerTwoId, db)
-		flipKickErr := test_helpers.CreateFlipKick(contractAddress, fakeBidId2, headerTwoId, flipKickLog.ID, test_data.FlipKickModel.Usr, flipKickRepo)
+		flipKickErr := test_helpers.CreateFlipKick(fakeBidId2, headerTwoId, flipKickLog.ID, test_data.FlipKickModel.Usr, flipKickRepo)
 		Expect(flipKickErr).NotTo(HaveOccurred())
 
 		expectedBid2 := test_helpers.FlipBidFromValues(strconv.Itoa(fakeBidId2), strconv.FormatInt(ilkId, 10),
@@ -297,7 +297,7 @@ var _ = Describe("All flips view", func() {
 		})
 
 		It("limits results if max_results argument is provided", func() {
-			flipKickErr := test_helpers.CreateFlipKick(contractAddress, fakeBidIdTwo, headerId, logId, test_data.FlipKickModel.Usr, flipKickRepo)
+			flipKickErr := test_helpers.CreateFlipKick(fakeBidIdTwo, headerId, logId, test_data.FlipKickModel.Usr, flipKickRepo)
 			Expect(flipKickErr).NotTo(HaveOccurred())
 
 			maxResults := 1
@@ -314,7 +314,7 @@ var _ = Describe("All flips view", func() {
 		})
 
 		It("offsets results if offset is provided", func() {
-			flipKickErr := test_helpers.CreateFlipKick(contractAddress, fakeBidIdOne, headerId, logId, test_data.FlipKickModel.Usr, flipKickRepo)
+			flipKickErr := test_helpers.CreateFlipKick(fakeBidIdOne, headerId, logId, test_data.FlipKickModel.Usr, flipKickRepo)
 			Expect(flipKickErr).NotTo(HaveOccurred())
 
 			maxResults := 1
