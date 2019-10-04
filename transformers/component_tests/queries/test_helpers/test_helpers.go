@@ -2,6 +2,13 @@ package test_helpers
 
 import (
 	"database/sql"
+	"errors"
+	"math/rand"
+	"strconv"
+	"time"
+
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/core/types"
 	. "github.com/onsi/gomega"
 	"github.com/vulcanize/mcd_transformers/transformers/events/deal"
 	"github.com/vulcanize/mcd_transformers/transformers/events/dent"
@@ -29,9 +36,6 @@ import (
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres/repositories"
 	"github.com/vulcanize/vulcanizedb/pkg/fakes"
-	"math/rand"
-	"strconv"
-	"time"
 )
 
 var (
@@ -575,9 +579,17 @@ func SetUpFlipBidContext(setupData FlipBidContextInput) (ilkId, urnId int64, err
 	if urnErr != nil {
 		return 0, 0, urnErr
 	}
-
-	flipKickLog := test_data.CreateTestLog(setupData.FlipKickHeaderId, setupData.Db)
-	flipKickErr := CreateFlipKick(setupData.BidId, setupData.FlipKickHeaderId, flipKickLog.ID, setupData.UrnGuy, setupData.FlipKickRepo)
+	setupLog := []types.Log{{
+		Address:     common.HexToAddress(setupData.ContractAddress),
+		BlockNumber: uint64(rand.Int31()),
+		Index:       uint(rand.Int31()),
+		TxIndex:     uint(rand.Int31()),
+	}}
+	flipKickLog := test_data.CreateLogs(setupData.FlipKickHeaderId, setupLog, setupData.Db)
+	if len(flipKickLog) < 1 {
+		return 0, 0, errors.New("create log empty")
+	}
+	flipKickErr := CreateFlipKick(setupData.BidId, setupData.FlipKickHeaderId, flipKickLog[0].ID, setupData.UrnGuy, setupData.FlipKickRepo)
 	if flipKickErr != nil {
 		return 0, 0, flipKickErr
 	}

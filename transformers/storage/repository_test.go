@@ -506,8 +506,8 @@ var _ = Describe("Maker storage repository", func() {
 		})
 
 		It("fetches unique bid ids from flip methods", func() {
-			insertFlipKick(1, bidId1, addressId, db)
-			insertFlipKick(2, bidId1, addressId, db)
+			insertFlipKick(1, address, bidId1, db)
+			insertFlipKick(2, address, bidId1, db)
 
 			bidIds, err := repository.GetFlipBidIds(address)
 			Expect(err).NotTo(HaveOccurred())
@@ -518,7 +518,7 @@ var _ = Describe("Maker storage repository", func() {
 		It("fetches unique bid ids from tick, flip_kick, flip_kicks, tend, dent, deal and yank", func() {
 			duplicateBidId := bidId1
 			insertTick(1, bidId1, addressId, db)
-			insertFlipKick(2, bidId2, addressId, db)
+			insertFlipKick(2, address, bidId2, db)
 			insertFlipKicks(3, bidId3, addressId, db)
 			insertTend(4, bidId4, addressId, db)
 			insertDent(5, bidId5, addressId, db)
@@ -654,12 +654,18 @@ func insertTick(blockNumber int64, bidId string, contractAddressId int64, db *po
 	Expect(insertErr).NotTo(HaveOccurred())
 }
 
-func insertFlipKick(blockNumber int64, bidId string, contractAddressId int64, db *postgres.DB) {
+func insertFlipKick(blockNumber int64, address string, bidId string, db *postgres.DB) {
 	// flip kick event record
 	headerID := insertHeader(db, blockNumber)
-	log := test_data.CreateTestLog(headerID, db)
+	setupLog := []types.Log{{
+		Address:     common.HexToAddress(address),
+		BlockNumber: uint64(rand.Int31()),
+		Index:       uint(rand.Int31()),
+		TxIndex:     uint(rand.Int31()),
+	}}
+	log := test_data.CreateLogs(headerID, setupLog, db)
 	_, insertErr := db.Exec(flip_kick.InsertFlipKickQuery,
-		headerID, bidId, 0, 0, 0, "", "", contractAddressId, log.ID,
+		headerID, bidId, 0, 0, 0, "", "", log[0].ID,
 	)
 	Expect(insertErr).NotTo(HaveOccurred())
 }

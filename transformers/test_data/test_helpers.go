@@ -95,6 +95,7 @@ func CreateLogs(headerID int64, logs []types.Log, db *postgres.DB) []core.Header
 	var results []core.HeaderSyncLog
 	for _, headerSyncLog := range headerSyncLogs {
 		for _, log := range logs {
+			//TODO: remove this condition
 			if headerSyncLog.Log.BlockNumber == log.BlockNumber && headerSyncLog.Log.TxIndex == log.TxIndex && headerSyncLog.Log.Index == log.Index {
 				results = append(results, headerSyncLog)
 			}
