@@ -55,7 +55,7 @@ var _ = Describe("Jug File Ilk EventTransformer", func() {
 	}
 
 	It("transforms jug file ilk log events", func() {
-		blockNumber := int64(13773320)
+		blockNumber := int64(8658597)
 		jugFileIlkConfig.StartingBlockNumber = blockNumber
 		jugFileIlkConfig.EndingBlockNumber = blockNumber
 
@@ -90,7 +90,7 @@ var _ = Describe("Jug File Ilk EventTransformer", func() {
 		Expect(err).NotTo(HaveOccurred())
 		Expect(dbResult[0].Ilk).To(Equal(strconv.FormatInt(ilkID, 10)))
 		Expect(dbResult[0].What).To(Equal("duty"))
-		Expect(dbResult[0].Data).To(Equal("1000000001547125957863212448"))
+		Expect(dbResult[0].Data).To(Equal("1000000002440418608258400030"))
 	})
 })
 

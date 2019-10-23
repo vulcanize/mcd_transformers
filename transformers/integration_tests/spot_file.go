@@ -61,7 +61,7 @@ var _ = Describe("SpotFile EventTransformers", func() {
 		)
 
 		BeforeEach(func() {
-			blockNumber = int64(13773237)
+			blockNumber = int64(8658534)
 			var insertHeaderErr error
 			header, insertHeaderErr = persistHeader(db, blockNumber, blockChain)
 			Expect(insertHeaderErr).NotTo(HaveOccurred())
@@ -96,7 +96,7 @@ var _ = Describe("SpotFile EventTransformers", func() {
 			Expect(executeErr).NotTo(HaveOccurred())
 		})
 
-		It("fetches and transforms a Spot.file mat event from Kovan", func() {
+		It("fetches and transforms a Spot.file mat event", func() {
 			var dbResult spotFileMatModel
 			getSpotErr := db.Get(&dbResult, `SELECT ilk_id, what, data FROM maker.spot_file_mat`)
 			Expect(getSpotErr).NotTo(HaveOccurred())
@@ -121,7 +121,7 @@ var _ = Describe("SpotFile EventTransformers", func() {
 		)
 
 		BeforeEach(func() {
-			blockNumber = int64(13772999)
+			blockNumber = int64(8658321)
 			var insertHeaderErr error
 			header, insertHeaderErr = persistHeader(db, blockNumber, blockChain)
 			Expect(insertHeaderErr).NotTo(HaveOccurred())
@@ -156,7 +156,7 @@ var _ = Describe("SpotFile EventTransformers", func() {
 			Expect(executeErr).NotTo(HaveOccurred())
 		})
 
-		It("fetches and transforms a Spot.file pip event from Kovan", func() {
+		It("fetches and transforms a Spot.file pip event", func() {
 			var dbResult spotFilePipModel
 			getSpotErr := db.Get(&dbResult, `SELECT ilk_id, pip from maker.spot_file_pip`)
 			Expect(getSpotErr).NotTo(HaveOccurred())
@@ -164,7 +164,7 @@ var _ = Describe("SpotFile EventTransformers", func() {
 			ilkID, ilkErr := shared.GetOrCreateIlk("0x4554482d41000000000000000000000000000000000000000000000000000000", db)
 			Expect(ilkErr).NotTo(HaveOccurred())
 			Expect(dbResult.Ilk).To(Equal(strconv.FormatInt(ilkID, 10)))
-			Expect(dbResult.Pip).To(Equal("0x75dD74e8afE8110C8320eD397CcCff3B8134d981"))
+			Expect(dbResult.Pip).To(Equal("0x2955E2A9a5c3D286517CA74D22A62F4F55da3264"))
 		})
 	})
 })

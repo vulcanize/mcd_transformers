@@ -55,7 +55,7 @@ var _ = Describe("SpotPoke Transformer", func() {
 	}
 
 	It("transforms spot poke log events", func() {
-		blockNumber := int64(13773347)
+		blockNumber := int64(8658612)
 		spotPokeConfig.StartingBlockNumber = blockNumber
 		spotPokeConfig.EndingBlockNumber = blockNumber
 
@@ -89,8 +89,8 @@ var _ = Describe("SpotPoke Transformer", func() {
 		ilkID, err := shared.GetOrCreateIlk("4554482d41000000000000000000000000000000000000000000000000000000", db)
 		Expect(err).NotTo(HaveOccurred())
 		Expect(dbResult[0].Ilk).To(Equal(strconv.FormatInt(ilkID, 10)))
-		Expect(dbResult[0].Value).To(Equal("315700000000000000000.000000"))
-		Expect(dbResult[0].Spot).To(Equal("210466666666666666666666666666"))
+		Expect(dbResult[0].Value).To(Equal("181874729312950000000.000000"))
+		Expect(dbResult[0].Spot).To(Equal("121249819541966666666666666666"))
 	})
 })
 

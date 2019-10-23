@@ -53,8 +53,8 @@ var _ = Describe("NewCdp Transformer", func() {
 		Topic:             mcdConstants.NewCdpSignature(),
 	}
 
-	It("fetches and transforms a NewCdp event from Kovan chain", func() {
-		blockNumber := int64(14287691)
+	It("fetches and transforms a NewCdp event", func() {
+		blockNumber := int64(8745213)
 		newCdpConfig.StartingBlockNumber = blockNumber
 		newCdpConfig.EndingBlockNumber = blockNumber
 
@@ -83,9 +83,9 @@ var _ = Describe("NewCdp Transformer", func() {
 		Expect(queryErr).NotTo(HaveOccurred())
 
 		Expect(len(dbResult)).To(Equal(1))
-		Expect(dbResult[0].Usr).To(Equal("0x8084a9350e4A841C16F832B0290856139a158b55"))
-		Expect(dbResult[0].Own).To(Equal("0x8084a9350e4A841C16F832B0290856139a158b55"))
-		Expect(dbResult[0].Cdp).To(Equal("136"))
+		Expect(dbResult[0].Usr).To(Equal("0x23106E1a67B1A4371402CaA34F022b1c012DFa92"))
+		Expect(dbResult[0].Own).To(Equal("0x23106E1a67B1A4371402CaA34F022b1c012DFa92"))
+		Expect(dbResult[0].Cdp).To(Equal("13"))
 	})
 })
 

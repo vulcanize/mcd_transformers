@@ -31,7 +31,7 @@ import (
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
 )
 
-var _ = Describe("VowFile LogNoteTransforer", func() {
+var _ = Describe("VowFile LogNoteTransformer", func() {
 	var (
 		db          *postgres.DB
 		blockChain  core.BlockChain
@@ -64,8 +64,8 @@ var _ = Describe("VowFile LogNoteTransforer", func() {
 		}
 	})
 
-	It("fetches and transforms a Vow.file event from Kovan", func() {
-		blockNumber := int64(13773166)
+	It("fetches and transforms a Vow.file event", func() {
+		blockNumber := int64(8658468)
 		initializer.Config.StartingBlockNumber = blockNumber
 		initializer.Config.EndingBlockNumber = blockNumber
 
@@ -88,7 +88,7 @@ var _ = Describe("VowFile LogNoteTransforer", func() {
 
 		Expect(len(dbResult)).To(Equal(1))
 		Expect(dbResult[0].What).To(Equal("sump"))
-		Expect(dbResult[0].Data).To(Equal("100000000000000000000000000000000000000000000"))
+		Expect(dbResult[0].Data).To(Equal("1000000000000000000000000000000000000000000000"))
 	})
 })
 

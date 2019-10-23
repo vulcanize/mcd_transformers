@@ -54,7 +54,7 @@ var _ = Describe("Jug File Base EventTransformer", func() {
 	}
 
 	It("transforms jug file base log events", func() {
-		blockNumber := int64(13773172)
+		blockNumber := int64(8658474)
 		jugFileBaseConfig.StartingBlockNumber = blockNumber
 		jugFileBaseConfig.EndingBlockNumber = blockNumber
 
@@ -86,7 +86,7 @@ var _ = Describe("Jug File Base EventTransformer", func() {
 
 		Expect(len(dbResult)).To(Equal(1))
 		Expect(dbResult[0].What).To(Equal("base"))
-		Expect(dbResult[0].Data).To(Equal("0"))
+		Expect(dbResult[0].Data).To(Equal("627937192491029810"))
 	})
 })
 
