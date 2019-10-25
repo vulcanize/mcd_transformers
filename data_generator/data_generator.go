@@ -1,5 +1,12 @@
 package main
 
+import (
+	"flag"
+	"fmt"
+	"os"
+	"time"
+)
+
 //
 //import (
 //	"encoding/json"
@@ -57,14 +64,19 @@ package main
 //	emptyRaw, _ = json.Marshal("nothing")
 //)
 //
-//func main() {
-//	const defaultConnectionString = "postgres://vulcanize:vulcanize@localhost:5432/vulcanize_private?sslmode=disable"
-//	connectionStringPtr := flag.String("pg-connection-string", defaultConnectionString,
-//		"postgres connection string")
-//	stepsPtr := flag.Int("steps", 100, "number of interactions to generate")
-//	seedPtr := flag.Int64("seed", -1,
-//		"optional seed for repeatability. Running same seed several times will lead to database constraint violations.")
-//	flag.Parse()
+func main() {
+	const defaultConnectionString = "postgres://vulcanize:vulcanize@localhost:5432/vulcanize_private?sslmode=disable"
+	const defaultGeneratorType = "probabilistic"
+	generatorType := flag.String("generator-type", defaultGeneratorType, "type of data generator to run:\n"+
+		"\"probabilistic\" which creates/updates records on chance\n"+
+		"\"benchmark\" which creates a fixed number of each storage record")
+	connectionStringPtr := flag.String("pg-connection-string", defaultConnectionString,
+		"postgres connection string")
+	stepsPtr := flag.Int("steps", 100, "number of interactions to generate")
+	seedPtr := flag.Int64("seed", -1,
+		"optional seed for repeatability. Running same seed several times will lead to database constraint violations.")
+
+	flag.Parse()
 //
 //	db, connectErr := sqlx.Connect("postgres", *connectionStringPtr)
 //	if connectErr != nil {
@@ -98,20 +110,20 @@ package main
 //		os.Exit(0)
 //	}
 //
-//	startTime := time.Now()
+startTime := time.Now()
 //	generatorState := NewGenerator(&pg)
 //	runErr := generatorState.Run(*stepsPtr)
-//	if runErr != nil {
-//		fmt.Println("Error occurred while running generator: ", runErr.Error())
-//		fmt.Println("Exiting without writing any data to DB.")
-//		os.Exit(1)
-//	}
+	if runErr != nil {
+		fmt.Println("Error occurred while running generator: ", runErr.Error())
+		fmt.Println("Exiting without writing any data to DB.")
+		os.Exit(1)
+	}
 //
-//	duration := time.Now().Sub(startTime)
-//	speed := float64(*stepsPtr) / duration.Seconds()
-//	fmt.Printf("Simulated %v interactions in %v. (%.f/s)\n",
-//		*stepsPtr, duration.Round(time.Duration(time.Second)).String(), speed)
-//}
+	duration := time.Now().Sub(startTime)
+	speed := float64(*stepsPtr) / duration.Seconds()
+	fmt.Printf("Simulated %v interactions in %v. (%.f/s)\n",
+		*stepsPtr, duration.Round(time.Duration(time.Second)).String(), speed)
+}
 //
 //type GeneratorState struct {
 //	db            *postgres.DB
