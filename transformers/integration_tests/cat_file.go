@@ -28,6 +28,7 @@ import (
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/factories/event"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/fetcher"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
 	"github.com/vulcanize/vulcanizedb/pkg/core"
@@ -71,12 +72,12 @@ var _ = Describe("Cat File transformer", func() {
 		catFileConfig.StartingBlockNumber = chopLumpBlockNumber
 		catFileConfig.EndingBlockNumber = chopLumpBlockNumber
 
-		initializer := shared.EventTransformer{
+		initializer := event.Transformer{
 			Config:     catFileConfig,
 			Converter:  &chop_lump.Converter{},
-			Repository: &chop_lump.CatFileChopLumpRepository{},
+			Repository: &chop_lump.Repository{},
 		}
-		transformer := initializer.NewEventTransformer(db)
+		transformer := initializer.NewTransformer(db)
 
 		logs, err := logFetcher.FetchLogs(
 			[]common.Address{common.HexToAddress(catFileConfig.ContractAddresses[0])},
@@ -111,12 +112,12 @@ var _ = Describe("Cat File transformer", func() {
 		catFileConfig.StartingBlockNumber = chopLumpBlockNumber
 		catFileConfig.EndingBlockNumber = chopLumpBlockNumber
 
-		initializer := shared.EventTransformer{
+		initializer := event.Transformer{
 			Config:     catFileConfig,
 			Converter:  &chop_lump.Converter{},
-			Repository: &chop_lump.CatFileChopLumpRepository{},
+			Repository: &chop_lump.Repository{},
 		}
-		transformer := initializer.NewEventTransformer(db)
+		transformer := initializer.NewTransformer(db)
 
 		logs, err := logFetcher.FetchLogs(
 			[]common.Address{common.HexToAddress(catFileConfig.ContractAddresses[0])},

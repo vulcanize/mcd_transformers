@@ -42,7 +42,7 @@ import (
 
 var _ = Describe("Ilk File Events Query", func() {
 	var (
-		catFileChopLumpRepo   chop_lump.CatFileChopLumpRepository
+		catFileChopLumpRepo   chop_lump.Repository
 		catFileFlipRepo       flip.CatFileFlipRepository
 		db                    *postgres.DB
 		err                   error
@@ -58,7 +58,7 @@ var _ = Describe("Ilk File Events Query", func() {
 	BeforeEach(func() {
 		db = test_config.NewTestDB(test_config.NewTestNode())
 		test_config.CleanTestDB(db)
-		catFileChopLumpRepo = chop_lump.CatFileChopLumpRepository{}
+		catFileChopLumpRepo = chop_lump.Repository{}
 		catFileChopLumpRepo.SetDB(db)
 		catFileFlipRepo = flip.CatFileFlipRepository{}
 		catFileFlipRepo.SetDB(db)
