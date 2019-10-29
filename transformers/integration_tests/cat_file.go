@@ -73,7 +73,7 @@ var _ = Describe("Cat File transformer", func() {
 
 		initializer := shared.EventTransformer{
 			Config:     catFileConfig,
-			Converter:  &chop_lump.CatFileChopLumpConverter{},
+			Converter:  &chop_lump.Converter{},
 			Repository: &chop_lump.CatFileChopLumpRepository{},
 		}
 		transformer := initializer.NewEventTransformer(db)
@@ -113,7 +113,7 @@ var _ = Describe("Cat File transformer", func() {
 
 		initializer := shared.EventTransformer{
 			Config:     catFileConfig,
-			Converter:  &chop_lump.CatFileChopLumpConverter{},
+			Converter:  &chop_lump.Converter{},
 			Repository: &chop_lump.CatFileChopLumpRepository{},
 		}
 		transformer := initializer.NewEventTransformer(db)
