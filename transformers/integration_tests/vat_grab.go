@@ -63,7 +63,7 @@ var _ = XDescribe("Vat Grab Transformer", func() {
 			header)
 		Expect(err).NotTo(HaveOccurred())
 
-		headerSyncLogs := test_data.CreateLogs(header.Id, logs, db)
+		headerSyncLogs := test_data.CreateLogs(header.ID, logs, db)
 
 		tr := shared.EventTransformer{
 			Config:     vatGrabConfig,

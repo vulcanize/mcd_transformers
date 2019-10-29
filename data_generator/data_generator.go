@@ -238,9 +238,9 @@ func (state *GeneratorState) updateIlk() error {
 	} else {
 		_, storageErr = state.pgTx.Exec(vat.InsertIlkSpotQuery, blockNumber, blockHash, randomIlkId, newValue)
 		var logID int64
-		logErr = state.pgTx.QueryRow(insertLogSql, state.currentHeader.Id).Scan(&logID)
+		logErr = state.pgTx.QueryRow(insertLogSql, state.currentHeader.ID).Scan(&logID)
 		_, eventErr = state.pgTx.Exec(spot_poke.InsertSpotPokeQuery,
-			state.currentHeader.Id, randomIlkId, newValue, newValue, logID)
+			state.currentHeader.ID, randomIlkId, newValue, newValue, logID)
 
 		txErr := state.insertCurrentBlockTx()
 		if txErr != nil {
@@ -287,9 +287,9 @@ func (state *GeneratorState) createUrn() error {
 	_, artErr := state.pgTx.Exec(vat.InsertUrnArtQuery, blockNumber, blockHash, urnId, art)
 	_, inkErr := state.pgTx.Exec(vat.InsertUrnInkQuery, blockNumber, blockHash, urnId, ink)
 	var logID int64
-	logErr := state.pgTx.QueryRow(insertLogSql, state.currentHeader.Id).Scan(&logID)
+	logErr := state.pgTx.QueryRow(insertLogSql, state.currentHeader.ID).Scan(&logID)
 	_, frobErr := state.pgTx.Exec(insertVatFrobSql,
-		state.currentHeader.Id, urnId, guy, guy, ink, art, logID)
+		state.currentHeader.ID, urnId, guy, guy, ink, art, logID)
 
 	if artErr != nil || inkErr != nil || frobErr != nil || logErr != nil {
 		return fmt.Errorf("error creating urn.\n artErr: %v\ninkErr: %v\nfrobErr: %v\n logErr: %v", artErr, inkErr, frobErr, logErr)
@@ -320,16 +320,16 @@ func (state *GeneratorState) updateUrn() error {
 		// Update ink
 		_, updateErr = state.pgTx.Exec(vat.InsertUrnInkQuery, blockNumber, blockHash, randomUrnId, newValue)
 		var logID int64
-		logErr = state.pgTx.QueryRow(insertLogSql, state.currentHeader.Id).Scan(&logID)
+		logErr = state.pgTx.QueryRow(insertLogSql, state.currentHeader.ID).Scan(&logID)
 		_, frobErr = state.pgTx.Exec(insertVatFrobSql,
-			state.currentHeader.Id, randomUrnId, randomGuy, randomGuy, newValue, 0, logID)
+			state.currentHeader.ID, randomUrnId, randomGuy, randomGuy, newValue, 0, logID)
 	} else {
 		// Update art
 		_, updateErr = state.pgTx.Exec(vat.InsertUrnArtQuery, blockNumber, blockHash, randomUrnId, newValue)
 		var logID int64
-		logErr = state.pgTx.QueryRow(insertLogSql, state.currentHeader.Id).Scan(&logID)
+		logErr = state.pgTx.QueryRow(insertLogSql, state.currentHeader.ID).Scan(&logID)
 		_, frobErr = state.pgTx.Exec(insertVatFrobSql,
-			state.currentHeader.Id, randomUrnId, randomGuy, randomGuy, 0, newValue, logID)
+			state.currentHeader.ID, randomUrnId, randomGuy, randomGuy, 0, newValue, logID)
 	}
 
 	if updateErr != nil {
@@ -407,7 +407,7 @@ func (state *GeneratorState) insertCurrentHeader() error {
 	header := state.currentHeader
 	var id int64
 	err := state.pgTx.QueryRow(headerSql, header.Hash, header.BlockNumber, header.Raw, header.Timestamp, 1, node.ID).Scan(&id)
-	state.currentHeader.Id = id
+	state.currentHeader.ID = id
 	return err
 }
 
@@ -417,7 +417,7 @@ func (state *GeneratorState) insertCurrentBlockTx() error {
 	txFrom := getRandomAddress()
 	txIndex := 0
 	txTo := getRandomAddress()
-	_, txErr := state.pgTx.Exec(txSql, state.currentHeader.Id, txHash, txFrom, txIndex, txTo)
+	_, txErr := state.pgTx.Exec(txSql, state.currentHeader.ID, txHash, txFrom, txIndex, txTo)
 	return txErr
 }
 

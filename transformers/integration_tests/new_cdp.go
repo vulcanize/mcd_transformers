@@ -73,7 +73,7 @@ var _ = Describe("NewCdp Transformer", func() {
 			[]common.Hash{common.HexToHash(newCdpConfig.Topic)},
 			header)
 		Expect(err).NotTo(HaveOccurred())
-		headerSyncLogs := test_data.CreateLogs(header.Id, logs, db)
+		headerSyncLogs := test_data.CreateLogs(header.ID, logs, db)
 
 		err = tr.Execute(headerSyncLogs)
 		Expect(err).NotTo(HaveOccurred())

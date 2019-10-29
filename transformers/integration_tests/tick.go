@@ -80,7 +80,7 @@ var _ = XDescribe("Tick EventTransformer", func() {
 
 		logs, err := logFetcher.FetchLogs(addresses, topics, header)
 		Expect(err).NotTo(HaveOccurred())
-		headerSyncLogs := test_data.CreateLogs(header.Id, logs, db)
+		headerSyncLogs := test_data.CreateLogs(header.ID, logs, db)
 
 		transformer := initializer.NewEventTransformer(db)
 		err = transformer.Execute(headerSyncLogs)
@@ -106,7 +106,7 @@ var _ = XDescribe("Tick EventTransformer", func() {
 
 		logs, err := logFetcher.FetchLogs(addresses, topics, header)
 		Expect(err).NotTo(HaveOccurred())
-		headerSyncLogs := test_data.CreateLogs(header.Id, logs, db)
+		headerSyncLogs := test_data.CreateLogs(header.ID, logs, db)
 
 		transformer := initializer.NewEventTransformer(db)
 		err = transformer.Execute(headerSyncLogs)

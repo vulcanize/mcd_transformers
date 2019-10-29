@@ -40,7 +40,7 @@ var _ = Describe("Cat File transformer", func() {
 	var (
 		db         *postgres.DB
 		blockChain core.BlockChain
-		rpcClient  client.RpcClient
+		rpcClient  client.RPCClient
 		err        error
 		ethClient  *ethclient.Client
 		logFetcher fetcher.ILogFetcher
@@ -84,7 +84,7 @@ var _ = Describe("Cat File transformer", func() {
 			header)
 		Expect(err).NotTo(HaveOccurred())
 
-		headerSyncLogs := test_data.CreateLogs(header.Id, logs, db)
+		headerSyncLogs := test_data.CreateLogs(header.ID, logs, db)
 
 		err = transformer.Execute(headerSyncLogs)
 		Expect(err).NotTo(HaveOccurred())
@@ -124,7 +124,7 @@ var _ = Describe("Cat File transformer", func() {
 			header)
 		Expect(err).NotTo(HaveOccurred())
 
-		headerSyncLogs := test_data.CreateLogs(header.Id, logs, db)
+		headerSyncLogs := test_data.CreateLogs(header.ID, logs, db)
 
 		err = transformer.Execute(headerSyncLogs)
 		Expect(err).NotTo(HaveOccurred())
@@ -165,7 +165,7 @@ var _ = Describe("Cat File transformer", func() {
 			header)
 		Expect(err).NotTo(HaveOccurred())
 
-		headerSyncLogs := test_data.CreateLogs(header.Id, logs, db)
+		headerSyncLogs := test_data.CreateLogs(header.ID, logs, db)
 
 		err = t.Execute(headerSyncLogs)
 		Expect(err).NotTo(HaveOccurred())
@@ -204,7 +204,7 @@ var _ = Describe("Cat File transformer", func() {
 			header)
 		Expect(err).NotTo(HaveOccurred())
 
-		headerSyncLogs := test_data.CreateLogs(header.Id, logs, db)
+		headerSyncLogs := test_data.CreateLogs(header.ID, logs, db)
 
 		err = t.Execute(headerSyncLogs)
 		Expect(err).NotTo(HaveOccurred())

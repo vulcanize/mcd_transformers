@@ -31,18 +31,18 @@ import (
 
 var ipc string
 
-func getClients(ipc string) (client.RpcClient, *ethclient.Client, error) {
+func getClients(ipc string) (client.RPCClient, *ethclient.Client, error) {
 	raw, err := rpc.Dial(ipc)
 	if err != nil {
-		return client.RpcClient{}, &ethclient.Client{}, err
+		return client.RPCClient{}, &ethclient.Client{}, err
 	}
-	return client.NewRpcClient(raw, ipc), ethclient.NewClient(raw), nil
+	return client.NewRPCClient(raw, ipc), ethclient.NewClient(raw), nil
 }
 
-func getBlockChain(rpcClient client.RpcClient, ethClient *ethclient.Client) (core.BlockChain, error) {
+func getBlockChain(rpcClient client.RPCClient, ethClient *ethclient.Client) (core.BlockChain, error) {
 	client := client.NewEthClient(ethClient)
 	node := node.MakeNode(rpcClient)
-	transactionConverter := rpc2.NewRpcTransactionConverter(client)
+	transactionConverter := rpc2.NewRPCTransactionConverter(client)
 	blockChain := eth.NewBlockChain(client, rpcClient, node, transactionConverter)
 	return blockChain, nil
 }
@@ -55,6 +55,6 @@ func persistHeader(db *postgres.DB, blockNumber int64, blockChain core.BlockChai
 	}
 	headerRepository := repositories.NewHeaderRepository(db)
 	id, err := headerRepository.CreateOrUpdateHeader(header)
-	header.Id = id
+	header.ID = id
 	return header, err
 }

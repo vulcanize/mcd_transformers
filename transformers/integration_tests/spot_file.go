@@ -89,7 +89,7 @@ var _ = Describe("SpotFile EventTransformers", func() {
 			logs, fetcherErr = logFetcher.FetchLogs(addresses, topics, header)
 			Expect(fetcherErr).NotTo(HaveOccurred())
 
-			headerSyncLogs := test_data.CreateLogs(header.Id, logs, db)
+			headerSyncLogs := test_data.CreateLogs(header.ID, logs, db)
 
 			tr = initializer.NewEventTransformer(db)
 			executeErr := tr.Execute(headerSyncLogs)
@@ -149,7 +149,7 @@ var _ = Describe("SpotFile EventTransformers", func() {
 			logs, fetcherErr = logFetcher.FetchLogs(addresses, topics, header)
 			Expect(fetcherErr).NotTo(HaveOccurred())
 
-			headerSyncLogs := test_data.CreateLogs(header.Id, logs, db)
+			headerSyncLogs := test_data.CreateLogs(header.ID, logs, db)
 
 			tr = initializer.NewEventTransformer(db)
 			executeErr := tr.Execute(headerSyncLogs)

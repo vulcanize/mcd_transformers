@@ -8391,7 +8391,8 @@ ALTER SEQUENCE maker.yank_id_seq OWNED BY maker.yank.id;
 
 CREATE TABLE public.addresses (
     id integer NOT NULL,
-    address character varying(42)
+    address character varying(42),
+    hashed_address character varying(66)
 );
 
 
@@ -12315,6 +12316,14 @@ ALTER TABLE ONLY public.header_sync_transactions
 
 ALTER TABLE ONLY public.header_sync_transactions
     ADD CONSTRAINT header_sync_transactions_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: headers headers_block_number_hash_eth_node_fingerprint_key; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.headers
+    ADD CONSTRAINT headers_block_number_hash_eth_node_fingerprint_key UNIQUE (block_number, hash, eth_node_fingerprint);
 
 
 --

@@ -77,7 +77,7 @@ var _ = Describe("VatFileIlk EventTransformer", func() {
 		logs, err := logFetcher.FetchLogs(addresses, topics, header)
 		Expect(err).NotTo(HaveOccurred())
 
-		headerSyncLogs := test_data.CreateLogs(header.Id, logs, db)
+		headerSyncLogs := test_data.CreateLogs(header.ID, logs, db)
 
 		tr := initializer.NewEventTransformer(db)
 		err = tr.Execute(headerSyncLogs)
@@ -107,7 +107,7 @@ var _ = Describe("VatFileIlk EventTransformer", func() {
 		logs, err := logFetcher.FetchLogs(addresses, topics, header)
 		Expect(err).NotTo(HaveOccurred())
 
-		headerSyncLogs := test_data.CreateLogs(header.Id, logs, db)
+		headerSyncLogs := test_data.CreateLogs(header.ID, logs, db)
 
 		tr := initializer.NewEventTransformer(db)
 		err = tr.Execute(headerSyncLogs)
@@ -138,7 +138,7 @@ var _ = Describe("VatFileIlk EventTransformer", func() {
 		logs, err := logFetcher.FetchLogs(addresses, topics, header)
 		Expect(err).NotTo(HaveOccurred())
 
-		headerSyncLogs := test_data.CreateLogs(header.Id, logs, db)
+		headerSyncLogs := test_data.CreateLogs(header.ID, logs, db)
 
 		tr := initializer.NewEventTransformer(db)
 		err = tr.Execute(headerSyncLogs)
