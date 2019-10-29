@@ -16,13 +16,10 @@
 
 package utilities
 
-import (
-	"errors"
-	"fmt"
-)
+import "fmt"
 
 var ErrInvalidAddress = func(addr string) error {
-	return errors.New(fmt.Sprintf("invalid address passed for padding: %s", addr))
+	return fmt.Errorf("invalid address passed for padding: %s", addr)
 }
 
 func PadAddress(addr string) (string, error) {

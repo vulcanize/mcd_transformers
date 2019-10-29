@@ -28,7 +28,7 @@ import (
 )
 
 var ErrInvalidIndex = func(index int) error {
-	return errors.New(fmt.Sprintf("unsupported log data index: %d", index))
+	return fmt.Errorf("unsupported log data index: %d", index)
 }
 
 func BigIntToInt64(value *big.Int) int64 {
