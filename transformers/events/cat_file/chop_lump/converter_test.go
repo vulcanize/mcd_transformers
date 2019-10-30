@@ -49,7 +49,7 @@ var _ = Describe("Cat file chop lump converter", func() {
 			Expect(err).NotTo(HaveOccurred())
 
 			var ilkID int64
-			ilkErr := db.Get(&ilkID, `SELECT id FROM maker.ilks where ilk = $1`, "0x434f4c342d410000000000000000000000000000000000000000000000000000")
+			ilkErr := db.Get(&ilkID, `SELECT id FROM maker.ilks where ilk = $1`, test_data.CatFileChopHeaderSyncLog.Log.Topics[2].Hex())
 			Expect(ilkErr).NotTo(HaveOccurred())
 			expectedModel := test_data.CatFileChopModel()
 			expectedModel.ColumnValues[constants.IlkColumn] = ilkID
@@ -64,7 +64,7 @@ var _ = Describe("Cat file chop lump converter", func() {
 			Expect(err).NotTo(HaveOccurred())
 
 			var ilkID int64
-			ilkErr := db.Get(&ilkID, `SELECT id FROM maker.ilks where ilk = $1`, "0x434f4c342d410000000000000000000000000000000000000000000000000000")
+			ilkErr := db.Get(&ilkID, `SELECT id FROM maker.ilks where ilk = $1`,  test_data.CatFileLumpHeaderSyncLog.Log.Topics[2].Hex())
 			Expect(ilkErr).NotTo(HaveOccurred())
 			expectedModel := test_data.CatFileLumpModel()
 			expectedModel.ColumnValues[constants.IlkColumn] = ilkID

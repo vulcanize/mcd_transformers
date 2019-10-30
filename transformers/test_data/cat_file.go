@@ -120,7 +120,6 @@ var catFileLumpModel = event.InsertionModel{
 		event.LogFK:    CatFileLumpHeaderSyncLog.ID,
 	},
 }
-		//constants.IlkFK: "0x434f4c342d410000000000000000000000000000000000000000000000000000",
 
 var rawCatFileFlipLog = types.Log{
 	Address: common.HexToAddress(CatAddress()),
