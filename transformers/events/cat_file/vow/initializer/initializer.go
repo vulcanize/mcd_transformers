@@ -18,14 +18,15 @@ package initializer
 
 import (
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/factories/event"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
 
 	"github.com/vulcanize/mcd_transformers/transformers/events/cat_file/vow"
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
 )
 
-var EventTransformerInitializer transformer.EventTransformerInitializer = shared.EventTransformer{
+var EventTransformerInitializer transformer.EventTransformerInitializer = event.Transformer{
 	Config:     shared.GetEventTransformerConfig(constants.CatFileVowLabel, constants.CatFileVowSignature()),
-	Converter:  &vow.CatFileVowConverter{},
+	Converter:  &vow.Converter{},
 	Repository: &vow.CatFileVowRepository{},
-}.NewEventTransformer
+}.NewTransformer
