@@ -29,11 +29,11 @@ var _ = Describe("Flop bid event computed columns", func() {
 		timestamp       = int(rand.Int31())
 		header          core.Header
 		contractAddress = "0x763ztv6x68exwqrgtl325e7hrcvavid4e3fcb4g"
-		fakeBidId       = rand.Int()
+		fakeBidID       = rand.Int()
 		flopKickGethLog types.Log
 		flopKickRepo    flop_kick.FlopKickRepository
 		flopKickEvent   shared.InsertionModel
-		headerId        int64
+		headerID        int64
 		headerRepo      repositories.HeaderRepository
 	)
 
@@ -44,9 +44,9 @@ var _ = Describe("Flop bid event computed columns", func() {
 		headerRepo = repositories.NewHeaderRepository(db)
 		header = fakes.GetFakeHeaderWithTimestamp(int64(timestamp), int64(blockNumber))
 		var insertHeaderErr error
-		headerId, insertHeaderErr = headerRepo.CreateOrUpdateHeader(header)
+		headerID, insertHeaderErr = headerRepo.CreateOrUpdateHeader(header)
 		Expect(insertHeaderErr).NotTo(HaveOccurred())
-		flopKickHeaderSyncLog := test_data.CreateTestLog(headerId, db)
+		flopKickHeaderSyncLog := test_data.CreateTestLog(headerID, db)
 		flopKickGethLog = flopKickHeaderSyncLog.Log
 
 		flopKickRepo = flop_kick.FlopKickRepository{}
@@ -54,8 +54,8 @@ var _ = Describe("Flop bid event computed columns", func() {
 
 		flopKickEvent = test_data.FlopKickModel()
 		flopKickEvent.ForeignKeyValues[constants.AddressFK] = contractAddress
-		flopKickEvent.ColumnValues["bid_id"] = strconv.Itoa(fakeBidId)
-		flopKickEvent.ColumnValues[constants.HeaderFK] = headerId
+		flopKickEvent.ColumnValues["bid_id"] = strconv.Itoa(fakeBidID)
+		flopKickEvent.ColumnValues[constants.HeaderFK] = headerID
 		flopKickEvent.ColumnValues[constants.LogFK] = flopKickHeaderSyncLog.ID
 		insertFlopKickErr := flopKickRepo.Create([]shared.InsertionModel{flopKickEvent})
 
@@ -69,10 +69,10 @@ var _ = Describe("Flop bid event computed columns", func() {
 
 	Describe("flop_bid_event_bid", func() {
 		It("returns flop bid for a flop_bid_event", func() {
-			flopStorageValues := test_helpers.GetFlopStorageValues(1, fakeBidId)
-			test_helpers.CreateFlop(db, header, flopStorageValues, test_helpers.GetFlopMetadatas(strconv.Itoa(fakeBidId)), contractAddress)
+			flopStorageValues := test_helpers.GetFlopStorageValues(1, fakeBidID)
+			test_helpers.CreateFlop(db, header, flopStorageValues, test_helpers.GetFlopMetadatas(strconv.Itoa(fakeBidID)), contractAddress)
 
-			expectedBid := test_helpers.FlopBidFromValues(strconv.Itoa(fakeBidId), "false", header.Timestamp, header.Timestamp, flopStorageValues)
+			expectedBid := test_helpers.FlopBidFromValues(strconv.Itoa(fakeBidID), "false", header.Timestamp, header.Timestamp, flopStorageValues)
 
 			var actualBid test_helpers.FlopBid
 			err := db.Get(&actualBid, `
@@ -98,7 +98,7 @@ var _ = Describe("Flop bid event computed columns", func() {
 			}
 
 			_, insertErr := db.Exec(`INSERT INTO header_sync_transactions (header_id, hash, tx_from, tx_index, tx_to)
-				VALUES ($1, $2, $3, $4, $5)`, headerId, expectedTx.TransactionHash, expectedTx.TxFrom,
+				VALUES ($1, $2, $3, $4, $5)`, headerID, expectedTx.TransactionHash, expectedTx.TxFrom,
 				expectedTx.TransactionIndex, expectedTx.TxTo)
 			Expect(insertErr).NotTo(HaveOccurred())
 
@@ -125,7 +125,7 @@ var _ = Describe("Flop bid event computed columns", func() {
 			}
 
 			_, insertErr := db.Exec(`INSERT INTO header_sync_transactions (header_id, hash, tx_from, tx_index, tx_to)
-				VALUES ($1, $2, $3, $4, $5)`, headerId, wrongTx.TransactionHash, wrongTx.TxFrom,
+				VALUES ($1, $2, $3, $4, $5)`, headerID, wrongTx.TransactionHash, wrongTx.TxFrom,
 				wrongTx.TransactionIndex, wrongTx.TxTo)
 			Expect(insertErr).NotTo(HaveOccurred())
 

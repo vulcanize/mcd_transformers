@@ -50,7 +50,7 @@ var _ = Describe("Flop storage keys loader", func() {
 		Expect(mappings[flop.GemKey]).To(Equal(flop.GemMetadata))
 		Expect(mappings[flop.BegKey]).To(Equal(flop.BegMetadata))
 		Expect(mappings[flop.PadKey]).To(Equal(flop.PadMetadata))
-		Expect(mappings[flop.TtlAndTauKey]).To(Equal(flop.TtlAndTauMetadata))
+		Expect(mappings[flop.TTLAndTauKey]).To(Equal(flop.TTLAndTauMetadata))
 		Expect(mappings[flop.KicksKey]).To(Equal(flop.KicksMetadata))
 		Expect(mappings[flop.LiveKey]).To(Equal(flop.LiveMetadata))
 	})
@@ -90,7 +90,7 @@ var _ = Describe("Flop storage keys loader", func() {
 			It("returns value metadata for bid bid", func() {
 				expectedMetadata := utils.StorageValueMetadata{
 					Name: mcdStorage.BidBid,
-					Keys: map[utils.Key]string{constants.BidId: fakeBidId},
+					Keys: map[utils.Key]string{constants.BidID: fakeBidId},
 					Type: utils.Uint256,
 				}
 
@@ -101,7 +101,7 @@ var _ = Describe("Flop storage keys loader", func() {
 				bidLotKey := utils.GetIncrementedStorageKey(bidBidKey, 1)
 				expectedMetadata := utils.StorageValueMetadata{
 					Name: mcdStorage.BidLot,
-					Keys: map[utils.Key]string{constants.BidId: fakeBidId},
+					Keys: map[utils.Key]string{constants.BidID: fakeBidId},
 					Type: utils.Uint256,
 				}
 
@@ -112,7 +112,7 @@ var _ = Describe("Flop storage keys loader", func() {
 				bidGuyKey := utils.GetIncrementedStorageKey(bidBidKey, 2)
 				expectedMetadata := utils.StorageValueMetadata{
 					Name:        mcdStorage.Packed,
-					Keys:        map[utils.Key]string{constants.BidId: fakeBidId},
+					Keys:        map[utils.Key]string{constants.BidID: fakeBidId},
 					Type:        utils.PackedSlot,
 					PackedTypes: map[int]utils.ValueType{0: utils.Address, 1: utils.Uint48, 2: utils.Uint48},
 					PackedNames: map[int]string{0: mcdStorage.BidGuy, 1: mcdStorage.BidTic, 2: mcdStorage.BidEnd},

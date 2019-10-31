@@ -92,7 +92,7 @@ var _ = XDescribe("Tick EventTransformer", func() {
 
 		Expect(len(dbResult)).To(Equal(1))
 		Expect(dbResult[0].ContractAddress).To(Equal(""))
-		Expect(dbResult[0].BidId).To(Equal(""))
+		Expect(dbResult[0].BidID).To(Equal(""))
 	})
 
 	// Todo: fill this in with flap tick event data from kovan
@@ -118,12 +118,12 @@ var _ = XDescribe("Tick EventTransformer", func() {
 
 		Expect(len(dbResult)).To(Equal(1))
 		Expect(dbResult[0].ContractAddress).To(Equal(""))
-		Expect(dbResult[0].BidId).To(Equal(""))
+		Expect(dbResult[0].BidID).To(Equal(""))
 	})
 })
 
 type tickModel struct {
-	BidId            string `db:"bid_id"`
+	BidID            string `db:"bid_id"`
 	ContractAddress  string `db:"contract_address"`
 	LogIndex         uint   `db:"log_idx"`
 	TransactionIndex uint   `db:"tx_idx"`

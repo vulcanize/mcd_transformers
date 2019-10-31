@@ -38,10 +38,10 @@ var (
 	BegStorageKey = common.HexToHash(utils.IndexFour)
 	BegMetadata   = utils.GetStorageValueMetadata(mcdStorage.Beg, nil, utils.Uint256)
 
-	TtlAndTauStorageKey = common.HexToHash(utils.IndexFive)
+	TTLAndTauStorageKey = common.HexToHash(utils.IndexFive)
 	ttlAndTauTypes      = map[int]utils.ValueType{0: utils.Uint48, 1: utils.Uint48}
-	ttlAndTauNames      = map[int]string{0: mcdStorage.Ttl, 1: mcdStorage.Tau}
-	TtlAndTauMetadata   = utils.GetStorageValueMetadataForPackedSlot(mcdStorage.Packed, nil, utils.PackedSlot, ttlAndTauNames, ttlAndTauTypes)
+	ttlAndTauNames      = map[int]string{0: mcdStorage.TTL, 1: mcdStorage.Tau}
+	TTLAndTauMetadata   = utils.GetStorageValueMetadataForPackedSlot(mcdStorage.Packed, nil, utils.PackedSlot, ttlAndTauNames, ttlAndTauTypes)
 
 	KicksStorageKey = common.HexToHash(utils.IndexSix)
 	KicksMetadata   = utils.GetStorageValueMetadata(mcdStorage.Kicks, nil, utils.Uint256)
@@ -72,18 +72,18 @@ func (loader *keysLoader) LoadMappings() (map[common.Hash]utils.StorageValueMeta
 }
 
 func (loader *keysLoader) loadBidKeys(mappings map[common.Hash]utils.StorageValueMetadata) (map[common.Hash]utils.StorageValueMetadata, error) {
-	bidIds, getBidIdsErr := loader.storageRepository.GetFlapBidIds(loader.contractAddress)
-	if getBidIdsErr != nil {
-		return nil, getBidIdsErr
+	bidIDs, getBidIDsErr := loader.storageRepository.GetFlapBidIDs(loader.contractAddress)
+	if getBidIDsErr != nil {
+		return nil, getBidIDsErr
 	}
-	for _, bidId := range bidIds {
-		hexBidId, convertErr := shared.ConvertIntStringToHex(bidId)
+	for _, bidID := range bidIDs {
+		hexBidID, convertErr := shared.ConvertIntStringToHex(bidID)
 		if convertErr != nil {
 			return nil, convertErr
 		}
-		mappings[getBidBidKey(hexBidId)] = getBidBidMetadata(bidId)
-		mappings[getBidLotKey(hexBidId)] = getBidLotMetadata(bidId)
-		mappings[getBidGuyTicEndKey(hexBidId)] = getBidGuyTicEndMetadata(bidId)
+		mappings[getBidBidKey(hexBidID)] = getBidBidMetadata(bidID)
+		mappings[getBidLotKey(hexBidID)] = getBidLotMetadata(bidID)
+		mappings[getBidGuyTicEndKey(hexBidID)] = getBidGuyTicEndMetadata(bidID)
 	}
 	return mappings, nil
 }
@@ -93,42 +93,42 @@ func loadStaticKeys() map[common.Hash]utils.StorageValueMetadata {
 	mappings[VatStorageKey] = VatMetadata
 	mappings[GemStorageKey] = GemMetadata
 	mappings[BegStorageKey] = BegMetadata
-	mappings[TtlAndTauStorageKey] = TtlAndTauMetadata
+	mappings[TTLAndTauStorageKey] = TTLAndTauMetadata
 	mappings[KicksStorageKey] = KicksMetadata
 	mappings[LiveStorageKey] = LiveMetadata
 	return mappings
 }
 
-func getBidBidKey(bidId string) common.Hash {
-	return utils.GetStorageKeyForMapping(BidsIndex, bidId)
+func getBidBidKey(bidID string) common.Hash {
+	return utils.GetStorageKeyForMapping(BidsIndex, bidID)
 }
 
-func getBidBidMetadata(bidId string) utils.StorageValueMetadata {
+func getBidBidMetadata(bidID string) utils.StorageValueMetadata {
 	return utils.StorageValueMetadata{
 		Name: mcdStorage.BidBid,
-		Keys: map[utils.Key]string{constants.BidId: bidId},
+		Keys: map[utils.Key]string{constants.BidID: bidID},
 		Type: utils.Uint256,
 	}
 }
 
-func getBidLotKey(bidId string) common.Hash {
-	return utils.GetIncrementedStorageKey(getBidBidKey(bidId), 1) //should this be renamed GetMappingKey?
+func getBidLotKey(bidID string) common.Hash {
+	return utils.GetIncrementedStorageKey(getBidBidKey(bidID), 1) //should this be renamed GetMappingKey?
 }
 
-func getBidLotMetadata(bidId string) utils.StorageValueMetadata {
+func getBidLotMetadata(bidID string) utils.StorageValueMetadata {
 	return utils.StorageValueMetadata{
 		Name: mcdStorage.BidLot,
-		Keys: map[utils.Key]string{constants.BidId: bidId},
+		Keys: map[utils.Key]string{constants.BidID: bidID},
 		Type: utils.Uint256,
 	}
 }
 
-func getBidGuyTicEndKey(hexBidId string) common.Hash {
-	return utils.GetIncrementedStorageKey(getBidBidKey(hexBidId), 2)
+func getBidGuyTicEndKey(hexBidID string) common.Hash {
+	return utils.GetIncrementedStorageKey(getBidBidKey(hexBidID), 2)
 }
 
-func getBidGuyTicEndMetadata(bidId string) utils.StorageValueMetadata {
-	keys := map[utils.Key]string{constants.BidId: bidId}
+func getBidGuyTicEndMetadata(bidID string) utils.StorageValueMetadata {
+	keys := map[utils.Key]string{constants.BidID: bidID}
 	packedTypes := map[int]utils.ValueType{0: utils.Address, 1: utils.Uint48, 2: utils.Uint48}
 	packedNames := map[int]string{0: mcdStorage.BidGuy, 1: mcdStorage.BidTic, 2: mcdStorage.BidEnd}
 	return utils.GetStorageValueMetadataForPackedSlot(mcdStorage.Packed, keys, utils.PackedSlot, packedNames, packedTypes)

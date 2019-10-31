@@ -88,7 +88,7 @@ var _ = Describe("Bite Transformer", func() {
 		Expect(dbResult[0].Ink).To(Equal("1000000000000000000"))
 		Expect(dbResult[0].Flip).To(Equal("2"))
 		Expect(dbResult[0].Tab).To(Equal("149846666666666655744"))
-		Expect(dbResult[0].Id).To(Equal(""))
+		Expect(dbResult[0].ID).To(Equal(""))
 	})
 })
 
@@ -99,7 +99,7 @@ type biteModel struct {
 	Art      string
 	Tab      string
 	Flip     string
-	Id       string `db:"bid_id"`
+	ID       string `db:"bid_id"`
 	HeaderID int64
 	LogID    int64 `db:"log_id"`
 }

@@ -353,8 +353,8 @@ func AssertUrn(actual, expected UrnState) {
 	Expect(actual.Updated).To(Equal(expected.Updated))
 }
 
-func getCommonBidMetadatas(bidId string) []utils.StorageValueMetadata {
-	keys := map[utils.Key]string{constants.BidId: bidId}
+func getCommonBidMetadatas(bidID string) []utils.StorageValueMetadata {
+	keys := map[utils.Key]string{constants.BidID: bidID}
 	packedNames := map[int]string{0: storage.BidGuy, 1: storage.BidTic, 2: storage.BidEnd}
 	packedTypes := map[int]utils.ValueType{0: utils.Address, 1: utils.Uint48, 2: utils.Uint48}
 	return []utils.StorageValueMetadata{
@@ -365,16 +365,16 @@ func getCommonBidMetadatas(bidId string) []utils.StorageValueMetadata {
 	}
 }
 
-func GetFlopMetadatas(bidId string) []utils.StorageValueMetadata {
-	return getCommonBidMetadatas(bidId)
+func GetFlopMetadatas(bidID string) []utils.StorageValueMetadata {
+	return getCommonBidMetadatas(bidID)
 }
 
-func GetFlapMetadatas(bidId string) []utils.StorageValueMetadata {
-	return getCommonBidMetadatas(bidId)
+func GetFlapMetadatas(bidID string) []utils.StorageValueMetadata {
+	return getCommonBidMetadatas(bidID)
 }
 
 func GetCdpManagerMetadatas(cdpi string) []utils.StorageValueMetadata {
-	keys := map[utils.Key]string{constants.Cdpi: cdpi}
+	keys := map[utils.Key]string{constants.CDPI: cdpi}
 	return []utils.StorageValueMetadata{
 		utils.GetStorageValueMetadata(cdp_manager.Cdpi, nil, utils.Uint256),
 		utils.GetStorageValueMetadata(cdp_manager.Urns, keys, utils.Address),
@@ -383,9 +383,9 @@ func GetCdpManagerMetadatas(cdpi string) []utils.StorageValueMetadata {
 	}
 }
 
-func GetFlipMetadatas(bidId string) []utils.StorageValueMetadata {
-	keys := map[utils.Key]string{constants.BidId: bidId}
-	return append(getCommonBidMetadatas(bidId),
+func GetFlipMetadatas(bidID string) []utils.StorageValueMetadata {
+	keys := map[utils.Key]string{constants.BidID: bidID}
+	return append(getCommonBidMetadatas(bidID),
 		utils.GetStorageValueMetadata(storage.Ilk, nil, utils.Bytes32),
 		utils.GetStorageValueMetadata(storage.BidUsr, keys, utils.Address),
 		utils.GetStorageValueMetadata(storage.BidGal, keys, utils.Address),
@@ -401,10 +401,10 @@ func GetCdpManagerStorageValues(seed int, ilkHex string, urnGuy string, cdpi int
 	return valuesMap
 }
 
-func getCommonBidStorageValues(seed, bidId int) map[string]interface{} {
+func getCommonBidStorageValues(seed, bidID int) map[string]interface{} {
 	packedValues := map[int]string{0: "address1" + strconv.Itoa(seed), 1: strconv.Itoa(1 + seed), 2: strconv.Itoa(2 + seed)}
 	valuesMap := make(map[string]interface{})
-	valuesMap[storage.Kicks] = strconv.Itoa(bidId)
+	valuesMap[storage.Kicks] = strconv.Itoa(bidID)
 	valuesMap[storage.BidBid] = strconv.Itoa(3 + seed)
 	valuesMap[storage.BidLot] = strconv.Itoa(4 + seed)
 	valuesMap[storage.Packed] = packedValues
@@ -412,16 +412,16 @@ func getCommonBidStorageValues(seed, bidId int) map[string]interface{} {
 	return valuesMap
 }
 
-func GetFlopStorageValues(seed, bidId int) map[string]interface{} {
-	return getCommonBidStorageValues(seed, bidId)
+func GetFlopStorageValues(seed, bidID int) map[string]interface{} {
+	return getCommonBidStorageValues(seed, bidID)
 }
 
-func GetFlapStorageValues(seed, bidId int) map[string]interface{} {
-	return getCommonBidStorageValues(seed, bidId)
+func GetFlapStorageValues(seed, bidID int) map[string]interface{} {
+	return getCommonBidStorageValues(seed, bidID)
 }
 
-func GetFlipStorageValues(seed int, ilk string, bidId int) map[string]interface{} {
-	valuesMap := getCommonBidStorageValues(seed, bidId)
+func GetFlipStorageValues(seed int, ilk string, bidID int) map[string]interface{} {
+	valuesMap := getCommonBidStorageValues(seed, bidID)
 	valuesMap[storage.Ilk] = ilk
 	valuesMap[storage.BidGal] = "address2" + strconv.Itoa(seed)
 	valuesMap[storage.BidUsr] = "address3" + strconv.Itoa(seed)
@@ -476,14 +476,14 @@ func ManagedCdpFromValues(ilkIdentifier, created string, cdpValues map[string]in
 
 	return ManagedCdp{
 		Usr:           cdpValues[cdp_manager.Owns].(string),
-		Id:            cdpValues[cdp_manager.Cdpi].(string),
+		ID:            cdpValues[cdp_manager.Cdpi].(string),
 		UrnIdentifier: cdpValues[cdp_manager.Urns].(string),
 		IlkIdentifier: ilkIdentifier,
 		Created:       sql.NullString{String: createdTimestamp, Valid: true},
 	}
 }
 
-func commonBidFromValues(bidId, dealt, updated, created string, bidValues map[string]interface{}) commonBid {
+func commonBidFromValues(bidID, dealt, updated, created string, bidValues map[string]interface{}) commonBid {
 	parsedCreated, _ := strconv.ParseInt(created, 10, 64)
 	parsedUpdated, _ := strconv.ParseInt(updated, 10, 64)
 	createdTimestamp := time.Unix(parsedCreated, 0).UTC().Format(time.RFC3339)
@@ -491,7 +491,7 @@ func commonBidFromValues(bidId, dealt, updated, created string, bidValues map[st
 	packedValues := bidValues[storage.Packed].(map[int]string)
 
 	return commonBid{
-		BidId:   bidId,
+		BidID:   bidID,
 		Guy:     packedValues[0],
 		Tic:     packedValues[1],
 		End:     packedValues[2],
@@ -503,30 +503,30 @@ func commonBidFromValues(bidId, dealt, updated, created string, bidValues map[st
 	}
 }
 
-func FlopBidFromValues(bidId, dealt, updated, created string, bidValues map[string]interface{}) FlopBid {
+func FlopBidFromValues(bidID, dealt, updated, created string, bidValues map[string]interface{}) FlopBid {
 	return FlopBid{
-		commonBid: commonBidFromValues(bidId, dealt, updated, created, bidValues),
+		commonBid: commonBidFromValues(bidID, dealt, updated, created, bidValues),
 	}
 }
 
-func FlapBidFromValues(bidId, dealt, updated, created string, bidValues map[string]interface{}) FlapBid {
+func FlapBidFromValues(bidID, dealt, updated, created string, bidValues map[string]interface{}) FlapBid {
 	return FlapBid{
-		commonBid: commonBidFromValues(bidId, dealt, updated, created, bidValues),
+		commonBid: commonBidFromValues(bidID, dealt, updated, created, bidValues),
 	}
 }
 
-func FlipBidFromValues(bidId, ilkId, urnId, dealt, updated, created string, bidValues map[string]interface{}) FlipBid {
+func FlipBidFromValues(bidID, ilkID, urnID, dealt, updated, created string, bidValues map[string]interface{}) FlipBid {
 	return FlipBid{
-		commonBid: commonBidFromValues(bidId, dealt, updated, created, bidValues),
-		IlkId:     ilkId,
-		UrnId:     urnId,
+		commonBid: commonBidFromValues(bidID, dealt, updated, created, bidValues),
+		IlkID:     ilkID,
+		UrnID:     urnID,
 		Gal:       bidValues[storage.BidGal].(string),
 		Tab:       bidValues[storage.BidTab].(string),
 	}
 }
 
 type ManagedCdp struct {
-	Id            string `db:"cdpi"`
+	ID            string `db:"cdpi"`
 	Usr           string
 	UrnIdentifier string `db:"urn_identifier"`
 	IlkIdentifier string `db:"ilk_identifier"`
@@ -534,7 +534,7 @@ type ManagedCdp struct {
 }
 
 type commonBid struct {
-	BidId   string `db:"bid_id"`
+	BidID   string `db:"bid_id"`
 	Guy     string
 	Tic     string
 	End     string
@@ -555,25 +555,25 @@ type FlapBid struct {
 
 type FlipBid struct {
 	commonBid
-	IlkId string `db:"ilk_id"`
-	UrnId string `db:"urn_id"`
+	IlkID string `db:"ilk_id"`
+	UrnID string `db:"urn_id"`
 	Gal   string
 	Tab   string
 }
 
-func SetUpFlipBidContext(setupData FlipBidContextInput) (ilkId, urnId int64, err error) {
-	ilkId, ilkErr := shared.GetOrCreateIlk(setupData.IlkHex, setupData.Db)
+func SetUpFlipBidContext(setupData FlipBidContextInput) (ilkID, urnID int64, err error) {
+	ilkID, ilkErr := shared.GetOrCreateIlk(setupData.IlkHex, setupData.Db)
 	if ilkErr != nil {
 		return 0, 0, ilkErr
 	}
 
-	urnId, urnErr := shared.GetOrCreateUrn(setupData.UrnGuy, setupData.IlkHex, setupData.Db)
+	urnID, urnErr := shared.GetOrCreateUrn(setupData.UrnGuy, setupData.IlkHex, setupData.Db)
 	if urnErr != nil {
 		return 0, 0, urnErr
 	}
 
-	flipKickLog := test_data.CreateTestLog(setupData.FlipKickHeaderId, setupData.Db)
-	flipKickErr := CreateFlipKick(setupData.ContractAddress, setupData.BidId, setupData.FlipKickHeaderId, flipKickLog.ID, setupData.UrnGuy, setupData.FlipKickRepo)
+	flipKickLog := test_data.CreateTestLog(setupData.FlipKickHeaderID, setupData.Db)
+	flipKickErr := CreateFlipKick(setupData.ContractAddress, setupData.BidID, setupData.FlipKickHeaderID, flipKickLog.ID, setupData.UrnGuy, setupData.FlipKickRepo)
 	if flipKickErr != nil {
 		return 0, 0, flipKickErr
 	}
@@ -585,12 +585,12 @@ func SetUpFlipBidContext(setupData FlipBidContextInput) (ilkId, urnId int64, err
 		}
 	}
 
-	return ilkId, urnId, nil
+	return ilkID, urnID, nil
 }
 
 func SetUpFlapBidContext(setupData FlapBidCreationInput) (err error) {
-	flapKickLog := test_data.CreateTestLog(setupData.FlapKickHeaderId, setupData.Db)
-	flapKickErr := CreateFlapKick(setupData.ContractAddress, setupData.BidId, setupData.FlapKickHeaderId, flapKickLog.ID, setupData.FlapKickRepo)
+	flapKickLog := test_data.CreateTestLog(setupData.FlapKickHeaderID, setupData.Db)
+	flapKickErr := CreateFlapKick(setupData.ContractAddress, setupData.BidID, setupData.FlapKickHeaderID, flapKickLog.ID, setupData.FlapKickRepo)
 	if flapKickErr != nil {
 		return flapKickErr
 	}
@@ -606,8 +606,8 @@ func SetUpFlapBidContext(setupData FlapBidCreationInput) (err error) {
 }
 
 func SetUpFlopBidContext(setupData FlopBidCreationInput) (err error) {
-	flopKickLog := test_data.CreateTestLog(setupData.FlopKickHeaderId, setupData.Db)
-	flopKickErr := CreateFlopKick(setupData.ContractAddress, setupData.BidId, setupData.FlopKickHeaderId, flopKickLog.ID, setupData.FlopKickRepo)
+	flopKickLog := test_data.CreateTestLog(setupData.FlopKickHeaderID, setupData.Db)
+	flopKickErr := CreateFlopKick(setupData.ContractAddress, setupData.BidID, setupData.FlopKickHeaderID, flopKickLog.ID, setupData.FlopKickRepo)
 	if flopKickErr != nil {
 		return flopKickErr
 	}
@@ -622,121 +622,121 @@ func SetUpFlopBidContext(setupData FlopBidCreationInput) (err error) {
 }
 
 func CreateDeal(input DealCreationInput) (err error) {
-	dealLog := test_data.CreateTestLog(input.DealHeaderId, input.Db)
+	dealLog := test_data.CreateTestLog(input.DealHeaderID, input.Db)
 	dealModel := test_data.CopyModel(test_data.DealModel)
-	dealModel.ColumnValues["bid_id"] = strconv.Itoa(input.BidId)
+	dealModel.ColumnValues["bid_id"] = strconv.Itoa(input.BidID)
 	dealModel.ColumnValues["tx_idx"] = rand.Int31()
 	dealModel.ForeignKeyValues[constants.AddressFK] = input.ContractAddress
-	dealModel.ColumnValues[constants.HeaderFK] = input.DealHeaderId
+	dealModel.ColumnValues[constants.HeaderFK] = input.DealHeaderID
 	dealModel.ColumnValues[constants.LogFK] = dealLog.ID
 	deals := []shared.InsertionModel{dealModel}
 	return input.DealRepo.Create(deals)
 }
 
-func CreateFlipKick(contractAddress string, bidId int, headerId, logId int64, usr string, repo flip_kick.FlipKickRepository) error {
+func CreateFlipKick(contractAddress string, bidID int, headerID, logID int64, usr string, repo flip_kick.FlipKickRepository) error {
 	flipKickModel := test_data.CopyModel(test_data.FlipKickModel())
 	flipKickModel.ForeignKeyValues[constants.AddressFK] = contractAddress
-	flipKickModel.ColumnValues["bid_id"] = strconv.Itoa(bidId)
+	flipKickModel.ColumnValues["bid_id"] = strconv.Itoa(bidID)
 	flipKickModel.ColumnValues["usr"] = usr
-	flipKickModel.ColumnValues[constants.HeaderFK] = headerId
-	flipKickModel.ColumnValues[constants.LogFK] = logId
+	flipKickModel.ColumnValues[constants.HeaderFK] = headerID
+	flipKickModel.ColumnValues[constants.LogFK] = logID
 	return repo.Create([]shared.InsertionModel{flipKickModel})
 }
 
-func CreateFlapKick(contractAddress string, bidId int, headerId, logId int64, repo flap_kick.FlapKickRepository) error {
+func CreateFlapKick(contractAddress string, bidID int, headerID, logID int64, repo flap_kick.FlapKickRepository) error {
 	flapKickModel := test_data.FlapKickModel()
 	flapKickModel.ForeignKeyValues[constants.AddressFK] = contractAddress
-	flapKickModel.ColumnValues[constants.HeaderFK] = headerId
-	flapKickModel.ColumnValues[constants.LogFK] = logId
-	flapKickModel.ColumnValues["bid_id"] = strconv.Itoa(bidId)
+	flapKickModel.ColumnValues[constants.HeaderFK] = headerID
+	flapKickModel.ColumnValues[constants.LogFK] = logID
+	flapKickModel.ColumnValues["bid_id"] = strconv.Itoa(bidID)
 	return repo.Create([]shared.InsertionModel{flapKickModel})
 }
 
-func CreateFlopKick(contractAddress string, bidId int, headerId, logId int64, repo flop_kick.FlopKickRepository) error {
+func CreateFlopKick(contractAddress string, bidID int, headerID, logID int64, repo flop_kick.FlopKickRepository) error {
 	flopKickModel := test_data.FlopKickModel()
 	flopKickModel.ForeignKeyValues[constants.AddressFK] = contractAddress
-	flopKickModel.ColumnValues["bid_id"] = strconv.Itoa(bidId)
-	flopKickModel.ColumnValues[constants.HeaderFK] = headerId
-	flopKickModel.ColumnValues[constants.LogFK] = logId
+	flopKickModel.ColumnValues["bid_id"] = strconv.Itoa(bidID)
+	flopKickModel.ColumnValues[constants.HeaderFK] = headerID
+	flopKickModel.ColumnValues[constants.LogFK] = logID
 	return repo.Create([]shared.InsertionModel{flopKickModel})
 }
 
 func CreateTend(input TendCreationInput) (err error) {
 	tendModel := test_data.CopyModel(test_data.TendModel)
-	tendModel.ColumnValues["bid_id"] = strconv.Itoa(input.BidId)
+	tendModel.ColumnValues["bid_id"] = strconv.Itoa(input.BidID)
 	tendModel.ColumnValues["lot"] = strconv.Itoa(input.Lot)
 	tendModel.ColumnValues["bid"] = strconv.Itoa(input.BidAmount)
 	tendModel.ForeignKeyValues[constants.AddressFK] = input.ContractAddress
-	tendModel.ColumnValues[constants.HeaderFK] = input.TendHeaderId
-	tendModel.ColumnValues[constants.LogFK] = input.TendLogId
+	tendModel.ColumnValues[constants.HeaderFK] = input.TendHeaderID
+	tendModel.ColumnValues[constants.LogFK] = input.TendLogID
 	return input.TendRepo.Create([]shared.InsertionModel{tendModel})
 }
 
 func CreateDent(input DentCreationInput) (err error) {
 	dentModel := test_data.CopyModel(test_data.DentModel)
-	dentModel.ColumnValues["bid_id"] = strconv.Itoa(input.BidId)
+	dentModel.ColumnValues["bid_id"] = strconv.Itoa(input.BidID)
 	dentModel.ColumnValues["lot"] = strconv.Itoa(input.Lot)
 	dentModel.ColumnValues["bid"] = strconv.Itoa(input.BidAmount)
 	dentModel.ForeignKeyValues[constants.AddressFK] = input.ContractAddress
-	dentModel.ColumnValues[constants.HeaderFK] = input.DentHeaderId
-	dentModel.ColumnValues[constants.LogFK] = input.DentLogId
+	dentModel.ColumnValues[constants.HeaderFK] = input.DentHeaderID
+	dentModel.ColumnValues[constants.LogFK] = input.DentLogID
 	return input.DentRepo.Create([]shared.InsertionModel{dentModel})
 }
 
 func CreateYank(input YankCreationInput) (err error) {
 	yankModel := test_data.CopyModel(test_data.YankModel)
-	yankModel.ColumnValues["bid_id"] = strconv.Itoa(input.BidId)
+	yankModel.ColumnValues["bid_id"] = strconv.Itoa(input.BidID)
 	yankModel.ColumnValues["tx_idx"] = rand.Int31()
 	yankModel.ForeignKeyValues[constants.AddressFK] = input.ContractAddress
-	yankModel.ColumnValues[constants.HeaderFK] = input.YankHeaderId
-	yankModel.ColumnValues[constants.LogFK] = input.YankLogId
+	yankModel.ColumnValues[constants.HeaderFK] = input.YankHeaderID
+	yankModel.ColumnValues[constants.LogFK] = input.YankLogID
 	return input.YankRepo.Create([]shared.InsertionModel{yankModel})
 }
 
 func CreateTick(input TickCreationInput) (err error) {
 	tickModel := test_data.CopyModel(test_data.TickModel)
-	tickModel.ColumnValues["bid_id"] = strconv.Itoa(input.BidId)
+	tickModel.ColumnValues["bid_id"] = strconv.Itoa(input.BidID)
 	tickModel.ColumnValues["tx_idx"] = rand.Int31()
 	tickModel.ForeignKeyValues[constants.AddressFK] = input.ContractAddress
-	tickModel.ColumnValues[constants.HeaderFK] = input.TickHeaderId
-	tickModel.ColumnValues[constants.LogFK] = input.TickLogId
+	tickModel.ColumnValues[constants.HeaderFK] = input.TickHeaderID
+	tickModel.ColumnValues[constants.LogFK] = input.TickLogID
 	return input.TickRepo.Create([]shared.InsertionModel{tickModel})
 }
 
 type YankCreationInput struct {
 	ContractAddress string
-	BidId           int
+	BidID           int
 	YankRepo        yank.YankRepository
-	YankHeaderId    int64
-	YankLogId       int64
+	YankHeaderID    int64
+	YankLogID       int64
 }
 
 type TendCreationInput struct {
 	ContractAddress string
-	BidId           int
+	BidID           int
 	Lot             int
 	BidAmount       int
 	TendRepo        tend.TendRepository
-	TendHeaderId    int64
-	TendLogId       int64
+	TendHeaderID    int64
+	TendLogID       int64
 }
 
 type DentCreationInput struct {
 	ContractAddress string
-	BidId           int
+	BidID           int
 	Lot             int
 	BidAmount       int
 	DentRepo        dent.DentRepository
-	DentHeaderId    int64
-	DentLogId       int64
+	DentHeaderID    int64
+	DentLogID       int64
 }
 
 type DealCreationInput struct {
 	Db              *postgres.DB
-	BidId           int
+	BidID           int
 	ContractAddress string
 	DealRepo        deal.DealRepository
-	DealHeaderId    int64
+	DealHeaderID    int64
 }
 
 type FlipBidContextInput struct {
@@ -745,33 +745,33 @@ type FlipBidContextInput struct {
 	IlkHex           string
 	UrnGuy           string
 	FlipKickRepo     flip_kick.FlipKickRepository
-	FlipKickHeaderId int64
+	FlipKickHeaderID int64
 }
 
 type FlapBidCreationInput struct {
 	DealCreationInput
 	Dealt            bool
 	FlapKickRepo     flap_kick.FlapKickRepository
-	FlapKickHeaderId int64
+	FlapKickHeaderID int64
 }
 
 type TickCreationInput struct {
-	BidId           int
+	BidID           int
 	ContractAddress string
 	TickRepo        tick.TickRepository
-	TickHeaderId    int64
-	TickLogId       int64
+	TickHeaderID    int64
+	TickLogID       int64
 }
 
 type FlopBidCreationInput struct {
 	DealCreationInput
 	Dealt            bool
 	FlopKickRepo     flop_kick.FlopKickRepository
-	FlopKickHeaderId int64
+	FlopKickHeaderID int64
 }
 
 type BidEvent struct {
-	BidId           string `db:"bid_id"`
+	BidID           string `db:"bid_id"`
 	Lot             string
 	BidAmount       string `db:"bid_amount"`
 	Act             string
@@ -807,7 +807,7 @@ type SinQueueEvent struct {
 }
 
 type PokeEvent struct {
-	IlkId string `db:"ilk_id"`
+	IlkID string `db:"ilk_id"`
 	Val   string
 	Spot  string
 }

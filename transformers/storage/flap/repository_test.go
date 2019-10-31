@@ -63,7 +63,7 @@ var _ = Describe("Flap storage repository", func() {
 	It("rolls back the records and address insertions for records with bid_ids if there's a failure", func() {
 		var bidBidMetadata = utils.StorageValueMetadata{
 			Name: storage.BidBid,
-			Keys: map[utils.Key]string{constants.BidId: strconv.Itoa(rand.Int())},
+			Keys: map[utils.Key]string{constants.BidID: strconv.Itoa(rand.Int())},
 			Type: utils.Uint256,
 		}
 
@@ -82,14 +82,14 @@ var _ = Describe("Flap storage repository", func() {
 		createErr := repository.Create(fakeBlockNumber, fakeHash, begMetadata, strconv.Itoa(rand.Int()))
 		Expect(createErr).NotTo(HaveOccurred())
 
-		addressId, addressErr := shared.GetOrCreateAddress(repository.ContractAddress, db)
+		addressID, addressErr := shared.GetOrCreateAddress(repository.ContractAddress, db)
 		Expect(addressErr).NotTo(HaveOccurred())
 
-		var ttlContractAddressId int64
+		var ttlContractAddressID int64
 		query := "SELECT address_id FROM maker.flap_beg LIMIT 1"
-		getErr := db.Get(&ttlContractAddressId, query)
+		getErr := db.Get(&ttlContractAddressID, query)
 		Expect(getErr).NotTo(HaveOccurred())
-		Expect(ttlContractAddressId).To(Equal(addressId))
+		Expect(ttlContractAddressID).To(Equal(addressID))
 	})
 
 	Describe("vat", func() {
@@ -143,7 +143,7 @@ var _ = Describe("Flap storage repository", func() {
 
 	Describe("ttl and tau", func() {
 		packedNames := make(map[int]string)
-		packedNames[0] = storage.Ttl
+		packedNames[0] = storage.TTL
 		packedNames[1] = storage.Tau
 		var ttlAndTauMetadata = utils.StorageValueMetadata{
 			Name:        storage.Packed,
@@ -245,18 +245,18 @@ var _ = Describe("Flap storage repository", func() {
 				Type: utils.Uint256,
 			}
 			err := repository.Create(fakeBlockNumber, fakeHash, badMetadata, "")
-			Expect(err).To(MatchError(utils.ErrMetadataMalformed{MissingData: constants.BidId}))
+			Expect(err).To(MatchError(utils.ErrMetadataMalformed{MissingData: constants.BidID}))
 		})
 
 		Describe("bid_bid", func() {
 			var fakeBidValue = strconv.Itoa(rand.Int())
 			var bidBidMetadata = utils.StorageValueMetadata{
 				Name: storage.BidBid,
-				Keys: map[utils.Key]string{constants.BidId: fakeBidId},
+				Keys: map[utils.Key]string{constants.BidID: fakeBidId},
 				Type: utils.Uint256,
 			}
 			inputs := shared_behaviors.StorageVariableBehaviorInputs{
-				KeyFieldName:     string(constants.BidId),
+				KeyFieldName:     string(constants.BidID),
 				ValueFieldName:   "bid",
 				Value:            fakeBidValue,
 				Key:              fakeBidId,
@@ -277,7 +277,7 @@ var _ = Describe("Flap storage repository", func() {
 				Expect(queryErr).NotTo(HaveOccurred())
 				Expect(flap.BlockNumber).To(Equal(fakeBlockNumber))
 				Expect(flap.BlockHash).To(Equal(fakeHash))
-				Expect(flap.BidId).To(Equal(fakeBidId))
+				Expect(flap.BidID).To(Equal(fakeBidId))
 				Expect(flap.Bid).To(Equal(fakeBidValue))
 			})
 		})
@@ -286,11 +286,11 @@ var _ = Describe("Flap storage repository", func() {
 			var fakeLotValue = strconv.Itoa(rand.Int())
 			var bidLotMetadata = utils.StorageValueMetadata{
 				Name: storage.BidLot,
-				Keys: map[utils.Key]string{constants.BidId: fakeBidId},
+				Keys: map[utils.Key]string{constants.BidID: fakeBidId},
 				Type: utils.Uint256,
 			}
 			inputs := shared_behaviors.StorageVariableBehaviorInputs{
-				KeyFieldName:     string(constants.BidId),
+				KeyFieldName:     string(constants.BidID),
 				ValueFieldName:   "lot",
 				Value:            fakeLotValue,
 				Key:              fakeBidId,
@@ -311,7 +311,7 @@ var _ = Describe("Flap storage repository", func() {
 				Expect(queryErr).NotTo(HaveOccurred())
 				Expect(flap.BlockNumber).To(Equal(fakeBlockNumber))
 				Expect(flap.BlockHash).To(Equal(fakeHash))
-				Expect(flap.BidId).To(Equal(fakeBidId))
+				Expect(flap.BidID).To(Equal(fakeBidId))
 				Expect(flap.Lot).To(Equal(fakeLotValue))
 			})
 		})
@@ -323,7 +323,7 @@ var _ = Describe("Flap storage repository", func() {
 			packedNames[2] = storage.BidEnd
 			var bidGuyTicEndMetadata = utils.StorageValueMetadata{
 				Name:        storage.Packed,
-				Keys:        map[utils.Key]string{constants.BidId: fakeBidId},
+				Keys:        map[utils.Key]string{constants.BidID: fakeBidId},
 				PackedNames: packedNames,
 			}
 
@@ -368,7 +368,7 @@ var _ = Describe("Flap storage repository", func() {
 					Expect(queryErr).NotTo(HaveOccurred())
 					Expect(flap.BlockNumber).To(Equal(fakeBlockNumber))
 					Expect(flap.BlockHash).To(Equal(fakeHash))
-					Expect(flap.BidId).To(Equal(fakeBidId))
+					Expect(flap.BidID).To(Equal(fakeBidId))
 					Expect(flap.Guy).To(Equal(fakeGuy))
 					Expect(flap.Tic).To(Equal(fakeTic))
 					Expect(flap.End).To(Equal(fakeEnd))

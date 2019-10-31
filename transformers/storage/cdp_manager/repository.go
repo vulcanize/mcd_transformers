@@ -127,11 +127,11 @@ func (repository CdpManagerStorageRepository) insertIlks(blockNumber int, blockH
 		return keyErr
 	}
 
-	ilkId, ilkErr := shared.GetOrCreateIlk(ilks, repository.db)
+	ilkID, ilkErr := shared.GetOrCreateIlk(ilks, repository.db)
 	if ilkErr != nil {
 		return ilkErr
 	}
-	_, writeErr := repository.db.Exec(insertIlksQuery, blockNumber, blockHash, cdpi, ilkId)
+	_, writeErr := repository.db.Exec(insertIlksQuery, blockNumber, blockHash, cdpi, ilkID)
 	return writeErr
 }
 
@@ -166,9 +166,9 @@ func (repository CdpManagerStorageRepository) insertCount(blockNumber int, block
 }
 
 func getCdpi(keys map[utils.Key]string) (string, error) {
-	cdpi, ok := keys[constants.Cdpi]
+	cdpi, ok := keys[constants.CDPI]
 	if !ok {
-		return "", utils.ErrMetadataMalformed{MissingData: constants.Cdpi}
+		return "", utils.ErrMetadataMalformed{MissingData: constants.CDPI}
 	}
 	return cdpi, nil
 }

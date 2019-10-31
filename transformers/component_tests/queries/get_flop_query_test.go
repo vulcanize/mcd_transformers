@@ -23,7 +23,7 @@ var _ = Describe("get flop query", func() {
 		headerRepo      repositories.HeaderRepository
 		contractAddress = "contract address"
 
-		fakeBidId      = rand.Int()
+		fakeBidID      = rand.Int()
 		blockOne       = rand.Int()
 		timestampOne   = int(rand.Int31())
 		hashOne        = "hashOne"
@@ -34,8 +34,8 @@ var _ = Describe("get flop query", func() {
 		hashTwo        = "hashTwo"
 		blockTwoHeader = fakes.GetFakeHeaderWithTimestamp(int64(timestampTwo), int64(blockTwo))
 
-		flopStorageValuesOne = test_helpers.GetFlopStorageValues(1, fakeBidId)
-		flopStorageValuesTwo = test_helpers.GetFlopStorageValues(2, fakeBidId)
+		flopStorageValuesOne = test_helpers.GetFlopStorageValues(1, fakeBidID)
+		flopStorageValuesTwo = test_helpers.GetFlopStorageValues(2, fakeBidID)
 	)
 
 	BeforeEach(func() {
@@ -57,73 +57,73 @@ var _ = Describe("get flop query", func() {
 	})
 
 	It("gets the specified flop", func() {
-		headerId, headerOneErr := headerRepo.CreateOrUpdateHeader(blockOneHeader)
+		headerID, headerOneErr := headerRepo.CreateOrUpdateHeader(blockOneHeader)
 		Expect(headerOneErr).NotTo(HaveOccurred())
 
 		err := test_helpers.SetUpFlopBidContext(test_helpers.FlopBidCreationInput{
 			DealCreationInput: test_helpers.DealCreationInput{
 				Db:              db,
-				BidId:           fakeBidId,
+				BidID:           fakeBidID,
 				ContractAddress: contractAddress,
 				DealRepo:        dealRepo,
-				DealHeaderId:    headerId,
+				DealHeaderID:    headerID,
 			},
 			Dealt:            true,
 			FlopKickRepo:     flopKickRepo,
-			FlopKickHeaderId: headerId,
+			FlopKickHeaderID: headerID,
 		})
 		Expect(err).NotTo(HaveOccurred())
 
-		test_helpers.CreateFlop(db, blockOneHeader, flopStorageValuesOne, test_helpers.GetFlopMetadatas(strconv.Itoa(fakeBidId)), contractAddress)
+		test_helpers.CreateFlop(db, blockOneHeader, flopStorageValuesOne, test_helpers.GetFlopMetadatas(strconv.Itoa(fakeBidID)), contractAddress)
 
 		_, headerTwoErr := headerRepo.CreateOrUpdateHeader(blockTwoHeader)
 		Expect(headerTwoErr).NotTo(HaveOccurred())
 
-		test_helpers.CreateFlop(db, blockTwoHeader, flopStorageValuesTwo, test_helpers.GetFlopMetadatas(strconv.Itoa(fakeBidId)), contractAddress)
+		test_helpers.CreateFlop(db, blockTwoHeader, flopStorageValuesTwo, test_helpers.GetFlopMetadatas(strconv.Itoa(fakeBidID)), contractAddress)
 
-		expectedBid := test_helpers.FlopBidFromValues(strconv.Itoa(fakeBidId), "true", blockOneHeader.Timestamp, blockOneHeader.Timestamp, flopStorageValuesOne)
+		expectedBid := test_helpers.FlopBidFromValues(strconv.Itoa(fakeBidID), "true", blockOneHeader.Timestamp, blockOneHeader.Timestamp, flopStorageValuesOne)
 
 		var actualBid test_helpers.FlopBid
-		queryErr := db.Get(&actualBid, `SELECT bid_id, guy, tic, "end", lot, bid, dealt, created, updated FROM api.get_flop($1, $2)`, fakeBidId, blockOne)
+		queryErr := db.Get(&actualBid, `SELECT bid_id, guy, tic, "end", lot, bid, dealt, created, updated FROM api.get_flop($1, $2)`, fakeBidID, blockOne)
 		Expect(queryErr).NotTo(HaveOccurred())
 
 		Expect(expectedBid).To(Equal(actualBid))
 	})
 
 	It("gets created and updated blocks", func() {
-		headerOneId, headerOneErr := headerRepo.CreateOrUpdateHeader(blockOneHeader)
+		headerOneID, headerOneErr := headerRepo.CreateOrUpdateHeader(blockOneHeader)
 		Expect(headerOneErr).NotTo(HaveOccurred())
 
-		headerTwoId, headerTwoErr := headerRepo.CreateOrUpdateHeader(blockTwoHeader)
+		headerTwoID, headerTwoErr := headerRepo.CreateOrUpdateHeader(blockTwoHeader)
 		Expect(headerTwoErr).NotTo(HaveOccurred())
 
 		err := test_helpers.SetUpFlopBidContext(test_helpers.FlopBidCreationInput{
 			DealCreationInput: test_helpers.DealCreationInput{
 				Db:              db,
-				BidId:           fakeBidId,
+				BidID:           fakeBidID,
 				ContractAddress: contractAddress,
 				DealRepo:        dealRepo,
-				DealHeaderId:    headerTwoId,
+				DealHeaderID:    headerTwoID,
 			},
 			Dealt:            true,
 			FlopKickRepo:     flopKickRepo,
-			FlopKickHeaderId: headerOneId,
+			FlopKickHeaderID: headerOneID,
 		})
 		Expect(err).NotTo(HaveOccurred())
 
-		test_helpers.CreateFlop(db, blockOneHeader, flopStorageValuesOne, test_helpers.GetFlopMetadatas(strconv.Itoa(fakeBidId)), contractAddress)
-		test_helpers.CreateFlop(db, blockTwoHeader, flopStorageValuesTwo, test_helpers.GetFlopMetadatas(strconv.Itoa(fakeBidId)), contractAddress)
+		test_helpers.CreateFlop(db, blockOneHeader, flopStorageValuesOne, test_helpers.GetFlopMetadatas(strconv.Itoa(fakeBidID)), contractAddress)
+		test_helpers.CreateFlop(db, blockTwoHeader, flopStorageValuesTwo, test_helpers.GetFlopMetadatas(strconv.Itoa(fakeBidID)), contractAddress)
 
 		blockThree := blockTwo + 1
 		timestampThree := timestampTwo + 1000
 		blockThreeHeader := fakes.GetFakeHeaderWithTimestamp(int64(timestampThree), int64(blockThree))
-		flopStorageValuesThree := test_helpers.GetFlopStorageValues(3, fakeBidId)
-		test_helpers.CreateFlop(db, blockThreeHeader, flopStorageValuesThree, test_helpers.GetFlopMetadatas(strconv.Itoa(fakeBidId)), contractAddress)
+		flopStorageValuesThree := test_helpers.GetFlopStorageValues(3, fakeBidID)
+		test_helpers.CreateFlop(db, blockThreeHeader, flopStorageValuesThree, test_helpers.GetFlopMetadatas(strconv.Itoa(fakeBidID)), contractAddress)
 
-		expectedBid := test_helpers.FlopBidFromValues(strconv.Itoa(fakeBidId), "true", blockTwoHeader.Timestamp, blockOneHeader.Timestamp, flopStorageValuesTwo)
+		expectedBid := test_helpers.FlopBidFromValues(strconv.Itoa(fakeBidID), "true", blockTwoHeader.Timestamp, blockOneHeader.Timestamp, flopStorageValuesTwo)
 
 		var actualBid test_helpers.FlopBid
-		queryErr := db.Get(&actualBid, `SELECT bid_id, guy, tic, "end", lot, bid, dealt, created, updated FROM api.get_flop($1, $2)`, fakeBidId, blockTwo)
+		queryErr := db.Get(&actualBid, `SELECT bid_id, guy, tic, "end", lot, bid, dealt, created, updated FROM api.get_flop($1, $2)`, fakeBidID, blockTwo)
 		Expect(queryErr).NotTo(HaveOccurred())
 
 		Expect(expectedBid).To(Equal(actualBid))
@@ -135,62 +135,62 @@ var _ = Describe("get flop query", func() {
 			timestamp := int(rand.Int31())
 
 			header := fakes.GetFakeHeaderWithTimestamp(int64(timestamp), int64(blockNumber))
-			headerId, headerErr := headerRepo.CreateOrUpdateHeader(header)
+			headerID, headerErr := headerRepo.CreateOrUpdateHeader(header)
 			Expect(headerErr).NotTo(HaveOccurred())
 
 			err := test_helpers.SetUpFlopBidContext(test_helpers.FlopBidCreationInput{
 				DealCreationInput: test_helpers.DealCreationInput{
 					Db:              db,
-					BidId:           fakeBidId,
+					BidID:           fakeBidID,
 					ContractAddress: contractAddress,
 				},
 				Dealt:            false,
 				FlopKickRepo:     flopKickRepo,
-				FlopKickHeaderId: headerId,
+				FlopKickHeaderID: headerID,
 			})
 			Expect(err).NotTo(HaveOccurred())
 
-			flopStorageValues := test_helpers.GetFlopStorageValues(1, fakeBidId)
-			test_helpers.CreateFlop(db, header, flopStorageValues, test_helpers.GetFlopMetadatas(strconv.Itoa(fakeBidId)), contractAddress)
+			flopStorageValues := test_helpers.GetFlopStorageValues(1, fakeBidID)
+			test_helpers.CreateFlop(db, header, flopStorageValues, test_helpers.GetFlopMetadatas(strconv.Itoa(fakeBidID)), contractAddress)
 
-			expectedBid := test_helpers.FlopBidFromValues(strconv.Itoa(fakeBidId), "false", header.Timestamp, header.Timestamp, flopStorageValues)
+			expectedBid := test_helpers.FlopBidFromValues(strconv.Itoa(fakeBidID), "false", header.Timestamp, header.Timestamp, flopStorageValues)
 
 			var actualBid test_helpers.FlopBid
-			queryErr := db.Get(&actualBid, `SELECT bid_id, guy, tic, "end", lot, bid, dealt, created, updated FROM api.get_flop($1, $2)`, fakeBidId, blockNumber)
+			queryErr := db.Get(&actualBid, `SELECT bid_id, guy, tic, "end", lot, bid, dealt, created, updated FROM api.get_flop($1, $2)`, fakeBidID, blockNumber)
 			Expect(queryErr).NotTo(HaveOccurred())
 
 			Expect(expectedBid).To(Equal(actualBid))
 		})
 
 		It("is false if deal event in later block", func() {
-			headerId, headerOneErr := headerRepo.CreateOrUpdateHeader(blockOneHeader)
+			headerID, headerOneErr := headerRepo.CreateOrUpdateHeader(blockOneHeader)
 			Expect(headerOneErr).NotTo(HaveOccurred())
 
-			headerTwoId, headerTwoErr := headerRepo.CreateOrUpdateHeader(blockTwoHeader)
+			headerTwoID, headerTwoErr := headerRepo.CreateOrUpdateHeader(blockTwoHeader)
 			Expect(headerTwoErr).NotTo(HaveOccurred())
 
 			err := test_helpers.SetUpFlopBidContext(test_helpers.FlopBidCreationInput{
 				DealCreationInput: test_helpers.DealCreationInput{
 					Db:              db,
-					BidId:           fakeBidId,
+					BidID:           fakeBidID,
 					ContractAddress: contractAddress,
 					DealRepo:        dealRepo,
-					DealHeaderId:    headerTwoId,
+					DealHeaderID:    headerTwoID,
 				},
 				Dealt:            true,
 				FlopKickRepo:     flopKickRepo,
-				FlopKickHeaderId: headerId,
+				FlopKickHeaderID: headerID,
 			})
 			Expect(err).NotTo(HaveOccurred())
 
-			test_helpers.CreateFlop(db, blockOneHeader, flopStorageValuesOne, test_helpers.GetFlopMetadatas(strconv.Itoa(fakeBidId)), contractAddress)
-			test_helpers.CreateFlop(db, blockTwoHeader, flopStorageValuesTwo, test_helpers.GetFlopMetadatas(strconv.Itoa(fakeBidId)), contractAddress)
+			test_helpers.CreateFlop(db, blockOneHeader, flopStorageValuesOne, test_helpers.GetFlopMetadatas(strconv.Itoa(fakeBidID)), contractAddress)
+			test_helpers.CreateFlop(db, blockTwoHeader, flopStorageValuesTwo, test_helpers.GetFlopMetadatas(strconv.Itoa(fakeBidID)), contractAddress)
 
 			expectedBid := test_helpers.FlopBidFromValues(
-				strconv.Itoa(fakeBidId), "false", blockOneHeader.Timestamp, blockOneHeader.Timestamp, flopStorageValuesOne)
+				strconv.Itoa(fakeBidID), "false", blockOneHeader.Timestamp, blockOneHeader.Timestamp, flopStorageValuesOne)
 
 			var actualBid test_helpers.FlopBid
-			queryErr := db.Get(&actualBid, `SELECT bid_id, guy, tic, "end", lot, bid, dealt, created, updated FROM api.get_flop($1, $2)`, fakeBidId, blockOne)
+			queryErr := db.Get(&actualBid, `SELECT bid_id, guy, tic, "end", lot, bid, dealt, created, updated FROM api.get_flop($1, $2)`, fakeBidID, blockOne)
 			Expect(queryErr).NotTo(HaveOccurred())
 
 			Expect(expectedBid).To(Equal(actualBid))

@@ -41,7 +41,7 @@ type MockMakerStorageRepository struct {
 	GetUrnsError            error
 }
 
-func (repository *MockMakerStorageRepository) GetFlapBidIds(string) ([]string, error) {
+func (repository *MockMakerStorageRepository) GetFlapBidIDs(string) ([]string, error) {
 	repository.GetFlapBidIdsCalled = true
 	return repository.FlapBidIds, repository.GetFlapBidIdsError
 }
@@ -76,17 +76,17 @@ func (repository *MockMakerStorageRepository) GetUrns() ([]storage.Urn, error) {
 	return repository.Urns, repository.GetUrnsError
 }
 
-func (repository *MockMakerStorageRepository) GetFlipBidIds(contractAddress string) ([]string, error) {
+func (repository *MockMakerStorageRepository) GetFlipBidIDs(contractAddress string) ([]string, error) {
 	repository.GetFlipBidIdsCalledWith = contractAddress
 	return repository.FlipBidIds, repository.GetFlipBidIdsError
 }
 
-func (repository *MockMakerStorageRepository) GetFlopBidIds(contractAddress string) ([]string, error) {
+func (repository *MockMakerStorageRepository) GetFlopBidIDs(contractAddress string) ([]string, error) {
 	repository.GetFlopBidIdsCalledWith = contractAddress
 	return repository.FlopBidIds, repository.GetFlopBidIdsError
 }
 
-func (repository *MockMakerStorageRepository) GetCdpis() ([]string, error) {
+func (repository *MockMakerStorageRepository) GetCDPIs() ([]string, error) {
 	repository.GetCdpisCalled = true
 	return repository.Cdpis, repository.GetCdpisError
 }

@@ -17,9 +17,8 @@
 package dent
 
 import (
-	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
-
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
+	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
 )
 
 type DentRepository struct {
@@ -30,6 +29,6 @@ func (repository DentRepository) Create(models []shared.InsertionModel) error {
 	return shared.Create(models, repository.db)
 }
 
-func (repo *DentRepository) SetDB(db *postgres.DB) {
-	repo.db = db
+func (repository *DentRepository) SetDB(db *postgres.DB) {
+	repository.db = db
 }

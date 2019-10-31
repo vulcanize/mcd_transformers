@@ -86,7 +86,7 @@ func (loader *keysLoader) LoadMappings() (map[common.Hash]utils.StorageValueMeta
 }
 
 func (loader *keysLoader) loadCdpiKeyMappings(mappings map[common.Hash]utils.StorageValueMetadata) (map[common.Hash]utils.StorageValueMetadata, error) {
-	cdpis, cdpiErr := loader.storageRepository.GetCdpis()
+	cdpis, cdpiErr := loader.storageRepository.GetCDPIs()
 	if cdpiErr != nil {
 		return nil, cdpiErr
 	}
@@ -133,7 +133,7 @@ func getUrnsKey(hexCdpi string) common.Hash {
 }
 
 func getUrnsMetadata(cdpi string) utils.StorageValueMetadata {
-	keys := map[utils.Key]string{constants.Cdpi: cdpi}
+	keys := map[utils.Key]string{constants.CDPI: cdpi}
 	return utils.GetStorageValueMetadata(Urns, keys, utils.Address)
 }
 
@@ -142,7 +142,7 @@ func getListPrevKey(hexCdpi string) common.Hash {
 }
 
 func getListPrevMetadata(cdpi string) utils.StorageValueMetadata {
-	keys := map[utils.Key]string{constants.Cdpi: cdpi}
+	keys := map[utils.Key]string{constants.CDPI: cdpi}
 	return utils.GetStorageValueMetadata(ListPrev, keys, utils.Uint256)
 }
 
@@ -151,7 +151,7 @@ func getListNextKey(hexCdpi string) common.Hash {
 }
 
 func getListNextMetadata(cdpi string) utils.StorageValueMetadata {
-	keys := map[utils.Key]string{constants.Cdpi: cdpi}
+	keys := map[utils.Key]string{constants.CDPI: cdpi}
 	return utils.GetStorageValueMetadata(ListNext, keys, utils.Uint256)
 }
 
@@ -160,7 +160,7 @@ func getOwnsKey(hexCdpi string) common.Hash {
 }
 
 func getOwnsMetadata(cdpi string) utils.StorageValueMetadata {
-	keys := map[utils.Key]string{constants.Cdpi: cdpi}
+	keys := map[utils.Key]string{constants.CDPI: cdpi}
 	return utils.GetStorageValueMetadata(Owns, keys, utils.Address)
 }
 
@@ -169,7 +169,7 @@ func getIlksKey(hexCdpi string) common.Hash {
 }
 
 func getIlksMetadata(cdpi string) utils.StorageValueMetadata {
-	keys := map[utils.Key]string{constants.Cdpi: cdpi}
+	keys := map[utils.Key]string{constants.CDPI: cdpi}
 	return utils.GetStorageValueMetadata(Ilks, keys, utils.Bytes32)
 }
 

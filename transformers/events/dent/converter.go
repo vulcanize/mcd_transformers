@@ -37,7 +37,7 @@ func (c DentConverter) ToModels(_ string, logs []core.HeaderSyncLog) (result []s
 			return nil, validateErr
 		}
 
-		bidId := log.Log.Topics[2].Big()
+		bidID := log.Log.Topics[2].Big()
 		lot := log.Log.Topics[3].Big()
 		bidBytes, dataErr := shared.GetLogNoteArgumentAtIndex(2, log.Log.Data)
 		if dataErr != nil {
@@ -52,7 +52,7 @@ func (c DentConverter) ToModels(_ string, logs []core.HeaderSyncLog) (result []s
 				constants.HeaderFK, "bid_id", "lot", "bid", string(constants.AddressFK), constants.LogFK,
 			},
 			ColumnValues: shared.ColumnValues{
-				"bid_id":           bidId.String(),
+				"bid_id":           bidID.String(),
 				"lot":              lot.String(),
 				"bid":              bid.String(),
 				constants.HeaderFK: log.HeaderID,

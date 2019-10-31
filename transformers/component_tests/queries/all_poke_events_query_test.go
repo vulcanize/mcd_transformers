@@ -51,7 +51,7 @@ var _ = Describe("all poke events query", func() {
 		spotPokeLog := test_data.CreateTestLog(headerID, db)
 
 		spotPoke := generateSpotPoke(test_helpers.FakeIlk.Hex, 1, headerID, spotPokeLog.ID)
-		ilkIdBlockOne, err := shared.GetOrCreateIlk(spotPoke.ForeignKeyValues[constants.IlkFK], db)
+		ilkIDBlockOne, err := shared.GetOrCreateIlk(spotPoke.ForeignKeyValues[constants.IlkFK], db)
 		err = spotPokeRepo.Create([]shared.InsertionModel{spotPoke})
 		Expect(err).NotTo(HaveOccurred())
 
@@ -61,19 +61,19 @@ var _ = Describe("all poke events query", func() {
 		anotherSpotPokeLog := test_data.CreateTestLog(anotherHeaderID, db)
 
 		anotherSpotPoke := generateSpotPoke(test_helpers.AnotherFakeIlk.Hex, 1, anotherHeaderID, anotherSpotPokeLog.ID)
-		anotherIlkId, err := shared.GetOrCreateIlk(anotherSpotPoke.ForeignKeyValues[constants.IlkFK], db)
+		anotherIlkID, err := shared.GetOrCreateIlk(anotherSpotPoke.ForeignKeyValues[constants.IlkFK], db)
 		Expect(err).NotTo(HaveOccurred())
 		err = spotPokeRepo.Create([]shared.InsertionModel{anotherSpotPoke})
 		Expect(err).NotTo(HaveOccurred())
 
 		expectedValues := []test_helpers.PokeEvent{
 			{
-				IlkId: strconv.Itoa(int(anotherIlkId)),
+				IlkID: strconv.Itoa(int(anotherIlkID)),
 				Val:   anotherSpotPoke.ColumnValues["value"].(string),
 				Spot:  anotherSpotPoke.ColumnValues["spot"].(string),
 			},
 			{
-				IlkId: strconv.Itoa(int(ilkIdBlockOne)),
+				IlkID: strconv.Itoa(int(ilkIDBlockOne)),
 				Val:   spotPoke.ColumnValues["value"].(string),
 				Spot:  spotPoke.ColumnValues["spot"].(string),
 			},
@@ -92,25 +92,25 @@ var _ = Describe("all poke events query", func() {
 		spotPokeLog := test_data.CreateTestLog(headerID, db)
 
 		spotPoke := generateSpotPoke(test_helpers.FakeIlk.Hex, 1, headerID, spotPokeLog.ID)
-		ilkIdBlockOne, err := shared.GetOrCreateIlk(spotPoke.ForeignKeyValues[constants.IlkFK], db)
+		ilkIDBlockOne, err := shared.GetOrCreateIlk(spotPoke.ForeignKeyValues[constants.IlkFK], db)
 		err = spotPokeRepo.Create([]shared.InsertionModel{spotPoke})
 		Expect(err).NotTo(HaveOccurred())
 		anotherSpotPokeLog := test_data.CreateTestLog(headerID, db)
 
 		anotherSpotPoke := generateSpotPoke(test_helpers.AnotherFakeIlk.Hex, 1, headerID, anotherSpotPokeLog.ID)
-		anotherIlkId, err := shared.GetOrCreateIlk(anotherSpotPoke.ForeignKeyValues[constants.IlkFK], db)
+		anotherIlkID, err := shared.GetOrCreateIlk(anotherSpotPoke.ForeignKeyValues[constants.IlkFK], db)
 		Expect(err).NotTo(HaveOccurred())
 		err = spotPokeRepo.Create([]shared.InsertionModel{anotherSpotPoke})
 		Expect(err).NotTo(HaveOccurred())
 
 		expectedValues := []test_helpers.PokeEvent{
 			{
-				IlkId: strconv.Itoa(int(ilkIdBlockOne)),
+				IlkID: strconv.Itoa(int(ilkIDBlockOne)),
 				Val:   spotPoke.ColumnValues["value"].(string),
 				Spot:  spotPoke.ColumnValues["spot"].(string),
 			},
 			{
-				IlkId: strconv.Itoa(int(anotherIlkId)),
+				IlkID: strconv.Itoa(int(anotherIlkID)),
 				Val:   anotherSpotPoke.ColumnValues["value"].(string),
 				Spot:  anotherSpotPoke.ColumnValues["spot"].(string),
 			},
@@ -128,7 +128,7 @@ var _ = Describe("all poke events query", func() {
 		Expect(err).NotTo(HaveOccurred())
 		spotPokeLog := test_data.CreateTestLog(headerID, db)
 		spotPoke := generateSpotPoke(test_helpers.FakeIlk.Hex, 1, headerID, spotPokeLog.ID)
-		ilkIdBlockOne, err := shared.GetOrCreateIlk(spotPoke.ForeignKeyValues[constants.IlkFK], db)
+		ilkIDBlockOne, err := shared.GetOrCreateIlk(spotPoke.ForeignKeyValues[constants.IlkFK], db)
 		err = spotPokeRepo.Create([]shared.InsertionModel{spotPoke})
 		Expect(err).NotTo(HaveOccurred())
 
@@ -145,7 +145,7 @@ var _ = Describe("all poke events query", func() {
 
 		expectedValues := []test_helpers.PokeEvent{
 			{
-				IlkId: strconv.Itoa(int(ilkIdBlockOne)),
+				IlkID: strconv.Itoa(int(ilkIDBlockOne)),
 				Val:   spotPoke.ColumnValues["value"].(string),
 				Spot:  spotPoke.ColumnValues["spot"].(string),
 			},
@@ -159,7 +159,7 @@ var _ = Describe("all poke events query", func() {
 
 	Describe("result pagination", func() {
 		var (
-			ilkId                       int64
+			ilkID                       int64
 			oldSpotPoke, recentSpotPoke shared.InsertionModel
 		)
 		BeforeEach(func() {
@@ -170,7 +170,7 @@ var _ = Describe("all poke events query", func() {
 
 			oldSpotPoke = generateSpotPoke(test_helpers.FakeIlk.Hex, 1, headerID, logID)
 			var ilkErr error
-			ilkId, ilkErr = shared.GetOrCreateIlk(oldSpotPoke.ForeignKeyValues[constants.IlkFK], db)
+			ilkID, ilkErr = shared.GetOrCreateIlk(oldSpotPoke.ForeignKeyValues[constants.IlkFK], db)
 			Expect(ilkErr).NotTo(HaveOccurred())
 			oldSpotPokeErr := spotPokeRepo.Create([]shared.InsertionModel{oldSpotPoke})
 			Expect(oldSpotPokeErr).NotTo(HaveOccurred())
@@ -193,7 +193,7 @@ var _ = Describe("all poke events query", func() {
 			Expect(selectErr).NotTo(HaveOccurred())
 
 			Expect(dbPokeEvents).To(ConsistOf(test_helpers.PokeEvent{
-				IlkId: strconv.FormatInt(ilkId, 10),
+				IlkID: strconv.FormatInt(ilkID, 10),
 				Val:   recentSpotPoke.ColumnValues["value"].(string),
 				Spot:  recentSpotPoke.ColumnValues["spot"].(string),
 			}))
@@ -208,7 +208,7 @@ var _ = Describe("all poke events query", func() {
 			Expect(selectErr).NotTo(HaveOccurred())
 
 			Expect(dbPokeEvents).To(ConsistOf(test_helpers.PokeEvent{
-				IlkId: strconv.FormatInt(ilkId, 10),
+				IlkID: strconv.FormatInt(ilkID, 10),
 				Val:   oldSpotPoke.ColumnValues["value"].(string),
 				Spot:  oldSpotPoke.ColumnValues["spot"].(string),
 			}))

@@ -33,16 +33,16 @@ var ErrNoFlips = errors.New("no flips exist in db")
 
 type IMakerStorageRepository interface {
 	GetDaiKeys() ([]string, error)
-	GetFlapBidIds(string) ([]string, error)
+	GetFlapBidIDs(string) ([]string, error)
 	GetGemKeys() ([]Urn, error)
 	GetIlks() ([]string, error)
 	GetVatSinKeys() ([]string, error)
 	GetVowSinKeys() ([]string, error)
 	GetUrns() ([]Urn, error)
-	GetCdpis() ([]string, error)
+	GetCDPIs() ([]string, error)
 	GetOwners() ([]string, error)
-	GetFlipBidIds(contractAddress string) ([]string, error)
-	GetFlopBidIds(contractAddress string) ([]string, error)
+	GetFlipBidIDs(contractAddress string) ([]string, error)
+	GetFlopBidIDs(contractAddress string) ([]string, error)
 	SetDB(db *postgres.DB)
 }
 
@@ -50,13 +50,13 @@ type MakerStorageRepository struct {
 	db *postgres.DB
 }
 
-func (repository *MakerStorageRepository) GetFlapBidIds(contractAddress string) ([]string, error) {
-	var bidIds []string
-	addressId, addressErr := repository.GetOrCreateAddress(contractAddress)
+func (repository *MakerStorageRepository) GetFlapBidIDs(contractAddress string) ([]string, error) {
+	var bidIDs []string
+	addressID, addressErr := repository.GetOrCreateAddress(contractAddress)
 	if addressErr != nil {
 		return []string{}, addressErr
 	}
-	err := repository.db.Select(&bidIds, `
+	err := repository.db.Select(&bidIDs, `
 		SELECT bid_id FROM maker.flap_kick WHERE address_id = $1
 		UNION
 		SELECT kicks FROM maker.flap_kicks WHERE address_id = $1
@@ -65,8 +65,8 @@ func (repository *MakerStorageRepository) GetFlapBidIds(contractAddress string) 
 		UNION
 		SELECT bid_id from maker.deal WHERE address_id = $1
 		UNION
-		SELECT bid_id from maker.yank WHERE address_id = $1`, addressId)
-	return bidIds, err
+		SELECT bid_id from maker.yank WHERE address_id = $1`, addressID)
+	return bidIDs, err
 }
 
 func (repository *MakerStorageRepository) GetDaiKeys() ([]string, error) {
@@ -167,19 +167,19 @@ func (repository *MakerStorageRepository) GetUrns() ([]Urn, error) {
 	return urns, err
 }
 
-func (repository *MakerStorageRepository) GetCdpis() ([]string, error) {
+func (repository *MakerStorageRepository) GetCDPIs() ([]string, error) {
 	nullValue := 0
-	var maxCdpi int
-	readErr := repository.db.Get(&maxCdpi, `
+	var maxCDPI int
+	readErr := repository.db.Get(&maxCDPI, `
 		SELECT COALESCE(MAX(cdpi), $1)
 		FROM maker.cdp_manager_cdpi`, nullValue)
 	if readErr != nil {
 		return nil, readErr
 	}
-	if maxCdpi == nullValue {
+	if maxCDPI == nullValue {
 		return []string{}, nil
 	}
-	return rangeIntsAsStrings(1, maxCdpi), readErr
+	return rangeIntsAsStrings(1, maxCDPI), readErr
 }
 
 func (repository *MakerStorageRepository) GetOwners() ([]string, error) {
@@ -190,9 +190,9 @@ func (repository *MakerStorageRepository) GetOwners() ([]string, error) {
 	return owners, err
 }
 
-func (repository *MakerStorageRepository) GetFlipBidIds(contractAddress string) ([]string, error) {
+func (repository *MakerStorageRepository) GetFlipBidIDs(contractAddress string) ([]string, error) {
 	var bidIds []string
-	addressId, addressErr := repository.GetOrCreateAddress(contractAddress)
+	addressID, addressErr := repository.GetOrCreateAddress(contractAddress)
 	if addressErr != nil {
 		return []string{}, addressErr
 	}
@@ -216,17 +216,17 @@ func (repository *MakerStorageRepository) GetFlipBidIds(contractAddress string) 
 		WHERE address_id = $1
 		UNION
 		SELECT DISTINCT kicks FROM maker.flip_kicks
-		WHERE address_id = $1`, addressId)
+		WHERE address_id = $1`, addressID)
 	return bidIds, err
 }
 
-func (repository *MakerStorageRepository) GetFlopBidIds(contractAddress string) ([]string, error) {
-	var bidIds []string
-	addressId, addressErr := repository.GetOrCreateAddress(contractAddress)
+func (repository *MakerStorageRepository) GetFlopBidIDs(contractAddress string) ([]string, error) {
+	var bidIDs []string
+	addressID, addressErr := repository.GetOrCreateAddress(contractAddress)
 	if addressErr != nil {
 		return []string{}, addressErr
 	}
-	err := repository.db.Select(&bidIds, `
+	err := repository.db.Select(&bidIDs, `
 		SELECT bid_id FROM maker.flop_kick
 		WHERE address_id = $1
 		UNION
@@ -240,8 +240,8 @@ func (repository *MakerStorageRepository) GetFlopBidIds(contractAddress string) 
 		WHERE address_id = $1
 		UNION
 		SELECT DISTINCT kicks FROM maker.flop_kicks
-		WHERE address_id = $1`, addressId)
-	return bidIds, err
+		WHERE address_id = $1`, addressID)
+	return bidIDs, err
 }
 
 func (repository *MakerStorageRepository) GetOrCreateAddress(contractAddress string) (int64, error) {

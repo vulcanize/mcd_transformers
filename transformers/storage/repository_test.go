@@ -89,7 +89,7 @@ var _ = Describe("Maker storage repository", func() {
 			insertFlapKick(1, bidId1, addressId, db)
 			insertFlapKick(2, bidId1, addressId, db)
 
-			bidIds, err := repository.GetFlapBidIds(address)
+			bidIds, err := repository.GetFlapBidIDs(address)
 			Expect(err).NotTo(HaveOccurred())
 			Expect(len(bidIds)).To(Equal(1))
 			Expect(bidIds[0]).To(Equal(bidId1))
@@ -104,7 +104,7 @@ var _ = Describe("Maker storage repository", func() {
 			insertYank(5, bidId5, addressId, db)
 			insertYank(6, duplicateBidId, addressId, db)
 
-			bidIds, err := repository.GetFlapBidIds(address)
+			bidIds, err := repository.GetFlapBidIDs(address)
 			Expect(err).NotTo(HaveOccurred())
 			Expect(len(bidIds)).To(Equal(5))
 			Expect(bidIds).To(ConsistOf(bidId1, bidId2, bidId3, bidId4, bidId5))
@@ -121,14 +121,14 @@ var _ = Describe("Maker storage repository", func() {
 			insertYank(5, bidId5, addressId, db)
 			insertYank(6, bidId6, anotherAddressId, db)
 
-			bidIds, err := repository.GetFlapBidIds(address)
+			bidIds, err := repository.GetFlapBidIDs(address)
 			Expect(err).NotTo(HaveOccurred())
 			Expect(len(bidIds)).To(Equal(5))
 			Expect(bidIds).To(ConsistOf(bidId1, bidId2, bidId3, bidId4, bidId5))
 		})
 
 		It("does not return error if no matching rows", func() {
-			bidIds, err := repository.GetFlapBidIds(fakes.FakeAddress.Hex())
+			bidIds, err := repository.GetFlapBidIDs(fakes.FakeAddress.Hex())
 
 			Expect(err).NotTo(HaveOccurred())
 			Expect(len(bidIds)).To(BeZero())
@@ -509,7 +509,7 @@ var _ = Describe("Maker storage repository", func() {
 			insertFlipKick(1, bidId1, addressId, db)
 			insertFlipKick(2, bidId1, addressId, db)
 
-			bidIds, err := repository.GetFlipBidIds(address)
+			bidIds, err := repository.GetFlipBidIDs(address)
 			Expect(err).NotTo(HaveOccurred())
 			Expect(len(bidIds)).To(Equal(1))
 			Expect(bidIds[0]).To(Equal(bidId1))
@@ -526,7 +526,7 @@ var _ = Describe("Maker storage repository", func() {
 			insertYank(7, bidId7, addressId, db)
 			insertYank(8, duplicateBidId, addressId, db)
 
-			bidIds, err := repository.GetFlipBidIds(address)
+			bidIds, err := repository.GetFlipBidIDs(address)
 			Expect(err).NotTo(HaveOccurred())
 			Expect(len(bidIds)).To(Equal(7))
 			Expect(bidIds).To(ConsistOf(bidId1, bidId2, bidId3, bidId4, bidId5, bidId6, bidId7))
@@ -557,7 +557,7 @@ var _ = Describe("Maker storage repository", func() {
 			insertFlopKick(1, bidId1, addressId, db)
 			insertFlopKick(2, bidId1, addressId, db)
 
-			bidIds, err := repository.GetFlopBidIds(address)
+			bidIds, err := repository.GetFlopBidIDs(address)
 			Expect(err).NotTo(HaveOccurred())
 			Expect(len(bidIds)).To(Equal(1))
 			Expect(bidIds[0]).To(Equal(bidId1))
@@ -572,7 +572,7 @@ var _ = Describe("Maker storage repository", func() {
 			insertYank(5, bidId5, addressId, db)
 			insertYank(6, duplicateBidId, addressId, db)
 
-			bidIds, err := repository.GetFlopBidIds(address)
+			bidIds, err := repository.GetFlopBidIDs(address)
 			Expect(err).NotTo(HaveOccurred())
 			Expect(len(bidIds)).To(Equal(5))
 			Expect(bidIds).To(ConsistOf(bidId1, bidId2, bidId3, bidId4, bidId5))
@@ -589,14 +589,14 @@ var _ = Describe("Maker storage repository", func() {
 			insertYank(5, bidId5, addressId, db)
 			insertYank(6, bidId6, anotherAddressId, db)
 
-			bidIds, err := repository.GetFlopBidIds(address)
+			bidIds, err := repository.GetFlopBidIDs(address)
 			Expect(err).NotTo(HaveOccurred())
 			Expect(len(bidIds)).To(Equal(5))
 			Expect(bidIds).To(ConsistOf(bidId1, bidId2, bidId3, bidId4, bidId5))
 		})
 
 		It("does not return error if no matching rows", func() {
-			bidIds, err := repository.GetFlopBidIds(fakes.FakeAddress.Hex())
+			bidIds, err := repository.GetFlopBidIDs(fakes.FakeAddress.Hex())
 
 			Expect(err).NotTo(HaveOccurred())
 			Expect(len(bidIds)).To(BeZero())
@@ -609,7 +609,7 @@ var _ = Describe("Maker storage repository", func() {
 			insertCdpManagerCdpi(int64(rand.Int()), 5, db)
 			insertCdpManagerCdpi(int64(rand.Int()), 3, db)
 
-			cdpis, err := repository.GetCdpis()
+			cdpis, err := repository.GetCDPIs()
 			Expect(err).NotTo(HaveOccurred())
 
 			Expect(len(cdpis)).To(Equal(5))
@@ -617,7 +617,7 @@ var _ = Describe("Maker storage repository", func() {
 		})
 
 		It("returns empty slice if table is empty", func() {
-			cdpis, err := repository.GetCdpis()
+			cdpis, err := repository.GetCDPIs()
 			Expect(err).NotTo(HaveOccurred())
 
 			Expect(cdpis).To(BeEmpty())

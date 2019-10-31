@@ -35,8 +35,8 @@ type DoubleMappingRes struct {
 type FlapRes struct {
 	BlockMetadata
 	ContractAddress string `db:"contract_address"`
-	Id              string
-	BidId           string `db:"bid_id"`
+	ID              string
+	BidID           string `db:"bid_id"`
 	Guy             string
 	Tic             string
 	End             string
@@ -47,8 +47,8 @@ type FlapRes struct {
 type FlopRes struct {
 	BlockMetadata
 	ContractAddress string `db:"contract_address"`
-	Id              string
-	BidId           string `db:"bid_id"`
+	ID              string
+	BidID           string `db:"bid_id"`
 	Guy             string
 	Tic             string
 	End             string

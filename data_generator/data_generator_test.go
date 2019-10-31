@@ -28,14 +28,14 @@ var _ = Describe("data generator", func() {
 
 		// Runs twice with the same seed, dumps the DB data, repeats and compares results
 		It("is repeatable", func() {
-			resetIdColumnSequences(db)
+			resetIDColumnSequences(db)
 			runErr := state.Run(30)
 			Expect(runErr).NotTo(HaveOccurred())
 			state1 := dumpTables()
 
 			// Run two
 			test_config.CleanTestDB(db)
-			resetIdColumnSequences(db)
+			resetIDColumnSequences(db)
 			rand.Seed(int64(seed))
 			newState := NewGenerator(db)
 			runErr = newState.Run(30)
@@ -64,7 +64,7 @@ func dumpTables() []byte {
 
 // Grabs all user sequences from the DB and restarts them.
 // This allows the id columns to match between subsequent runs.
-func resetIdColumnSequences(db *postgres.DB) {
+func resetIDColumnSequences(db *postgres.DB) {
 	var sequences []string
 	seqErr := db.Select(&sequences,
 		`SELECT schemaname || '.' || relname from pg_statio_user_sequences

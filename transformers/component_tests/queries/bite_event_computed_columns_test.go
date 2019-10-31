@@ -2,24 +2,22 @@ package queries
 
 import (
 	"database/sql"
-	"github.com/vulcanize/vulcanizedb/libraries/shared/factories/event"
-	"math/rand"
-	"strconv"
-
 	"github.com/ethereum/go-ethereum/core/types"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/vulcanize/vulcanizedb/pkg/core"
-	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
-	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres/repositories"
-	"github.com/vulcanize/vulcanizedb/pkg/fakes"
-
 	"github.com/vulcanize/mcd_transformers/test_config"
 	"github.com/vulcanize/mcd_transformers/transformers/component_tests/queries/test_helpers"
 	"github.com/vulcanize/mcd_transformers/transformers/events/bite"
 	"github.com/vulcanize/mcd_transformers/transformers/events/flip_kick"
 	"github.com/vulcanize/mcd_transformers/transformers/storage/vat"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/factories/event"
+	"github.com/vulcanize/vulcanizedb/pkg/core"
+	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
+	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres/repositories"
+	"github.com/vulcanize/vulcanizedb/pkg/fakes"
+	"math/rand"
+	"strconv"
 )
 
 var _ = Describe("Bite event computed columns", func() {
@@ -31,7 +29,7 @@ var _ = Describe("Bite event computed columns", func() {
 		biteGethLog      types.Log
 		biteEvent        event.InsertionModel
 		biteRepo         bite.Repository
-		headerId         int64
+		headerID         int64
 		vatRepository    vat.VatStorageRepository
 		headerRepository repositories.HeaderRepository
 	)
@@ -45,15 +43,15 @@ var _ = Describe("Bite event computed columns", func() {
 		fakeBlock = rand.Int()
 		fakeHeader = fakes.GetFakeHeader(int64(fakeBlock))
 		var insertHeaderErr error
-		headerId, insertHeaderErr = headerRepository.CreateOrUpdateHeader(fakeHeader)
+		headerID, insertHeaderErr = headerRepository.CreateOrUpdateHeader(fakeHeader)
 		Expect(insertHeaderErr).NotTo(HaveOccurred())
 
-		biteHeaderSyncLog := test_data.CreateTestLog(headerId, db)
+		biteHeaderSyncLog := test_data.CreateTestLog(headerID, db)
 		biteGethLog = biteHeaderSyncLog.Log
 
 		biteRepo = bite.Repository{}
 		biteRepo.SetDB(db)
-		biteEvent = generateBite(test_helpers.FakeIlk.Hex, fakeGuy, headerId, biteHeaderSyncLog.ID, db)
+		biteEvent = generateBite(test_helpers.FakeIlk.Hex, fakeGuy, headerID, biteHeaderSyncLog.ID, db)
 		insertBiteErr := biteRepo.Create([]event.InsertionModel{biteEvent})
 		Expect(insertBiteErr).NotTo(HaveOccurred())
 	})
@@ -109,28 +107,28 @@ var _ = Describe("Bite event computed columns", func() {
 
 	Describe("bite_event_bid", func() {
 		It("returns flip_state for a bite_event", func() {
-			bidId, convErr := strconv.Atoi(biteEvent.ColumnValues["bid_id"].(string))
+			bidID, convErr := strconv.Atoi(biteEvent.ColumnValues["bid_id"].(string))
 			Expect(convErr).NotTo(HaveOccurred())
 			address := fakes.FakeAddress
 			dealt := false
 			flipKickRepo := flip_kick.FlipKickRepository{}
 			flipKickRepo.SetDB(db)
-			ilkId, urnId, ctxErr := test_helpers.SetUpFlipBidContext(
+			ilkID, urnID, ctxErr := test_helpers.SetUpFlipBidContext(
 				test_helpers.FlipBidContextInput{
 					DealCreationInput: test_helpers.DealCreationInput{
 						Db:              db,
-						BidId:           bidId,
+						BidID:           bidID,
 						ContractAddress: address.Hex(),
 					},
 					Dealt:            dealt,
 					IlkHex:           test_helpers.FakeIlk.Hex,
 					UrnGuy:           test_data.FakeUrn,
 					FlipKickRepo:     flipKickRepo,
-					FlipKickHeaderId: headerId,
+					FlipKickHeaderID: headerID,
 				})
 			Expect(ctxErr).NotTo(HaveOccurred())
-			flipValues := test_helpers.GetFlipStorageValues(0, test_helpers.FakeIlk.Hex, bidId)
-			flipMetadatas := test_helpers.GetFlipMetadatas(strconv.Itoa(bidId))
+			flipValues := test_helpers.GetFlipStorageValues(0, test_helpers.FakeIlk.Hex, bidID)
+			flipMetadatas := test_helpers.GetFlipMetadatas(strconv.Itoa(bidID))
 			test_helpers.CreateFlip(db, fakeHeader, flipValues, flipMetadatas, address.Hex())
 
 			var actualBid test_helpers.FlipBid
@@ -140,7 +138,7 @@ var _ = Describe("Bite event computed columns", func() {
 				test_helpers.FakeIlk.Identifier)
 			Expect(err).NotTo(HaveOccurred())
 
-			expectedBid := test_helpers.FlipBidFromValues(strconv.Itoa(bidId), strconv.FormatInt(ilkId, 10), strconv.FormatInt(urnId, 10),
+			expectedBid := test_helpers.FlipBidFromValues(strconv.Itoa(bidID), strconv.FormatInt(ilkID, 10), strconv.FormatInt(urnID, 10),
 				strconv.FormatBool(dealt), fakeHeader.Timestamp, fakeHeader.Timestamp, flipValues)
 			Expect(actualBid).To(Equal(expectedBid))
 		})
@@ -158,7 +156,7 @@ var _ = Describe("Bite event computed columns", func() {
 			}
 
 			_, err := db.Exec(`INSERT INTO header_sync_transactions (header_id, hash, tx_from, tx_index, tx_to)
-		        VALUES ($1, $2, $3, $4, $5)`, headerId, expectedTx.TransactionHash, expectedTx.TxFrom,
+		        VALUES ($1, $2, $3, $4, $5)`, headerID, expectedTx.TransactionHash, expectedTx.TxFrom,
 				expectedTx.TransactionIndex, expectedTx.TxTo)
 			Expect(err).NotTo(HaveOccurred())
 
@@ -186,7 +184,7 @@ var _ = Describe("Bite event computed columns", func() {
 			}
 
 			_, insertErr := db.Exec(`INSERT INTO header_sync_transactions (header_id, hash, tx_from, tx_index, tx_to)
-				VALUES ($1, $2, $3, $4, $5)`, headerId, wrongTx.TransactionHash, wrongTx.TxFrom,
+				VALUES ($1, $2, $3, $4, $5)`, headerID, wrongTx.TransactionHash, wrongTx.TxFrom,
 				wrongTx.TransactionIndex, wrongTx.TxTo)
 			Expect(insertErr).NotTo(HaveOccurred())
 

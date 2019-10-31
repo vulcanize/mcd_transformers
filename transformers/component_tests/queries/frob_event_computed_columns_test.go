@@ -46,7 +46,7 @@ var _ = Describe("Frob event computed columns", func() {
 		frobGethLog      types.Log
 		frobRepo         vat_frob.VatFrobRepository
 		frobEvent        shared.InsertionModel
-		headerId         int64
+		headerID         int64
 		vatRepository    vat.VatStorageRepository
 		headerRepository repositories.HeaderRepository
 	)
@@ -59,10 +59,10 @@ var _ = Describe("Frob event computed columns", func() {
 		fakeBlock = rand.Int()
 		fakeHeader = fakes.GetFakeHeader(int64(fakeBlock))
 		var insertHeaderErr error
-		headerId, insertHeaderErr = headerRepository.CreateOrUpdateHeader(fakeHeader)
+		headerID, insertHeaderErr = headerRepository.CreateOrUpdateHeader(fakeHeader)
 		Expect(insertHeaderErr).NotTo(HaveOccurred())
 
-		frobHeaderSyncLog := test_data.CreateTestLog(headerId, db)
+		frobHeaderSyncLog := test_data.CreateTestLog(headerID, db)
 		frobGethLog = frobHeaderSyncLog.Log
 
 		frobRepo = vat_frob.VatFrobRepository{}
@@ -70,7 +70,7 @@ var _ = Describe("Frob event computed columns", func() {
 		frobEvent = test_data.VatFrobModelWithPositiveDart()
 		frobEvent.ForeignKeyValues[constants.UrnFK] = fakeGuy
 		frobEvent.ForeignKeyValues[constants.IlkFK] = test_helpers.FakeIlk.Hex
-		frobEvent.ColumnValues[constants.HeaderFK] = headerId
+		frobEvent.ColumnValues[constants.HeaderFK] = headerID
 		frobEvent.ColumnValues[constants.LogFK] = frobHeaderSyncLog.ID
 		insertFrobErr := frobRepo.Create([]shared.InsertionModel{frobEvent})
 		Expect(insertFrobErr).NotTo(HaveOccurred())
@@ -140,7 +140,7 @@ var _ = Describe("Frob event computed columns", func() {
 			}
 
 			_, insertTxErr := db.Exec(`INSERT INTO header_sync_transactions (header_id, hash, tx_from, tx_index, tx_to)
-				VALUES ($1, $2, $3, $4, $5)`, headerId, expectedTx.TransactionHash, expectedTx.TxFrom,
+				VALUES ($1, $2, $3, $4, $5)`, headerID, expectedTx.TransactionHash, expectedTx.TxFrom,
 				expectedTx.TransactionIndex, expectedTx.TxTo)
 			Expect(insertTxErr).NotTo(HaveOccurred())
 
@@ -167,7 +167,7 @@ var _ = Describe("Frob event computed columns", func() {
 			}
 
 			_, insertTxErr := db.Exec(`INSERT INTO header_sync_transactions (header_id, hash, tx_from, tx_index, tx_to)
-				VALUES ($1, $2, $3, $4, $5)`, headerId, wrongTx.TransactionHash, wrongTx.TxFrom,
+				VALUES ($1, $2, $3, $4, $5)`, headerID, wrongTx.TransactionHash, wrongTx.TxFrom,
 				wrongTx.TransactionIndex, wrongTx.TxTo)
 			Expect(insertTxErr).NotTo(HaveOccurred())
 

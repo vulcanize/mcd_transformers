@@ -80,15 +80,15 @@ var _ = Describe("Frobs query", func() {
 		})
 
 		It("returns matching frobs from multiple blocks", func() {
-			headerOneId, headerOneBlockNumber := insertHeader(rand.Int63(), headerRepo)
-			vatFrobLog := test_data.CreateTestLog(headerOneId, db)
-			frobBlockOne := getFakeVatFrobEvent(fakeIlkHex, fakeUrn, headerOneId, vatFrobLog.ID)
+			headerOneID, headerOneBlockNumber := insertHeader(rand.Int63(), headerRepo)
+			vatFrobLog := test_data.CreateTestLog(headerOneID, db)
+			frobBlockOne := getFakeVatFrobEvent(fakeIlkHex, fakeUrn, headerOneID, vatFrobLog.ID)
 			insertFrobErr := frobRepo.Create([]shared.InsertionModel{frobBlockOne})
 			Expect(insertFrobErr).NotTo(HaveOccurred())
 
-			headerTwoId, _ := insertHeader(headerOneBlockNumber+1, headerRepo)
-			vatFrobLogTwo := test_data.CreateTestLog(headerTwoId, db)
-			frobBlockTwo := getFakeVatFrobEvent(fakeIlkHex, fakeUrn, headerTwoId, vatFrobLogTwo.ID)
+			headerTwoID, _ := insertHeader(headerOneBlockNumber+1, headerRepo)
+			vatFrobLogTwo := test_data.CreateTestLog(headerTwoID, db)
+			frobBlockTwo := getFakeVatFrobEvent(fakeIlkHex, fakeUrn, headerTwoID, vatFrobLogTwo.ID)
 			insertFrobTwoErr := frobRepo.Create([]shared.InsertionModel{frobBlockTwo})
 			Expect(insertFrobTwoErr).NotTo(HaveOccurred())
 
@@ -123,15 +123,15 @@ var _ = Describe("Frobs query", func() {
 			)
 
 			BeforeEach(func() {
-				headerOneId, headerOneBlockNumber := insertHeader(rand.Int63(), headerRepo)
-				logId := test_data.CreateTestLog(headerOneId, db).ID
-				frobBlockOne = getFakeVatFrobEvent(fakeIlkHex, fakeUrn, headerOneId, logId)
+				headerOneID, headerOneBlockNumber := insertHeader(rand.Int63(), headerRepo)
+				logID := test_data.CreateTestLog(headerOneID, db).ID
+				frobBlockOne = getFakeVatFrobEvent(fakeIlkHex, fakeUrn, headerOneID, logID)
 				insertFrobErr := frobRepo.Create([]shared.InsertionModel{frobBlockOne})
 				Expect(insertFrobErr).NotTo(HaveOccurred())
 
-				headerTwoId, _ := insertHeader(headerOneBlockNumber+1, headerRepo)
-				logTwoId := test_data.CreateTestLog(headerTwoId, db).ID
-				frobBlockTwo = getFakeVatFrobEvent(fakeIlkHex, fakeUrn, headerTwoId, logTwoId)
+				headerTwoID, _ := insertHeader(headerOneBlockNumber+1, headerRepo)
+				logTwoID := test_data.CreateTestLog(headerTwoID, db).ID
+				frobBlockTwo = getFakeVatFrobEvent(fakeIlkHex, fakeUrn, headerTwoID, logTwoID)
 				insertFrobTwoErr := frobRepo.Create([]shared.InsertionModel{frobBlockTwo})
 				Expect(insertFrobTwoErr).NotTo(HaveOccurred())
 
@@ -204,17 +204,17 @@ var _ = Describe("Frobs query", func() {
 
 		It("provides most recent rate for each frob across blocks", func() {
 			blockNumber := rand.Int63()
-			headerOneId, headerOneBlockNumber := insertHeader(blockNumber, headerRepo)
-			vatFrobLog := test_data.CreateTestLog(headerOneId, db)
+			headerOneID, headerOneBlockNumber := insertHeader(blockNumber, headerRepo)
+			vatFrobLog := test_data.CreateTestLog(headerOneID, db)
 			ilkRateBlockOne := insertIlkRate(fakeIlkHex, headerOneBlockNumber, db)
-			frobBlockOne := getFakeVatFrobEvent(fakeIlkHex, fakeUrn, headerOneId, vatFrobLog.ID)
+			frobBlockOne := getFakeVatFrobEvent(fakeIlkHex, fakeUrn, headerOneID, vatFrobLog.ID)
 			insertFrobOneErr := frobRepo.Create([]shared.InsertionModel{frobBlockOne})
 			Expect(insertFrobOneErr).NotTo(HaveOccurred())
 
-			headerTwoId, headerTwoBlockNumber := insertHeader(blockNumber+1, headerRepo)
-			vatFrobLogTwo := test_data.CreateTestLog(headerTwoId, db)
+			headerTwoID, headerTwoBlockNumber := insertHeader(blockNumber+1, headerRepo)
+			vatFrobLogTwo := test_data.CreateTestLog(headerTwoID, db)
 			ilkRateBlockTwo := insertIlkRate(fakeIlkHex, headerTwoBlockNumber, db)
-			frobBlockTwo := getFakeVatFrobEvent(fakeIlkHex, fakeUrn, headerTwoId, vatFrobLogTwo.ID)
+			frobBlockTwo := getFakeVatFrobEvent(fakeIlkHex, fakeUrn, headerTwoID, vatFrobLogTwo.ID)
 			insertFrobTwoErr := frobRepo.Create([]shared.InsertionModel{frobBlockTwo})
 			Expect(insertFrobTwoErr).NotTo(HaveOccurred())
 
@@ -320,18 +320,18 @@ var _ = Describe("Frobs query", func() {
 			)
 
 			BeforeEach(func() {
-				var headerOneId int64
-				headerOneId, blockOne = insertHeader(rand.Int63(), headerRepo)
-				logId := test_data.CreateTestLog(headerOneId, db).ID
-				frobOne = getFakeVatFrobEvent(fakeIlkHex, fakeUrn, headerOneId, logId)
+				var headerOneID int64
+				headerOneID, blockOne = insertHeader(rand.Int63(), headerRepo)
+				logID := test_data.CreateTestLog(headerOneID, db).ID
+				frobOne = getFakeVatFrobEvent(fakeIlkHex, fakeUrn, headerOneID, logID)
 				insertFrobOneErr := frobRepo.Create([]shared.InsertionModel{frobOne})
 				Expect(insertFrobOneErr).NotTo(HaveOccurred())
 
 				anotherFakeUrn = test_data.RandomString(40)
-				var headerTwoId int64
-				headerTwoId, blockTwo = insertHeader(blockOne+1, headerRepo)
-				logTwoId := test_data.CreateTestLog(headerTwoId, db).ID
-				frobTwo = getFakeVatFrobEvent(fakeIlkHex, anotherFakeUrn, headerTwoId, logTwoId)
+				var headerTwoID int64
+				headerTwoID, blockTwo = insertHeader(blockOne+1, headerRepo)
+				logTwoID := test_data.CreateTestLog(headerTwoID, db).ID
+				frobTwo = getFakeVatFrobEvent(fakeIlkHex, anotherFakeUrn, headerTwoID, logTwoID)
 				insertFrobTwoErr := frobRepo.Create([]shared.InsertionModel{frobTwo})
 				Expect(insertFrobTwoErr).NotTo(HaveOccurred())
 			})

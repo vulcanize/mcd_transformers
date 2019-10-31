@@ -24,12 +24,12 @@ var _ = Describe("flap_bid_event computed columns", func() {
 		blockNumber     = rand.Int()
 		header          core.Header
 		flapKickLog     core.HeaderSyncLog
-		headerId        int64
+		headerID        int64
 		headerRepo      repositories.HeaderRepository
 		flapKickRepo    flap_kick.FlapKickRepository
 		flapKickEvent   shared.InsertionModel
 		contractAddress = "FlapAddress"
-		fakeBidId       = rand.Int()
+		fakeBidID       = rand.Int()
 	)
 
 	BeforeEach(func() {
@@ -39,17 +39,17 @@ var _ = Describe("flap_bid_event computed columns", func() {
 		headerRepo = repositories.NewHeaderRepository(db)
 		header = fakes.GetFakeHeader(int64(blockNumber))
 		var insertHeaderErr error
-		headerId, insertHeaderErr = headerRepo.CreateOrUpdateHeader(header)
+		headerID, insertHeaderErr = headerRepo.CreateOrUpdateHeader(header)
 		Expect(insertHeaderErr).NotTo(HaveOccurred())
-		flapKickLog = test_data.CreateTestLog(headerId, db)
+		flapKickLog = test_data.CreateTestLog(headerID, db)
 
 		flapKickRepo = flap_kick.FlapKickRepository{}
 		flapKickRepo.SetDB(db)
 
 		flapKickEvent = test_data.FlapKickModel()
-		flapKickEvent.ColumnValues["bid_id"] = strconv.Itoa(fakeBidId)
+		flapKickEvent.ColumnValues["bid_id"] = strconv.Itoa(fakeBidID)
 		flapKickEvent.ForeignKeyValues[constants.AddressFK] = contractAddress
-		flapKickEvent.ColumnValues[constants.HeaderFK] = headerId
+		flapKickEvent.ColumnValues[constants.HeaderFK] = headerID
 		flapKickEvent.ColumnValues[constants.LogFK] = flapKickLog.ID
 		insertFlapKickErr := flapKickRepo.Create([]shared.InsertionModel{flapKickEvent})
 		Expect(insertFlapKickErr).NotTo(HaveOccurred())
@@ -62,10 +62,10 @@ var _ = Describe("flap_bid_event computed columns", func() {
 
 	Describe("flap_bid_event_bid", func() {
 		It("returns flap_bid for a flap_bid_event", func() {
-			flapStorageValues := test_helpers.GetFlapStorageValues(1, fakeBidId)
-			test_helpers.CreateFlap(db, header, flapStorageValues, test_helpers.GetFlapMetadatas(strconv.Itoa(fakeBidId)), contractAddress)
+			flapStorageValues := test_helpers.GetFlapStorageValues(1, fakeBidID)
+			test_helpers.CreateFlap(db, header, flapStorageValues, test_helpers.GetFlapMetadatas(strconv.Itoa(fakeBidID)), contractAddress)
 
-			expectedBid := test_helpers.FlapBidFromValues(strconv.Itoa(fakeBidId), "false", header.Timestamp, header.Timestamp, flapStorageValues)
+			expectedBid := test_helpers.FlapBidFromValues(strconv.Itoa(fakeBidID), "false", header.Timestamp, header.Timestamp, flapStorageValues)
 
 			var actualBid test_helpers.FlapBid
 			err := db.Get(&actualBid, `
@@ -92,7 +92,7 @@ var _ = Describe("flap_bid_event computed columns", func() {
 			}
 
 			_, insertErr := db.Exec(`INSERT INTO header_sync_transactions (header_id, hash, tx_from, tx_index, tx_to)
-				VALUES ($1, $2, $3, $4, $5)`, headerId, expectedTx.TransactionHash, expectedTx.TxFrom,
+				VALUES ($1, $2, $3, $4, $5)`, headerID, expectedTx.TransactionHash, expectedTx.TxFrom,
 				expectedTx.TransactionIndex, expectedTx.TxTo)
 			Expect(insertErr).NotTo(HaveOccurred())
 
@@ -120,7 +120,7 @@ var _ = Describe("flap_bid_event computed columns", func() {
 			}
 
 			_, insertErr := db.Exec(`INSERT INTO header_sync_transactions (header_id, hash, tx_from, tx_index, tx_to)
-				VALUES ($1, $2, $3, $4, $5)`, headerId, wrongTx.TransactionHash, wrongTx.TxFrom,
+				VALUES ($1, $2, $3, $4, $5)`, headerID, wrongTx.TransactionHash, wrongTx.TxFrom,
 				wrongTx.TransactionIndex, wrongTx.TxTo)
 			Expect(insertErr).NotTo(HaveOccurred())
 

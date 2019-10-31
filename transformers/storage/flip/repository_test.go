@@ -114,9 +114,9 @@ var _ = Describe("Flip storage repository", func() {
 			shared_behaviors.SharedStorageRepositoryVariableBehaviors(&inputs)
 		})
 
-		Describe("Ttl and Tau", func() {
+		Describe("TTL and Tau", func() {
 			packedNames := make(map[int]string)
-			packedNames[0] = storage.Ttl
+			packedNames[0] = storage.TTL
 			packedNames[1] = storage.Tau
 			var ttlAndTauMetadata = utils.StorageValueMetadata{
 				Name:        storage.Packed,
@@ -194,18 +194,18 @@ var _ = Describe("Flip storage repository", func() {
 				Type: utils.Uint256,
 			}
 			err := repo.Create(fakeBlockNumber, fakeBlockHash, badMetadata, "")
-			Expect(err).To(MatchError(utils.ErrMetadataMalformed{MissingData: constants.BidId}))
+			Expect(err).To(MatchError(utils.ErrMetadataMalformed{MissingData: constants.BidID}))
 		})
 
 		Describe("BidBid", func() {
 			fakeBidValue := strconv.Itoa(rand.Int())
 			bidBidMetadata := utils.StorageValueMetadata{
 				Name: storage.BidBid,
-				Keys: map[utils.Key]string{constants.BidId: fakeBidId},
+				Keys: map[utils.Key]string{constants.BidID: fakeBidId},
 				Type: utils.Uint256,
 			}
 			inputs := shared_behaviors.StorageVariableBehaviorInputs{
-				KeyFieldName:     string(constants.BidId),
+				KeyFieldName:     string(constants.BidID),
 				ValueFieldName:   "bid",
 				Value:            fakeBidValue,
 				Key:              fakeBidId,
@@ -222,11 +222,11 @@ var _ = Describe("Flip storage repository", func() {
 			fakeLotValue := strconv.Itoa(rand.Int())
 			bidLotMetadata := utils.StorageValueMetadata{
 				Name: storage.BidLot,
-				Keys: map[utils.Key]string{constants.BidId: fakeBidId},
+				Keys: map[utils.Key]string{constants.BidID: fakeBidId},
 				Type: utils.Uint256,
 			}
 			inputs := shared_behaviors.StorageVariableBehaviorInputs{
-				KeyFieldName:     string(constants.BidId),
+				KeyFieldName:     string(constants.BidID),
 				ValueFieldName:   "lot",
 				Value:            fakeLotValue,
 				Key:              fakeBidId,
@@ -246,7 +246,7 @@ var _ = Describe("Flip storage repository", func() {
 			packedNames[2] = storage.BidEnd
 			var bidGuyTicEndMetadata = utils.StorageValueMetadata{
 				Name:        storage.Packed,
-				Keys:        map[utils.Key]string{constants.BidId: fakeBidId},
+				Keys:        map[utils.Key]string{constants.BidID: fakeBidId},
 				PackedNames: packedNames,
 			}
 
@@ -297,11 +297,11 @@ var _ = Describe("Flip storage repository", func() {
 		Describe("BidUsr", func() {
 			bidUsrMetadata := utils.StorageValueMetadata{
 				Name: storage.BidUsr,
-				Keys: map[utils.Key]string{constants.BidId: fakeBidId},
+				Keys: map[utils.Key]string{constants.BidID: fakeBidId},
 				Type: utils.Address,
 			}
 			inputs := shared_behaviors.StorageVariableBehaviorInputs{
-				KeyFieldName:     string(constants.BidId),
+				KeyFieldName:     string(constants.BidID),
 				ValueFieldName:   "usr",
 				Value:            FakeAddress,
 				Key:              fakeBidId,
@@ -317,11 +317,11 @@ var _ = Describe("Flip storage repository", func() {
 		Describe("BidGal", func() {
 			bidGalMetadata := utils.StorageValueMetadata{
 				Name: storage.BidGal,
-				Keys: map[utils.Key]string{constants.BidId: fakeBidId},
+				Keys: map[utils.Key]string{constants.BidID: fakeBidId},
 				Type: utils.Address,
 			}
 			inputs := shared_behaviors.StorageVariableBehaviorInputs{
-				KeyFieldName:     string(constants.BidId),
+				KeyFieldName:     string(constants.BidID),
 				ValueFieldName:   "gal",
 				Value:            FakeAddress,
 				Key:              fakeBidId,
@@ -338,11 +338,11 @@ var _ = Describe("Flip storage repository", func() {
 			fakeTabValue := strconv.Itoa(rand.Int())
 			bidTabMetadata := utils.StorageValueMetadata{
 				Name: storage.BidTab,
-				Keys: map[utils.Key]string{constants.BidId: fakeBidId},
+				Keys: map[utils.Key]string{constants.BidID: fakeBidId},
 				Type: utils.Uint256,
 			}
 			inputs := shared_behaviors.StorageVariableBehaviorInputs{
-				KeyFieldName:     string(constants.BidId),
+				KeyFieldName:     string(constants.BidID),
 				ValueFieldName:   "tab",
 				Value:            fakeTabValue,
 				Key:              fakeBidId,

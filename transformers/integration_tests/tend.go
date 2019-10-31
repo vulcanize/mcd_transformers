@@ -91,13 +91,13 @@ var _ = XDescribe("Tend EventTransformer", func() {
 
 		Expect(len(dbResult)).To(Equal(1))
 		Expect(dbResult[0].Bid).To(Equal("193362866030587"))
-		Expect(dbResult[0].BidId).To(Equal("27"))
+		Expect(dbResult[0].BidID).To(Equal("27"))
 		Expect(dbResult[0].Lot).To(Equal("100000000000000000000000000000000000000000000"))
 	})
 })
 
 type tendModel struct {
-	BidId string `db:"bid_id"`
+	BidID string `db:"bid_id"`
 	Lot   string
 	Bid   string
 }

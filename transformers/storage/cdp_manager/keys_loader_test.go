@@ -85,7 +85,7 @@ var _ = Describe("CDP Manager storage keys loader", func() {
 
 					Expect(mappings[urnsKey]).To(Equal(utils.StorageValueMetadata{
 						Name: cdp_manager.Urns,
-						Keys: map[utils.Key]string{constants.Cdpi: cdpi},
+						Keys: map[utils.Key]string{constants.CDPI: cdpi},
 						Type: utils.Address,
 					}))
 				})
@@ -97,7 +97,7 @@ var _ = Describe("CDP Manager storage keys loader", func() {
 					It("gets prev metadata", func() {
 						Expect(mappings[listPrevKey]).To(Equal(utils.StorageValueMetadata{
 							Name: cdp_manager.ListPrev,
-							Keys: map[utils.Key]string{constants.Cdpi: cdpi},
+							Keys: map[utils.Key]string{constants.CDPI: cdpi},
 							Type: utils.Uint256,
 						}))
 					})
@@ -107,7 +107,7 @@ var _ = Describe("CDP Manager storage keys loader", func() {
 
 						Expect(mappings[listNextKey]).To(Equal(utils.StorageValueMetadata{
 							Name: cdp_manager.ListNext,
-							Keys: map[utils.Key]string{constants.Cdpi: cdpi},
+							Keys: map[utils.Key]string{constants.CDPI: cdpi},
 							Type: utils.Uint256,
 						}))
 					})
@@ -118,7 +118,7 @@ var _ = Describe("CDP Manager storage keys loader", func() {
 
 					Expect(mappings[ownsKey]).To(Equal(utils.StorageValueMetadata{
 						Name: cdp_manager.Owns,
-						Keys: map[utils.Key]string{constants.Cdpi: cdpi},
+						Keys: map[utils.Key]string{constants.CDPI: cdpi},
 						Type: utils.Address,
 					}))
 				})
@@ -128,7 +128,7 @@ var _ = Describe("CDP Manager storage keys loader", func() {
 
 					Expect(mappings[ilksKey]).To(Equal(utils.StorageValueMetadata{
 						Name: cdp_manager.Ilks,
-						Keys: map[utils.Key]string{constants.Cdpi: cdpi},
+						Keys: map[utils.Key]string{constants.CDPI: cdpi},
 						Type: utils.Bytes32,
 					}))
 				})

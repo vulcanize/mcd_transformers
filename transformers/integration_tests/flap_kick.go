@@ -85,13 +85,13 @@ var _ = XDescribe("FlapKick Transformer", func() {
 
 		Expect(len(dbResult)).To(Equal(1))
 		Expect(dbResult[0].Bid).To(Equal("0"))
-		Expect(dbResult[0].BidId).To(Equal("28"))
+		Expect(dbResult[0].BidID).To(Equal("28"))
 		Expect(dbResult[0].Lot).To(Equal("100000000000000000000000000000000000000000000"))
 	})
 })
 
 type FlapKickModel struct {
-	BidId    string `db:"bid_id"`
+	BidID    string `db:"bid_id"`
 	Lot      string
 	Bid      string
 	HeaderID int64 `db:"header_id"`

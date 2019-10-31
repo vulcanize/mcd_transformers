@@ -92,7 +92,7 @@ var _ = XDescribe("Dent transformer", func() {
 
 		Expect(len(dbResult)).To(Equal(1))
 		Expect(dbResult[0].Bid).To(Equal("10000000000000000000000"))
-		Expect(dbResult[0].BidId).To(Equal("2"))
+		Expect(dbResult[0].BidID).To(Equal("2"))
 		Expect(dbResult[0].Lot).To(Equal("1000000000000000000000000000"))
 		Expect(dbResult[0].ContractAddress).To(Equal(""))
 
@@ -110,7 +110,7 @@ var _ = XDescribe("Dent transformer", func() {
 })
 
 type dentModel struct {
-	BidId           string `db:"bid_id"`
+	BidID           string `db:"bid_id"`
 	Lot             string
 	Bid             string
 	ContractAddress string `db:"contract_address"`

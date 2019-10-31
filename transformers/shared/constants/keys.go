@@ -22,12 +22,12 @@ import (
 )
 
 const (
-	BidId     utils.Key = "bid_id"
+	BidID     utils.Key = "bid_id"
 	Ilk       utils.Key = "ilk"
 	Guy       utils.Key = "guy"
 	Flip      utils.Key = "flip"
 	Timestamp utils.Key = "timestamp"
-	Cdpi      utils.Key = "cdpi"
+	CDPI      utils.Key = "cdpi"
 	Owner     utils.Key = "owner"
 )
 

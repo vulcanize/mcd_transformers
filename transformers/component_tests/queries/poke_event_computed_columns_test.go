@@ -28,7 +28,7 @@ var _ = Describe("all poke events query", func() {
 		fakeGethLog      types.Log
 		spotPokeEvent    shared.InsertionModel
 		spotPokeRepo     spot_poke.SpotPokeRepository
-		headerId         int64
+		headerID         int64
 		headerRepository repositories.HeaderRepository
 	)
 
@@ -40,17 +40,17 @@ var _ = Describe("all poke events query", func() {
 		fakeBlock = rand.Int()
 		fakeHeader = fakes.GetFakeHeader(int64(fakeBlock))
 		var insertHeaderErr error
-		headerId, insertHeaderErr = headerRepository.CreateOrUpdateHeader(fakeHeader)
+		headerID, insertHeaderErr = headerRepository.CreateOrUpdateHeader(fakeHeader)
 		Expect(insertHeaderErr).NotTo(HaveOccurred())
 
-		fakeHeaderSyncLog := test_data.CreateTestLog(headerId, db)
+		fakeHeaderSyncLog := test_data.CreateTestLog(headerID, db)
 		fakeGethLog = fakeHeaderSyncLog.Log
 
 		spotPokeRepo = spot_poke.SpotPokeRepository{}
 		spotPokeRepo.SetDB(db)
 		spotPokeEvent = test_data.SpotPokeModel()
 		spotPokeEvent.ForeignKeyValues[constants.IlkFK] = test_helpers.FakeIlk.Hex
-		spotPokeEvent.ColumnValues[constants.HeaderFK] = headerId
+		spotPokeEvent.ColumnValues[constants.HeaderFK] = headerID
 		spotPokeEvent.ColumnValues[constants.LogFK] = fakeHeaderSyncLog.ID
 		insertSpotPokeErr := spotPokeRepo.Create([]shared.InsertionModel{spotPokeEvent})
 		Expect(insertSpotPokeErr).NotTo(HaveOccurred())
@@ -91,7 +91,7 @@ var _ = Describe("all poke events query", func() {
 			}
 
 			_, err := db.Exec(`INSERT INTO header_sync_transactions (header_id, hash, tx_from, tx_index, tx_to)
-		        VALUES ($1, $2, $3, $4, $5)`, headerId, expectedTx.TransactionHash, expectedTx.TxFrom,
+		        VALUES ($1, $2, $3, $4, $5)`, headerID, expectedTx.TransactionHash, expectedTx.TxFrom,
 				expectedTx.TransactionIndex, expectedTx.TxTo)
 			Expect(err).NotTo(HaveOccurred())
 
@@ -118,7 +118,7 @@ var _ = Describe("all poke events query", func() {
 			}
 
 			_, insertErr := db.Exec(`INSERT INTO header_sync_transactions (header_id, hash, tx_from, tx_index, tx_to)
-				VALUES ($1, $2, $3, $4, $5)`, headerId, wrongTx.TransactionHash, wrongTx.TxFrom,
+				VALUES ($1, $2, $3, $4, $5)`, headerID, wrongTx.TransactionHash, wrongTx.TxFrom,
 				wrongTx.TransactionIndex, wrongTx.TxTo)
 			Expect(insertErr).NotTo(HaveOccurred())
 

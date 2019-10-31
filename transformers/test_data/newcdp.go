@@ -23,7 +23,7 @@ var (
 	newCdpUsr        = common.HexToAddress("0x000000000000000000000000a9fccb07dd3f774d5b9d02e99de1a27f47f91189")
 	newCdpOwn        = common.HexToAddress("0x000000000000000000000000a9fccb07dd3f774d5b9d02e99de1a27f47f91189")
 	newCdpCdp        = big.NewInt(21)
-	newCdpRawJson, _ = json.Marshal(NewCdpHeaderSyncLog)
+	newCdpRawJSON, _ = json.Marshal(NewCdpHeaderSyncLog)
 )
 
 var rawNewCdpLog = types.Log{

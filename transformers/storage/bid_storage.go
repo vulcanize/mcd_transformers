@@ -22,7 +22,7 @@ var (
 	Gem    = "gem"
 	Beg    = "beg"
 	Pad    = "pad"
-	Ttl    = "ttl"
+	TTL    = "ttl"
 	Tau    = "tau"
 	Kicks  = "kicks"
 	Live   = "live"

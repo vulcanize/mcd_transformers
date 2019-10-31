@@ -49,7 +49,7 @@ var _ = Describe("Flip storage keys loader", func() {
 		Expect(mappings[flip.VatKey]).To(Equal(flip.VatMetadata))
 		Expect(mappings[flip.IlkKey]).To(Equal(flip.IlkMetadata))
 		Expect(mappings[flip.BegKey]).To(Equal(flip.BegMetadata))
-		Expect(mappings[flip.TtlAndTauStorageKey]).To(Equal(flip.TtlAndTauMetadata))
+		Expect(mappings[flip.TTLAndTauStorageKey]).To(Equal(flip.TTLAndTauMetadata))
 		Expect(mappings[flip.KicksKey]).To(Equal(flip.KicksMetadata))
 	})
 
@@ -83,7 +83,7 @@ var _ = Describe("Flip storage keys loader", func() {
 			It("returns value metadata for bid bid", func() {
 				expectedMetadata := utils.StorageValueMetadata{
 					Name: mcdStorage.BidBid,
-					Keys: map[utils.Key]string{constants.BidId: fakeBidId},
+					Keys: map[utils.Key]string{constants.BidID: fakeBidId},
 					Type: utils.Uint256,
 				}
 
@@ -94,7 +94,7 @@ var _ = Describe("Flip storage keys loader", func() {
 				bidLotKey := utils.GetIncrementedStorageKey(bidBidKey, 1)
 				expectedMetadata := utils.StorageValueMetadata{
 					Name: mcdStorage.BidLot,
-					Keys: map[utils.Key]string{constants.BidId: fakeBidId},
+					Keys: map[utils.Key]string{constants.BidID: fakeBidId},
 					Type: utils.Uint256,
 				}
 
@@ -105,7 +105,7 @@ var _ = Describe("Flip storage keys loader", func() {
 				bidGuyKey := utils.GetIncrementedStorageKey(bidBidKey, 2)
 				expectedMetadata := utils.StorageValueMetadata{
 					Name:        mcdStorage.Packed,
-					Keys:        map[utils.Key]string{constants.BidId: fakeBidId},
+					Keys:        map[utils.Key]string{constants.BidID: fakeBidId},
 					Type:        utils.PackedSlot,
 					PackedTypes: map[int]utils.ValueType{0: utils.Address, 1: utils.Uint48, 2: utils.Uint48},
 					PackedNames: map[int]string{0: mcdStorage.BidGuy, 1: mcdStorage.BidTic, 2: mcdStorage.BidEnd},
@@ -118,7 +118,7 @@ var _ = Describe("Flip storage keys loader", func() {
 				bidUsrKey := utils.GetIncrementedStorageKey(bidBidKey, 3)
 				expectedMetadata := utils.StorageValueMetadata{
 					Name: mcdStorage.BidUsr,
-					Keys: map[utils.Key]string{constants.BidId: fakeBidId},
+					Keys: map[utils.Key]string{constants.BidID: fakeBidId},
 					Type: utils.Address,
 				}
 
@@ -129,7 +129,7 @@ var _ = Describe("Flip storage keys loader", func() {
 				bidGalKey := utils.GetIncrementedStorageKey(bidBidKey, 4)
 				expectedMetadata := utils.StorageValueMetadata{
 					Name: mcdStorage.BidGal,
-					Keys: map[utils.Key]string{constants.BidId: fakeBidId},
+					Keys: map[utils.Key]string{constants.BidID: fakeBidId},
 					Type: utils.Address,
 				}
 
@@ -140,7 +140,7 @@ var _ = Describe("Flip storage keys loader", func() {
 				bidTabKey := utils.GetIncrementedStorageKey(bidBidKey, 5)
 				expectedMetadata := utils.StorageValueMetadata{
 					Name: mcdStorage.BidTab,
-					Keys: map[utils.Key]string{constants.BidId: fakeBidId},
+					Keys: map[utils.Key]string{constants.BidID: fakeBidId},
 					Type: utils.Uint256,
 				}
 

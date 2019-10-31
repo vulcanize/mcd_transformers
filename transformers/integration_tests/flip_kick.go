@@ -86,7 +86,7 @@ var _ = Describe("FlipKick Transformer", func() {
 })
 
 type FlipKickModel struct {
-	BidId           string `db:"bid_id"`
+	BidID           string `db:"bid_id"`
 	Lot             string
 	Bid             string
 	Tab             string

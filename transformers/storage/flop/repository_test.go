@@ -113,9 +113,9 @@ var _ = Describe("Flop storage repository", func() {
 		})
 	})
 
-	Describe("Ttl and Tau", func() {
+	Describe("TTL and Tau", func() {
 		packedNames := make(map[int]string)
-		packedNames[0] = storage.Ttl
+		packedNames[0] = storage.TTL
 		packedNames[1] = storage.Tau
 		var ttlAndTauMetadata = utils.StorageValueMetadata{
 			Name:        storage.Packed,
@@ -210,18 +210,18 @@ var _ = Describe("Flop storage repository", func() {
 				Type: utils.Uint256,
 			}
 			createErr := repo.Create(fakeBlockNumber, fakeBlockHash, badMetadata, "")
-			Expect(createErr).To(MatchError(utils.ErrMetadataMalformed{MissingData: constants.BidId}))
+			Expect(createErr).To(MatchError(utils.ErrMetadataMalformed{MissingData: constants.BidID}))
 		})
 
 		Describe("bid_bid", func() {
 			var fakeBidValue = strconv.Itoa(rand.Int())
 			var bidBidMetadata = utils.StorageValueMetadata{
 				Name: storage.BidBid,
-				Keys: map[utils.Key]string{constants.BidId: fakeBidId},
+				Keys: map[utils.Key]string{constants.BidID: fakeBidId},
 				Type: utils.Uint256,
 			}
 			inputs := shared_behaviors.StorageVariableBehaviorInputs{
-				KeyFieldName:     string(constants.BidId),
+				KeyFieldName:     string(constants.BidID),
 				ValueFieldName:   "bid",
 				Value:            fakeBidValue,
 				Key:              fakeBidId,
@@ -242,7 +242,7 @@ var _ = Describe("Flop storage repository", func() {
 				Expect(queryErr).NotTo(HaveOccurred())
 				Expect(flop.BlockNumber).To(Equal(fakeBlockNumber))
 				Expect(flop.BlockHash).To(Equal(fakeBlockHash))
-				Expect(flop.BidId).To(Equal(fakeBidId))
+				Expect(flop.BidID).To(Equal(fakeBidId))
 				Expect(flop.Bid).To(Equal(fakeBidValue))
 			})
 		})
@@ -251,11 +251,11 @@ var _ = Describe("Flop storage repository", func() {
 			var fakeLotValue = strconv.Itoa(rand.Int())
 			var bidLotMetadata = utils.StorageValueMetadata{
 				Name: storage.BidLot,
-				Keys: map[utils.Key]string{constants.BidId: fakeBidId},
+				Keys: map[utils.Key]string{constants.BidID: fakeBidId},
 				Type: utils.Uint256,
 			}
 			inputs := shared_behaviors.StorageVariableBehaviorInputs{
-				KeyFieldName:     string(constants.BidId),
+				KeyFieldName:     string(constants.BidID),
 				ValueFieldName:   "lot",
 				Value:            fakeLotValue,
 				Key:              fakeBidId,
@@ -276,7 +276,7 @@ var _ = Describe("Flop storage repository", func() {
 				Expect(queryErr).NotTo(HaveOccurred())
 				Expect(flop.BlockNumber).To(Equal(fakeBlockNumber))
 				Expect(flop.BlockHash).To(Equal(fakeBlockHash))
-				Expect(flop.BidId).To(Equal(fakeBidId))
+				Expect(flop.BidID).To(Equal(fakeBidId))
 				Expect(flop.Lot).To(Equal(fakeLotValue))
 			})
 		})
@@ -288,7 +288,7 @@ var _ = Describe("Flop storage repository", func() {
 			packedNames[2] = storage.BidEnd
 			var bidGuyTicEndMetadata = utils.StorageValueMetadata{
 				Name:        storage.Packed,
-				Keys:        map[utils.Key]string{constants.BidId: fakeBidId},
+				Keys:        map[utils.Key]string{constants.BidID: fakeBidId},
 				PackedNames: packedNames,
 			}
 
@@ -333,7 +333,7 @@ var _ = Describe("Flop storage repository", func() {
 					Expect(queryErr).NotTo(HaveOccurred())
 					Expect(flop.BlockNumber).To(Equal(fakeBlockNumber))
 					Expect(flop.BlockHash).To(Equal(fakeBlockHash))
-					Expect(flop.BidId).To(Equal(fakeBidId))
+					Expect(flop.BidID).To(Equal(fakeBidId))
 					Expect(flop.Guy).To(Equal(fakeGuy))
 					Expect(flop.Tic).To(Equal(fakeTic))
 					Expect(flop.End).To(Equal(fakeEnd))

@@ -35,7 +35,7 @@ var _ = Describe("Managed CDP trigger-populated table", func() {
 		db         *postgres.DB
 		headerRepo repositories.HeaderRepository
 		repo       cdp_manager.CdpManagerStorageRepository
-		fakeCdpi   = rand.Int()
+		fakeCDPI   = rand.Int()
 	)
 
 	BeforeEach(func() {
@@ -60,15 +60,15 @@ var _ = Describe("Managed CDP trigger-populated table", func() {
 		_, headerErr := headerRepo.CreateOrUpdateHeader(header)
 		Expect(headerErr).NotTo(HaveOccurred())
 
-		cdpManagerStorageValues1 := test_helpers.GetCdpManagerStorageValues(1, fakeIlk, fakeUrn, fakeCdpi)
+		cdpManagerStorageValues1 := test_helpers.GetCdpManagerStorageValues(1, fakeIlk, fakeUrn, fakeCDPI)
 		cdpErr1 := test_helpers.CreateManagedCdp(db, header, cdpManagerStorageValues1,
-			test_helpers.GetCdpManagerMetadatas(strconv.Itoa(fakeCdpi)))
+			test_helpers.GetCdpManagerMetadatas(strconv.Itoa(fakeCDPI)))
 		Expect(cdpErr1).NotTo(HaveOccurred())
 
-		fakeCdpi2 := fakeCdpi + 1
-		cdpManagerStorageValues2 := test_helpers.GetCdpManagerStorageValues(2, fakeIlk, fakeUrn, fakeCdpi2)
+		fakeCDPI2 := fakeCDPI + 1
+		cdpManagerStorageValues2 := test_helpers.GetCdpManagerStorageValues(2, fakeIlk, fakeUrn, fakeCDPI2)
 		cdpErr2 := test_helpers.CreateManagedCdp(db, header, cdpManagerStorageValues2,
-			test_helpers.GetCdpManagerMetadatas(strconv.Itoa(fakeCdpi2)))
+			test_helpers.GetCdpManagerMetadatas(strconv.Itoa(fakeCDPI2)))
 		Expect(cdpErr2).NotTo(HaveOccurred())
 
 		expectedCdp1 := test_helpers.ManagedCdpFromValues(
@@ -101,12 +101,12 @@ var _ = Describe("Managed CDP trigger-populated table", func() {
 		Expect(headerTwoErr).NotTo(HaveOccurred())
 
 		newOwner := "0x16Fb96a5fa0427Af0C8F7cF1eB4870231c8154B6"
-		_, ownsErr := db.Exec(cdp_manager.InsertOwnsQuery, headerTwo.BlockNumber, headerTwo.Hash, fakeCdpi, newOwner)
+		_, ownsErr := db.Exec(cdp_manager.InsertOwnsQuery, headerTwo.BlockNumber, headerTwo.Hash, fakeCDPI, newOwner)
 		Expect(ownsErr).NotTo(HaveOccurred())
 
-		cdpManagerStorageValues := test_helpers.GetCdpManagerStorageValues(1, fakeIlk, fakeUrn, fakeCdpi)
+		cdpManagerStorageValues := test_helpers.GetCdpManagerStorageValues(1, fakeIlk, fakeUrn, fakeCDPI)
 		cdpErr := test_helpers.CreateManagedCdp(db, headerOne, cdpManagerStorageValues,
-			test_helpers.GetCdpManagerMetadatas(strconv.Itoa(fakeCdpi)))
+			test_helpers.GetCdpManagerMetadatas(strconv.Itoa(fakeCDPI)))
 		Expect(cdpErr).NotTo(HaveOccurred())
 
 		cdpManagerStorageValues[cdp_manager.Owns] = newOwner
@@ -116,7 +116,7 @@ var _ = Describe("Managed CDP trigger-populated table", func() {
 		var actualCdps []test_helpers.ManagedCdp
 		queryErr := db.Select(&actualCdps,
 			`SELECT usr, cdpi, urn_identifier, ilk_identifier, created FROM api.managed_cdp WHERE cdpi = $1`,
-			fakeCdpi)
+			fakeCDPI)
 		Expect(queryErr).NotTo(HaveOccurred())
 
 		Expect(actualCdps).To(Equal([]test_helpers.ManagedCdp{expectedCdp}))
@@ -138,12 +138,12 @@ var _ = Describe("Managed CDP trigger-populated table", func() {
 		_, headerTwoErr := headerRepo.CreateOrUpdateHeader(headerTwo)
 		Expect(headerTwoErr).NotTo(HaveOccurred())
 
-		_, cdpiErr := db.Exec(cdp_manager.InsertCdpiQuery, headerOne.BlockNumber, headerOne.Hash, fakeCdpi)
+		_, cdpiErr := db.Exec(cdp_manager.InsertCdpiQuery, headerOne.BlockNumber, headerOne.Hash, fakeCDPI)
 		Expect(cdpiErr).NotTo(HaveOccurred())
 
-		cdpManagerStorageValues := test_helpers.GetCdpManagerStorageValues(1, fakeIlk, fakeUrn, fakeCdpi)
+		cdpManagerStorageValues := test_helpers.GetCdpManagerStorageValues(1, fakeIlk, fakeUrn, fakeCDPI)
 		cdpErr := test_helpers.CreateManagedCdp(db, headerTwo, cdpManagerStorageValues,
-			test_helpers.GetCdpManagerMetadatas(strconv.Itoa(fakeCdpi)))
+			test_helpers.GetCdpManagerMetadatas(strconv.Itoa(fakeCDPI)))
 		Expect(cdpErr).NotTo(HaveOccurred())
 
 		expectedCdp := test_helpers.ManagedCdpFromValues(
@@ -152,7 +152,7 @@ var _ = Describe("Managed CDP trigger-populated table", func() {
 		var actualCdp test_helpers.ManagedCdp
 		queryErr := db.Get(&actualCdp,
 			`SELECT usr, cdpi, urn_identifier, ilk_identifier, created FROM api.managed_cdp WHERE cdpi = $1`,
-			fakeCdpi)
+			fakeCDPI)
 		Expect(queryErr).NotTo(HaveOccurred())
 
 		Expect(expectedCdp).To(Equal(actualCdp))

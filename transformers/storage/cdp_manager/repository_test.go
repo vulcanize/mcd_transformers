@@ -113,7 +113,7 @@ var _ = Describe("CDP Manager storage repository", func() {
 			var cdp test_helpers.ManagedCdp
 			queryErr := db.Get(&cdp, `SELECT cdpi, created FROM api.managed_cdp`)
 			Expect(queryErr).NotTo(HaveOccurred())
-			Expect(cdp.Id).To(Equal(fakeCdpi))
+			Expect(cdp.ID).To(Equal(fakeCdpi))
 			Expect(cdp.Created).To(Equal(expectedTimeCreated))
 		})
 	})
@@ -128,18 +128,18 @@ var _ = Describe("CDP Manager storage repository", func() {
 				Type: utils.Address,
 			}
 			err := repository.Create(fakeBlockNumber, fakeHash, badMetadata, "")
-			Expect(err).To(MatchError(utils.ErrMetadataMalformed{MissingData: constants.Cdpi}))
+			Expect(err).To(MatchError(utils.ErrMetadataMalformed{MissingData: constants.CDPI}))
 		})
 
 		Describe("urns", func() {
 			var fakeUrnsValue = FakeAddress
 			var urnsMetadata = utils.StorageValueMetadata{
 				Name: cdp_manager.Urns,
-				Keys: map[utils.Key]string{constants.Cdpi: fakeCdpi},
+				Keys: map[utils.Key]string{constants.CDPI: fakeCdpi},
 				Type: utils.Address,
 			}
 			inputs := shared_behaviors.StorageVariableBehaviorInputs{
-				KeyFieldName:     string(constants.Cdpi),
+				KeyFieldName:     string(constants.CDPI),
 				ValueFieldName:   "urn",
 				Key:              fakeCdpi,
 				Value:            fakeUrnsValue,
@@ -158,7 +158,7 @@ var _ = Describe("CDP Manager storage repository", func() {
 				var cdp test_helpers.ManagedCdp
 				queryErr := db.Get(&cdp, `SELECT cdpi, urn_identifier FROM api.managed_cdp`)
 				Expect(queryErr).NotTo(HaveOccurred())
-				Expect(cdp.Id).To(Equal(fakeCdpi))
+				Expect(cdp.ID).To(Equal(fakeCdpi))
 				Expect(cdp.UrnIdentifier).To(Equal(fakeUrnsValue))
 			})
 		})
@@ -167,11 +167,11 @@ var _ = Describe("CDP Manager storage repository", func() {
 			var fakePrevValue = strconv.Itoa(rand.Int())
 			var prevMetadata = utils.StorageValueMetadata{
 				Name: cdp_manager.ListPrev,
-				Keys: map[utils.Key]string{constants.Cdpi: fakeCdpi},
+				Keys: map[utils.Key]string{constants.CDPI: fakeCdpi},
 				Type: utils.Uint256,
 			}
 			inputs := shared_behaviors.StorageVariableBehaviorInputs{
-				KeyFieldName:     string(constants.Cdpi),
+				KeyFieldName:     string(constants.CDPI),
 				ValueFieldName:   "prev",
 				Key:              fakeCdpi,
 				Value:            fakePrevValue,
@@ -188,11 +188,11 @@ var _ = Describe("CDP Manager storage repository", func() {
 			var fakeNextValue = strconv.Itoa(rand.Int())
 			var nextMetadata = utils.StorageValueMetadata{
 				Name: cdp_manager.ListNext,
-				Keys: map[utils.Key]string{constants.Cdpi: fakeCdpi},
+				Keys: map[utils.Key]string{constants.CDPI: fakeCdpi},
 				Type: utils.Uint256,
 			}
 			inputs := shared_behaviors.StorageVariableBehaviorInputs{
-				KeyFieldName:     string(constants.Cdpi),
+				KeyFieldName:     string(constants.CDPI),
 				ValueFieldName:   "next",
 				Key:              fakeCdpi,
 				Value:            fakeNextValue,
@@ -209,11 +209,11 @@ var _ = Describe("CDP Manager storage repository", func() {
 			var fakeOwner = FakeAddress
 			var ownsMetadata = utils.StorageValueMetadata{
 				Name: cdp_manager.Owns,
-				Keys: map[utils.Key]string{constants.Cdpi: fakeCdpi},
+				Keys: map[utils.Key]string{constants.CDPI: fakeCdpi},
 				Type: utils.Address,
 			}
 			inputs := shared_behaviors.StorageVariableBehaviorInputs{
-				KeyFieldName:     string(constants.Cdpi),
+				KeyFieldName:     string(constants.CDPI),
 				ValueFieldName:   "owner",
 				Key:              fakeCdpi,
 				Value:            fakeOwner,
@@ -232,7 +232,7 @@ var _ = Describe("CDP Manager storage repository", func() {
 				var cdp test_helpers.ManagedCdp
 				queryErr := db.Get(&cdp, `SELECT cdpi, usr FROM api.managed_cdp`)
 				Expect(queryErr).NotTo(HaveOccurred())
-				Expect(cdp.Id).To(Equal(fakeCdpi))
+				Expect(cdp.ID).To(Equal(fakeCdpi))
 				Expect(cdp.Usr).To(Equal(fakeOwner))
 			})
 		})
@@ -241,7 +241,7 @@ var _ = Describe("CDP Manager storage repository", func() {
 			var (
 				ilksMetadata = utils.StorageValueMetadata{
 					Name: cdp_manager.Ilks,
-					Keys: map[utils.Key]string{constants.Cdpi: fakeCdpi},
+					Keys: map[utils.Key]string{constants.CDPI: fakeCdpi},
 					Type: utils.Bytes32,
 				}
 				fakeIlksValue   = test_helpers.FakeIlk.Hex
@@ -283,7 +283,7 @@ var _ = Describe("CDP Manager storage repository", func() {
 				var cdp test_helpers.ManagedCdp
 				queryErr := db.Get(&cdp, `SELECT cdpi, ilk_identifier FROM api.managed_cdp`)
 				Expect(queryErr).NotTo(HaveOccurred())
-				Expect(cdp.Id).To(Equal(fakeCdpi))
+				Expect(cdp.ID).To(Equal(fakeCdpi))
 				Expect(cdp.IlkIdentifier).To(Equal(test_helpers.FakeIlk.Identifier))
 			})
 		})

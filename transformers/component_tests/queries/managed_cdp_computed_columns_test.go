@@ -39,13 +39,13 @@ var _ = Describe("Managed CDP computed columns", func() {
 		fakeHeader       core.Header
 		headerRepository repositories.HeaderRepository
 		storageValues    map[string]interface{}
-		fakeCdpi         int
+		fakeCDPI         int
 		blockNumber      int
 	)
 
 	BeforeEach(func() {
 		blockNumber = rand.Int()
-		fakeCdpi = rand.Int()
+		fakeCDPI = rand.Int()
 
 		db = test_config.NewTestDB(test_config.NewTestNode())
 		test_config.CleanTestDB(db)
@@ -55,8 +55,8 @@ var _ = Describe("Managed CDP computed columns", func() {
 		_, headerOneErr := headerRepository.CreateOrUpdateHeader(fakeHeader)
 		Expect(headerOneErr).NotTo(HaveOccurred())
 
-		storageValues = test_helpers.GetCdpManagerStorageValues(1, test_helpers.FakeIlk.Hex, test_data.FakeUrn, fakeCdpi)
-		cdpErr := test_helpers.CreateManagedCdp(db, fakeHeader, storageValues, test_helpers.GetCdpManagerMetadatas(strconv.Itoa(fakeCdpi)))
+		storageValues = test_helpers.GetCdpManagerStorageValues(1, test_helpers.FakeIlk.Hex, test_data.FakeUrn, fakeCDPI)
+		cdpErr := test_helpers.CreateManagedCdp(db, fakeHeader, storageValues, test_helpers.GetCdpManagerMetadatas(strconv.Itoa(fakeCDPI)))
 		Expect(cdpErr).NotTo(HaveOccurred())
 	})
 
@@ -81,7 +81,7 @@ var _ = Describe("Managed CDP computed columns", func() {
 					(SELECT (id, cdpi, usr, urn_identifier, ilk_identifier, created)::api.managed_cdp
 					 FROM api.managed_cdp
 					 WHERE cdpi = $1))
-			`, fakeCdpi)
+			`, fakeCDPI)
 
 			Expect(getIlkErr).NotTo(HaveOccurred())
 			Expect(result).To(Equal(expectedIlk))
@@ -107,7 +107,7 @@ var _ = Describe("Managed CDP computed columns", func() {
 					(SELECT (id, cdpi, usr, urn_identifier, ilk_identifier, created)::api.managed_cdp
 					 FROM api.managed_cdp
 					 WHERE cdpi = $1))
-			`, fakeCdpi)
+			`, fakeCDPI)
 
 			Expect(getUrnErr).NotTo(HaveOccurred())
 			test_helpers.AssertUrn(actualUrn, expectedUrn)

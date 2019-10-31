@@ -37,7 +37,7 @@ func (TendConverter) ToModels(_ string, logs []core.HeaderSyncLog) (results []sh
 			return nil, err
 		}
 
-		bidId := log.Log.Topics[2].Big()
+		bidID := log.Log.Topics[2].Big()
 		lot := log.Log.Topics[3].Big().String()
 		rawBid, bidErr := shared.GetLogNoteArgumentAtIndex(2, log.Log.Data)
 		if bidErr != nil {
@@ -52,7 +52,7 @@ func (TendConverter) ToModels(_ string, logs []core.HeaderSyncLog) (results []sh
 				constants.HeaderFK, "bid_id", "lot", "bid", string(constants.AddressFK), constants.LogFK,
 			},
 			ColumnValues: shared.ColumnValues{
-				"bid_id":           bidId.String(),
+				"bid_id":           bidID.String(),
 				"lot":              lot,
 				"bid":              bidValue,
 				constants.HeaderFK: log.HeaderID,

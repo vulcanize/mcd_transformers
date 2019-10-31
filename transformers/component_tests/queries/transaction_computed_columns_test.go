@@ -22,14 +22,14 @@ var _ = Describe("Transaction computed columns", func() {
 			headerRepository := repositories.NewHeaderRepository(db)
 			fakeBlock := rand.Int()
 			fakeHeader := fakes.GetFakeHeaderWithTimestamp(int64(111111111), int64(fakeBlock))
-			headerId, insertHeaderErr := headerRepository.CreateOrUpdateHeader(fakeHeader)
+			headerID, insertHeaderErr := headerRepository.CreateOrUpdateHeader(fakeHeader)
 			Expect(insertHeaderErr).NotTo(HaveOccurred())
 
 			txFrom := "fromAddress"
 			txTo := "toAddress"
 			txIndex := rand.Intn(10)
 			_, insertTxErr := db.Exec(`INSERT INTO header_sync_transactions (header_id, hash, tx_from, tx_index, tx_to)
-                VALUES ($1, $2, $3, $4, $5)`, headerId, fakeHeader.Hash, txFrom, txIndex, txTo)
+                VALUES ($1, $2, $3, $4, $5)`, headerID, fakeHeader.Hash, txFrom, txIndex, txTo)
 			Expect(insertTxErr).NotTo(HaveOccurred())
 
 			var actualEra Era

@@ -190,9 +190,9 @@ var _ = Describe("Executing the transformer", func() {
 			var ilksResult test_helpers.MappingRes
 			readErr := db.Get(&ilksResult, `SELECT block_number, block_hash, cdpi AS key, ilk_id AS value FROM maker.cdp_manager_ilks`)
 			Expect(readErr).NotTo(HaveOccurred())
-			ilkId, ilkErr := shared.GetOrCreateIlk(ilk, db)
+			ilkID, ilkErr := shared.GetOrCreateIlk(ilk, db)
 			Expect(ilkErr).NotTo(HaveOccurred())
-			test_helpers.AssertMapping(ilksResult, blockNumber, blockHash, strconv.Itoa(cdpi), strconv.FormatInt(ilkId, 10))
+			test_helpers.AssertMapping(ilksResult, blockNumber, blockHash, strconv.Itoa(cdpi), strconv.FormatInt(ilkID, 10))
 		})
 	})
 

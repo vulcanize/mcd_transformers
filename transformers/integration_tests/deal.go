@@ -95,7 +95,7 @@ var _ = XDescribe("Deal transformer", func() {
 		Expect(err).NotTo(HaveOccurred())
 
 		Expect(len(dbResult)).To(Equal(1))
-		Expect(dbResult[0].BidId).To(Equal("6"))
+		Expect(dbResult[0].BidID).To(Equal("6"))
 		Expect(dbResult[0].ContractAddress).To(Equal(test_data.EthFlipAddress()))
 	})
 
@@ -125,12 +125,12 @@ var _ = XDescribe("Deal transformer", func() {
 		Expect(err).NotTo(HaveOccurred())
 
 		Expect(len(dbResult)).To(Equal(1))
-		Expect(dbResult[0].BidId).To(Equal("1"))
+		Expect(dbResult[0].BidID).To(Equal("1"))
 		Expect(dbResult[0].ContractAddress).To(Equal(test_data.FlapAddress()))
 	})
 })
 
 type dealModel struct {
-	BidId           string `db:"bid_id"`
+	BidID           string `db:"bid_id"`
 	ContractAddress string `db:"contract_address"`
 }

@@ -44,7 +44,7 @@ var _ = Describe("Ilk file event computed columns", func() {
 		fakeGethLog      types.Log
 		fileEvent        shared.InsertionModel
 		fileRepo         ilk.VatFileIlkRepository
-		headerId         int64
+		headerID         int64
 		headerRepository repositories.HeaderRepository
 	)
 
@@ -56,17 +56,17 @@ var _ = Describe("Ilk file event computed columns", func() {
 		fakeBlock = rand.Int()
 		fakeHeader = fakes.GetFakeHeader(int64(fakeBlock))
 		var insertHeaderErr error
-		headerId, insertHeaderErr = headerRepository.CreateOrUpdateHeader(fakeHeader)
+		headerID, insertHeaderErr = headerRepository.CreateOrUpdateHeader(fakeHeader)
 		Expect(insertHeaderErr).NotTo(HaveOccurred())
 
-		fakeHeaderSyncLog := test_data.CreateTestLog(headerId, db)
+		fakeHeaderSyncLog := test_data.CreateTestLog(headerID, db)
 		fakeGethLog = fakeHeaderSyncLog.Log
 
 		fileRepo = ilk.VatFileIlkRepository{}
 		fileRepo.SetDB(db)
 		fileEvent = test_data.VatFileIlkDustModel()
 		fileEvent.ForeignKeyValues[constants.IlkFK] = test_helpers.FakeIlk.Hex
-		fileEvent.ColumnValues[constants.HeaderFK] = headerId
+		fileEvent.ColumnValues[constants.HeaderFK] = headerID
 		fileEvent.ColumnValues[constants.LogFK] = fakeHeaderSyncLog.ID
 		insertFileErr := fileRepo.Create([]shared.InsertionModel{fileEvent})
 		Expect(insertFileErr).NotTo(HaveOccurred())
@@ -111,7 +111,7 @@ var _ = Describe("Ilk file event computed columns", func() {
 			}
 
 			_, insertErr := db.Exec(`INSERT INTO header_sync_transactions (header_id, hash, tx_from, tx_index, tx_to)
-				VALUES ($1, $2, $3, $4, $5)`, headerId, expectedTx.TransactionHash, expectedTx.TxFrom,
+				VALUES ($1, $2, $3, $4, $5)`, headerID, expectedTx.TransactionHash, expectedTx.TxFrom,
 				expectedTx.TransactionIndex, expectedTx.TxTo)
 			Expect(insertErr).NotTo(HaveOccurred())
 
@@ -138,7 +138,7 @@ var _ = Describe("Ilk file event computed columns", func() {
 			}
 
 			_, insertErr := db.Exec(`INSERT INTO header_sync_transactions (header_id, hash, tx_from, tx_index, tx_to)
-				VALUES ($1, $2, $3, $4, $5)`, headerId, wrongTx.TransactionHash, wrongTx.TxFrom,
+				VALUES ($1, $2, $3, $4, $5)`, headerID, wrongTx.TransactionHash, wrongTx.TxFrom,
 				wrongTx.TransactionIndex, wrongTx.TxTo)
 			Expect(insertErr).NotTo(HaveOccurred())
 

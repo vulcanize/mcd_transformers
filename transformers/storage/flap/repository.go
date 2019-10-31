@@ -13,7 +13,7 @@ const (
 	insertVatQuery    = `INSERT INTO maker.flap_vat (block_number, block_hash, address_id, vat) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
 	insertGemQuery    = `INSERT INTO maker.flap_gem (block_number, block_hash, address_id, gem) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
 	insertBegQuery    = `INSERT INTO maker.flap_beg (block_number, block_hash, address_id, beg) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
-	insertTtlQuery    = `INSERT INTO maker.flap_ttl (block_number, block_hash, address_id, ttl) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
+	insertTTLQuery    = `INSERT INTO maker.flap_ttl (block_number, block_hash, address_id, ttl) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
 	insertTauQuery    = `INSERT INTO maker.flap_tau (block_number, block_hash, address_id, tau) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
 	InsertKicksQuery  = `INSERT INTO maker.flap_kicks (block_number, block_hash, address_id, kicks) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
 	insertLiveQuery   = `INSERT INTO maker.flap_live (block_number, block_hash, address_id, live) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
@@ -68,8 +68,8 @@ func (repository *FlapStorageRepository) insertBeg(blockNumber int, blockHash st
 	return repository.insertRecordWithAddress(blockNumber, blockHash, insertBegQuery, beg)
 }
 
-func (repository *FlapStorageRepository) insertTtl(blockNumber int, blockHash string, ttl string) error {
-	return repository.insertRecordWithAddress(blockNumber, blockHash, insertTtlQuery, ttl)
+func (repository *FlapStorageRepository) insertTTL(blockNumber int, blockHash string, ttl string) error {
+	return repository.insertRecordWithAddress(blockNumber, blockHash, insertTTLQuery, ttl)
 }
 
 func (repository *FlapStorageRepository) insertTau(blockNumber int, blockHash string, tau string) error {
@@ -85,51 +85,51 @@ func (repository *FlapStorageRepository) insertLive(blockNumber int, blockHash s
 }
 
 func (repository *FlapStorageRepository) insertBidBid(blockNumber int, blockHash string, metadata utils.StorageValueMetadata, bid string) error {
-	bidId, err := getBidId(metadata.Keys)
+	bidID, err := getBidID(metadata.Keys)
 	if err != nil {
 		return err
 	}
-	return repository.insertRecordWithAddressAndBidId(blockNumber, blockHash, insertBidBidQuery, bidId, bid)
+	return repository.insertRecordWithAddressAndBidID(blockNumber, blockHash, insertBidBidQuery, bidID, bid)
 }
 
 func (repository *FlapStorageRepository) insertBidLot(blockNumber int, blockHash string, metadata utils.StorageValueMetadata, lot string) error {
-	bidId, err := getBidId(metadata.Keys)
+	bidID, err := getBidID(metadata.Keys)
 	if err != nil {
 		return err
 	}
-	return repository.insertRecordWithAddressAndBidId(blockNumber, blockHash, insertBidLotQuery, bidId, lot)
+	return repository.insertRecordWithAddressAndBidID(blockNumber, blockHash, insertBidLotQuery, bidID, lot)
 }
 
 func (repository *FlapStorageRepository) insertBidGuy(blockNumber int, blockHash string, metadata utils.StorageValueMetadata, guy string) error {
-	bidId, err := getBidId(metadata.Keys)
+	bidID, err := getBidID(metadata.Keys)
 	if err != nil {
 		return err
 	}
-	return repository.insertRecordWithAddressAndBidId(blockNumber, blockHash, insertBidGuyQuery, bidId, guy)
+	return repository.insertRecordWithAddressAndBidID(blockNumber, blockHash, insertBidGuyQuery, bidID, guy)
 }
 
 func (repository *FlapStorageRepository) insertBidTic(blockNumber int, blockHash string, metadata utils.StorageValueMetadata, tic string) error {
-	bidId, err := getBidId(metadata.Keys)
+	bidID, err := getBidID(metadata.Keys)
 	if err != nil {
 		return err
 	}
-	return repository.insertRecordWithAddressAndBidId(blockNumber, blockHash, insertBidTicQuery, bidId, tic)
+	return repository.insertRecordWithAddressAndBidID(blockNumber, blockHash, insertBidTicQuery, bidID, tic)
 }
 
 func (repository *FlapStorageRepository) insertBidEnd(blockNumber int, blockHash string, metadata utils.StorageValueMetadata, end string) error {
-	bidId, err := getBidId(metadata.Keys)
+	bidID, err := getBidID(metadata.Keys)
 	if err != nil {
 		return err
 	}
-	return repository.insertRecordWithAddressAndBidId(blockNumber, blockHash, insertBidEndQuery, bidId, end)
+	return repository.insertRecordWithAddressAndBidID(blockNumber, blockHash, insertBidEndQuery, bidID, end)
 }
 
 func (repository *FlapStorageRepository) insertPackedValueRecord(blockNumber int, blockHash string, metadata utils.StorageValueMetadata, packedValues map[int]string) error {
 	for order, value := range packedValues {
 		var insertErr error
 		switch metadata.PackedNames[order] {
-		case storage.Ttl:
-			insertErr = repository.insertTtl(blockNumber, blockHash, value)
+		case storage.TTL:
+			insertErr = repository.insertTTL(blockNumber, blockHash, value)
 		case storage.Tau:
 			insertErr = repository.insertTau(blockNumber, blockHash, value)
 		case storage.BidGuy:
@@ -148,12 +148,12 @@ func (repository *FlapStorageRepository) insertPackedValueRecord(blockNumber int
 	return nil
 }
 
-func getBidId(keys map[utils.Key]string) (string, error) {
-	bid, ok := keys[constants.BidId]
+func getBidID(keys map[utils.Key]string) (string, error) {
+	bidID, ok := keys[constants.BidID]
 	if !ok {
-		return "", utils.ErrMetadataMalformed{MissingData: constants.BidId}
+		return "", utils.ErrMetadataMalformed{MissingData: constants.BidID}
 	}
-	return bid, nil
+	return bidID, nil
 }
 
 func (repository *FlapStorageRepository) insertRecordWithAddress(blockNumber int, blockHash, query, value string) error {
@@ -162,7 +162,7 @@ func (repository *FlapStorageRepository) insertRecordWithAddress(blockNumber int
 		return txErr
 	}
 
-	addressId, addressErr := shared.GetOrCreateAddressInTransaction(repository.ContractAddress, tx)
+	addressID, addressErr := shared.GetOrCreateAddressInTransaction(repository.ContractAddress, tx)
 	if addressErr != nil {
 		rollbackErr := tx.Rollback()
 		if rollbackErr != nil {
@@ -170,7 +170,7 @@ func (repository *FlapStorageRepository) insertRecordWithAddress(blockNumber int
 		}
 		return addressErr
 	}
-	_, insertErr := tx.Exec(query, blockNumber, blockHash, addressId, value)
+	_, insertErr := tx.Exec(query, blockNumber, blockHash, addressID, value)
 	if insertErr != nil {
 		rollbackErr := tx.Rollback()
 		if rollbackErr != nil {
@@ -182,12 +182,12 @@ func (repository *FlapStorageRepository) insertRecordWithAddress(blockNumber int
 	return tx.Commit()
 }
 
-func (repository *FlapStorageRepository) insertRecordWithAddressAndBidId(blockNumber int, blockHash, query, bidId, value string) error {
+func (repository *FlapStorageRepository) insertRecordWithAddressAndBidID(blockNumber int, blockHash, query, bidID, value string) error {
 	tx, txErr := repository.db.Beginx()
 	if txErr != nil {
 		return txErr
 	}
-	addressId, addressErr := shared.GetOrCreateAddressInTransaction(repository.ContractAddress, tx)
+	addressID, addressErr := shared.GetOrCreateAddressInTransaction(repository.ContractAddress, tx)
 	if addressErr != nil {
 		rollbackErr := tx.Rollback()
 		if rollbackErr != nil {
@@ -195,11 +195,11 @@ func (repository *FlapStorageRepository) insertRecordWithAddressAndBidId(blockNu
 		}
 		return addressErr
 	}
-	_, insertErr := tx.Exec(query, blockNumber, blockHash, addressId, bidId, value)
+	_, insertErr := tx.Exec(query, blockNumber, blockHash, addressID, bidID, value)
 	if insertErr != nil {
 		rollbackErr := tx.Rollback()
 		if rollbackErr != nil {
-			errorString := fmt.Sprintf("flap field with address for bid id %s", bidId)
+			errorString := fmt.Sprintf("flap field with address for bid id %s", bidID)
 			return shared.FormatRollbackError(errorString, insertErr.Error())
 		}
 		return insertErr

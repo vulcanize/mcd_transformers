@@ -36,7 +36,7 @@ func (DealConverter) ToModels(_ string, logs []core.HeaderSyncLog) (result []sha
 			return nil, validationErr
 		}
 
-		bidId := log.Log.Topics[2].Big()
+		bidID := log.Log.Topics[2].Big()
 
 		model := shared.InsertionModel{
 			SchemaName: "maker",
@@ -45,7 +45,7 @@ func (DealConverter) ToModels(_ string, logs []core.HeaderSyncLog) (result []sha
 				constants.HeaderFK, "bid_id", string(constants.AddressFK), constants.LogFK,
 			},
 			ColumnValues: shared.ColumnValues{
-				"bid_id":           bidId.String(),
+				"bid_id":           bidID.String(),
 				constants.HeaderFK: log.HeaderID,
 				constants.LogFK:    log.ID,
 			},

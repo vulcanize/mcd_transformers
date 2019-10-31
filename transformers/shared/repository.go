@@ -238,6 +238,6 @@ func GetOrCreateAddress(address string, db *postgres.DB) (int64, error) {
 }
 
 func GetOrCreateAddressInTransaction(address string, tx *sqlx.Tx) (int64, error) {
-	addressId, addressErr := repository.GetOrCreateAddressInTransaction(tx, address)
-	return addressId, addressErr
+	addressID, addressErr := repository.GetOrCreateAddressInTransaction(tx, address)
+	return addressID, addressErr
 }

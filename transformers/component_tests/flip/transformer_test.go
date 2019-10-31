@@ -161,7 +161,7 @@ var _ = Describe("Executing the flip transformer", func() {
 	Describe("bids", func() {
 		//TODO: update when we get real flip bid storage diffs
 		Describe("guy + tic + end packed slot", func() {
-			bidId := 1
+			bidID := 1
 			blockNumber := 11579891
 			blockHash := common.HexToHash("5f2be3f6566f39dddfcfcf29784866280399ed9070af0b4fccd465509260349d")
 			diff := utils.StorageDiff{
@@ -173,10 +173,10 @@ var _ = Describe("Executing the flip transformer", func() {
 			}
 
 			BeforeEach(func() {
-				addressId, addressErr := shared.GetOrCreateAddress(contractAddress, db)
+				addressID, addressErr := shared.GetOrCreateAddress(contractAddress, db)
 				Expect(addressErr).NotTo(HaveOccurred())
 
-				_, writeErr := db.Exec(flip.InsertFlipKicksQuery, blockNumber, blockHash.Hex(), addressId, bidId)
+				_, writeErr := db.Exec(flip.InsertFlipKicksQuery, blockNumber, blockHash.Hex(), addressID, bidID)
 				Expect(writeErr).NotTo(HaveOccurred())
 
 				executeErr := transformer.Execute(diff)
@@ -187,21 +187,21 @@ var _ = Describe("Executing the flip transformer", func() {
 				var bidGuyResult test_helpers.MappingRes
 				dbErr := db.Get(&bidGuyResult, `SELECT block_number, block_hash, bid_id AS key, guy AS value FROM maker.flip_bid_guy`)
 				Expect(dbErr).NotTo(HaveOccurred())
-				test_helpers.AssertMapping(bidGuyResult, blockNumber, blockHash.Hex(), strconv.Itoa(bidId), "0x284ecB5880CdC3362D979D07D162bf1d8488975D")
+				test_helpers.AssertMapping(bidGuyResult, blockNumber, blockHash.Hex(), strconv.Itoa(bidID), "0x284ecB5880CdC3362D979D07D162bf1d8488975D")
 			})
 
 			It("reads and persists a tic diff", func() {
 				var bidTicResult test_helpers.MappingRes
 				dbErr := db.Get(&bidTicResult, `SELECT block_number, block_hash, bid_id AS key, tic AS value FROM maker.flip_bid_tic`)
 				Expect(dbErr).NotTo(HaveOccurred())
-				test_helpers.AssertMapping(bidTicResult, blockNumber, blockHash.Hex(), strconv.Itoa(bidId), "10800")
+				test_helpers.AssertMapping(bidTicResult, blockNumber, blockHash.Hex(), strconv.Itoa(bidID), "10800")
 			})
 
 			It("reads and persists an end diff", func() {
 				var bidEndResult test_helpers.MappingRes
 				dbErr := db.Get(&bidEndResult, `SELECT block_number, block_hash, bid_id AS key, "end" AS value FROM maker.flip_bid_end`)
 				Expect(dbErr).NotTo(HaveOccurred())
-				test_helpers.AssertMapping(bidEndResult, blockNumber, blockHash.Hex(), strconv.Itoa(bidId), "172800")
+				test_helpers.AssertMapping(bidEndResult, blockNumber, blockHash.Hex(), strconv.Itoa(bidID), "172800")
 			})
 		})
 	})

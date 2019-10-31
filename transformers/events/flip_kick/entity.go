@@ -23,7 +23,7 @@ import (
 )
 
 type FlipKickEntity struct {
-	Id              *big.Int
+	Id              *big.Int // can't be all caps or else unpacking fails
 	Lot             *big.Int
 	Bid             *big.Int
 	Tab             *big.Int

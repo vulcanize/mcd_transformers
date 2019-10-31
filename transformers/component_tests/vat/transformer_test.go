@@ -113,13 +113,13 @@ var _ = Describe("Executing the transformer", func() {
 
 	Describe("ilk", func() {
 		var (
-			ilkId  int64
+			ilkID  int64
 			ilkErr error
 		)
 
 		BeforeEach(func() {
 			ilk := "0x4554482d41000000000000000000000000000000000000000000000000000000"
-			ilkId, ilkErr = shared.GetOrCreateIlk(ilk, db)
+			ilkID, ilkErr = shared.GetOrCreateIlk(ilk, db)
 			Expect(ilkErr).NotTo(HaveOccurred())
 		})
 
@@ -139,7 +139,7 @@ var _ = Describe("Executing the transformer", func() {
 			var artResult test_helpers.MappingRes
 			err = db.Get(&artResult, `SELECT block_number, block_hash, ilk_id AS key, art AS value FROM maker.vat_ilk_art`)
 			Expect(err).NotTo(HaveOccurred())
-			test_helpers.AssertMapping(artResult, blockNumber, blockHash, strconv.FormatInt(ilkId, 10), "1000000000000000000")
+			test_helpers.AssertMapping(artResult, blockNumber, blockHash, strconv.FormatInt(ilkID, 10), "1000000000000000000")
 		})
 
 		It("reads in a Vat ilk rate storage diff row and persists it", func() {
@@ -158,7 +158,7 @@ var _ = Describe("Executing the transformer", func() {
 			var rateResult test_helpers.MappingRes
 			err = db.Get(&rateResult, `SELECT block_number, block_hash, ilk_id AS key, rate AS value FROM maker.vat_ilk_rate`)
 			Expect(err).NotTo(HaveOccurred())
-			test_helpers.AssertMapping(rateResult, blockNumber, blockHash, strconv.FormatInt(ilkId, 10), "1000000000000000000000000000")
+			test_helpers.AssertMapping(rateResult, blockNumber, blockHash, strconv.FormatInt(ilkID, 10), "1000000000000000000000000000")
 		})
 
 		It("reads in a Vat ilk spot storage diff row and persists it", func() {
@@ -177,7 +177,7 @@ var _ = Describe("Executing the transformer", func() {
 			var spotResult test_helpers.MappingRes
 			err = db.Get(&spotResult, `SELECT block_number, block_hash, ilk_id AS key, spot AS value FROM maker.vat_ilk_spot`)
 			Expect(err).NotTo(HaveOccurred())
-			test_helpers.AssertMapping(spotResult, blockNumber, blockHash, strconv.FormatInt(ilkId, 10), "89550000000000000000000000000")
+			test_helpers.AssertMapping(spotResult, blockNumber, blockHash, strconv.FormatInt(ilkID, 10), "89550000000000000000000000000")
 		})
 
 		It("reads in a Vat ilk spot storage diff with a hashed storage key", func() {
@@ -219,7 +219,7 @@ var _ = Describe("Executing the transformer", func() {
 			var lineResult test_helpers.MappingRes
 			err = db.Get(&lineResult, `SELECT block_number, block_hash, ilk_id AS key, line AS value FROM maker.vat_ilk_line`)
 			Expect(err).NotTo(HaveOccurred())
-			test_helpers.AssertMapping(lineResult, blockNumber, blockHash, strconv.FormatInt(ilkId, 10), "100000000000000000000000000000000000000000000")
+			test_helpers.AssertMapping(lineResult, blockNumber, blockHash, strconv.FormatInt(ilkID, 10), "100000000000000000000000000000000000000000000")
 		})
 	})
 

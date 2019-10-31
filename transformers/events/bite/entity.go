@@ -29,7 +29,7 @@ type BiteEntity struct {
 	Art      *big.Int
 	Tab      *big.Int
 	Flip     common.Address
-	Id       *big.Int
+	Id       *big.Int // can't be all caps or else unpacking fails
 	HeaderID int64
 	LogID    int64
 }

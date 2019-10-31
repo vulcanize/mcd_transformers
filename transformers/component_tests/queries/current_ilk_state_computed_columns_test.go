@@ -17,16 +17,8 @@
 package queries
 
 import (
-	"github.com/vulcanize/vulcanizedb/libraries/shared/factories/event"
-	"math/rand"
-
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/vulcanize/vulcanizedb/pkg/core"
-	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
-	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres/repositories"
-	"github.com/vulcanize/vulcanizedb/pkg/fakes"
-
 	"github.com/vulcanize/mcd_transformers/test_config"
 	"github.com/vulcanize/mcd_transformers/transformers/component_tests/queries/test_helpers"
 	"github.com/vulcanize/mcd_transformers/transformers/events/spot_file/mat"
@@ -35,6 +27,12 @@ import (
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/factories/event"
+	"github.com/vulcanize/vulcanizedb/pkg/core"
+	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
+	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres/repositories"
+	"github.com/vulcanize/vulcanizedb/pkg/fakes"
+	"math/rand"
 )
 
 var _ = Describe("current ilk state computed columns", func() {
@@ -43,7 +41,7 @@ var _ = Describe("current ilk state computed columns", func() {
 		fakeBlock        int
 		fakeGuy          = "fakeAddress"
 		fakeHeader       core.Header
-		headerId, logId  int64
+		headerID, logID  int64
 		headerRepository repositories.HeaderRepository
 	)
 
@@ -55,10 +53,10 @@ var _ = Describe("current ilk state computed columns", func() {
 		fakeBlock = rand.Int()
 		fakeHeader = fakes.GetFakeHeader(int64(fakeBlock))
 		var insertHeaderErr error
-		headerId, insertHeaderErr = headerRepository.CreateOrUpdateHeader(fakeHeader)
+		headerID, insertHeaderErr = headerRepository.CreateOrUpdateHeader(fakeHeader)
 		Expect(insertHeaderErr).NotTo(HaveOccurred())
-		fakeHeaderSyncLog := test_data.CreateTestLog(headerId, db)
-		logId = fakeHeaderSyncLog.ID
+		fakeHeaderSyncLog := test_data.CreateTestLog(headerID, db)
+		logID = fakeHeaderSyncLog.ID
 
 		ilkValues := test_helpers.GetIlkValues(0)
 		test_helpers.CreateIlk(db, fakeHeader, ilkValues, test_helpers.FakeIlkVatMetadatas,
@@ -77,8 +75,8 @@ var _ = Describe("current ilk state computed columns", func() {
 			frobEvent := test_data.VatFrobModelWithPositiveDart()
 			frobEvent.ForeignKeyValues[constants.UrnFK] = fakeGuy
 			frobEvent.ForeignKeyValues[constants.IlkFK] = test_helpers.FakeIlk.Hex
-			frobEvent.ColumnValues[constants.HeaderFK] = headerId
-			frobEvent.ColumnValues[constants.LogFK] = logId
+			frobEvent.ColumnValues[constants.HeaderFK] = headerID
+			frobEvent.ColumnValues[constants.LogFK] = logID
 			insertFrobErr := frobRepo.Create([]shared.InsertionModel{frobEvent})
 			Expect(insertFrobErr).NotTo(HaveOccurred())
 
@@ -111,22 +109,22 @@ var _ = Describe("current ilk state computed columns", func() {
 				oldFrob = test_data.VatFrobModelWithPositiveDart()
 				oldFrob.ForeignKeyValues[constants.UrnFK] = fakeGuy
 				oldFrob.ForeignKeyValues[constants.IlkFK] = test_helpers.FakeIlk.Hex
-				oldFrob.ColumnValues[constants.HeaderFK] = headerId
-				oldFrob.ColumnValues[constants.LogFK] = logId
+				oldFrob.ColumnValues[constants.HeaderFK] = headerID
+				oldFrob.ColumnValues[constants.LogFK] = logID
 				insertOldFrobErr := frobRepo.Create([]shared.InsertionModel{oldFrob})
 				Expect(insertOldFrobErr).NotTo(HaveOccurred())
 
 				newBlock = fakeBlock + 1
 				newHeader := fakes.GetFakeHeader(int64(newBlock))
-				newHeaderId, newHeaderErr := headerRepository.CreateOrUpdateHeader(newHeader)
+				newHeaderID, newHeaderErr := headerRepository.CreateOrUpdateHeader(newHeader)
 				Expect(newHeaderErr).NotTo(HaveOccurred())
-				newLogId := test_data.CreateTestLog(newHeaderId, db).ID
+				newLogID := test_data.CreateTestLog(newHeaderID, db).ID
 
 				newFrob = test_data.VatFrobModelWithNegativeDink()
 				newFrob.ForeignKeyValues[constants.UrnFK] = fakeGuy
 				newFrob.ForeignKeyValues[constants.IlkFK] = test_helpers.FakeIlk.Hex
-				newFrob.ColumnValues[constants.HeaderFK] = newHeaderId
-				newFrob.ColumnValues[constants.LogFK] = newLogId
+				newFrob.ColumnValues[constants.HeaderFK] = newHeaderID
+				newFrob.ColumnValues[constants.LogFK] = newLogID
 				insertNewFrobErr := frobRepo.Create([]shared.InsertionModel{newFrob})
 				Expect(insertNewFrobErr).NotTo(HaveOccurred())
 			})
@@ -178,8 +176,8 @@ var _ = Describe("current ilk state computed columns", func() {
 			fileRepo.SetDB(db)
 			fileEvent := test_data.VatFileIlkDustModel()
 			fileEvent.ForeignKeyValues[constants.IlkFK] = test_helpers.FakeIlk.Hex
-			fileEvent.ColumnValues[constants.HeaderFK] = headerId
-			fileEvent.ColumnValues[constants.LogFK] = logId
+			fileEvent.ColumnValues[constants.HeaderFK] = headerID
+			fileEvent.ColumnValues[constants.LogFK] = logID
 			insertFileErr := fileRepo.Create([]shared.InsertionModel{fileEvent})
 			Expect(insertFileErr).NotTo(HaveOccurred())
 
@@ -210,23 +208,23 @@ var _ = Describe("current ilk state computed columns", func() {
 				fileRepo.SetDB(db)
 				fileEvent = test_data.VatFileIlkDustModel()
 				fileEvent.ForeignKeyValues[constants.IlkFK] = test_helpers.FakeIlk.Hex
-				fileEvent.ColumnValues[constants.HeaderFK] = headerId
-				fileEvent.ColumnValues[constants.LogFK] = logId
+				fileEvent.ColumnValues[constants.HeaderFK] = headerID
+				fileEvent.ColumnValues[constants.LogFK] = logID
 				insertFileErr := fileRepo.Create([]shared.InsertionModel{fileEvent})
 				Expect(insertFileErr).NotTo(HaveOccurred())
 
 				newBlock = fakeBlock + 1
 				newHeader := fakes.GetFakeHeader(int64(newBlock))
-				newHeaderId, insertNewHeaderErr := headerRepository.CreateOrUpdateHeader(newHeader)
+				newHeaderID, insertNewHeaderErr := headerRepository.CreateOrUpdateHeader(newHeader)
 				Expect(insertNewHeaderErr).NotTo(HaveOccurred())
-				newLogId := test_data.CreateTestLog(newHeaderId, db).ID
+				newLogID := test_data.CreateTestLog(newHeaderID, db).ID
 
 				spotFileMatRepo := mat.SpotFileMatRepository{}
 				spotFileMatRepo.SetDB(db)
 				spotFileMat = test_data.SpotFileMatModel()
 				spotFileMat.ForeignKeyValues[constants.IlkFK] = test_helpers.FakeIlk.Hex
-				spotFileMat.ColumnValues[constants.HeaderFK] = newHeaderId
-				spotFileMat.ColumnValues[constants.LogFK] = newLogId
+				spotFileMat.ColumnValues[constants.HeaderFK] = newHeaderID
+				spotFileMat.ColumnValues[constants.LogFK] = newLogID
 				spotFileMatErr := spotFileMatRepo.Create([]shared.InsertionModel{spotFileMat})
 				Expect(spotFileMatErr).NotTo(HaveOccurred())
 			})
@@ -272,7 +270,7 @@ var _ = Describe("current ilk state computed columns", func() {
 
 	Describe("current_ilk_state_bites", func() {
 		It("returns bite event for a current ilk state", func() {
-			biteEvent := generateBite(test_helpers.FakeIlk.Hex, test_data.FakeUrn, headerId, logId, db)
+			biteEvent := generateBite(test_helpers.FakeIlk.Hex, test_data.FakeUrn, headerID, logID, db)
 			insertBiteErr := event.Create([]event.InsertionModel{biteEvent}, db)
 			Expect(insertBiteErr).NotTo(HaveOccurred())
 
@@ -302,17 +300,17 @@ var _ = Describe("current ilk state computed columns", func() {
 			)
 
 			BeforeEach(func() {
-				oldBite = generateBite(test_helpers.FakeIlk.Hex, oldGuy, headerId, logId, db)
+				oldBite = generateBite(test_helpers.FakeIlk.Hex, oldGuy, headerID, logID, db)
 				insertOldBiteErr := event.Create([]event.InsertionModel{oldBite}, db)
 				Expect(insertOldBiteErr).NotTo(HaveOccurred())
 
 				newBlock = fakeBlock + 1
 				newHeader := fakes.GetFakeHeader(int64(newBlock))
-				newHeaderId, insertNewHeaderErr := headerRepository.CreateOrUpdateHeader(newHeader)
+				newHeaderID, insertNewHeaderErr := headerRepository.CreateOrUpdateHeader(newHeader)
 				Expect(insertNewHeaderErr).NotTo(HaveOccurred())
-				newLogId := test_data.CreateTestLog(newHeaderId, db).ID
+				newLogID := test_data.CreateTestLog(newHeaderID, db).ID
 
-				newBite = generateBite(test_helpers.FakeIlk.Hex, test_data.FakeUrn, newHeaderId, newLogId, db)
+				newBite = generateBite(test_helpers.FakeIlk.Hex, test_data.FakeUrn, newHeaderID, newLogID, db)
 				insertNewBiteErr := event.Create([]event.InsertionModel{newBite}, db)
 				Expect(insertNewBiteErr).NotTo(HaveOccurred())
 			})

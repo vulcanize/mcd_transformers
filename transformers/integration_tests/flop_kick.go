@@ -91,7 +91,7 @@ var _ = XDescribe("FlopKick Transformer", func() {
 
 		Expect(len(dbResult)).To(Equal(1))
 		Expect(dbResult[0].Bid).To(Equal("0"))
-		Expect(dbResult[0].BidId).To(Equal("1"))
+		Expect(dbResult[0].BidID).To(Equal("1"))
 		Expect(dbResult[0].ContractAddress).To(Equal(""))
 		Expect(dbResult[0].Gal).To(Equal("0x9B870D55BaAEa9119dBFa71A92c5E26E79C4726d"))
 		// this very large number appears to be derived from the data including: "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
@@ -121,7 +121,7 @@ var _ = XDescribe("FlopKick Transformer", func() {
 
 		Expect(len(dbResult)).To(Equal(1))
 		Expect(dbResult[0].Bid).To(Equal("10000000000000000000000"))
-		Expect(dbResult[0].BidId).To(Equal("2"))
+		Expect(dbResult[0].BidID).To(Equal("2"))
 		Expect(dbResult[0].ContractAddress).To(Equal(""))
 		Expect(dbResult[0].Gal).To(Equal("0x3728e9777B2a0a611ee0F89e00E01044ce4736d1"))
 		Expect(dbResult[0].Lot).To(Equal("115792089237316195423570985008687907853269984665640564039457584007913129639935"))
@@ -129,7 +129,7 @@ var _ = XDescribe("FlopKick Transformer", func() {
 })
 
 type FlopKickModel struct {
-	BidId           string `db:"bid_id"`
+	BidID           string `db:"bid_id"`
 	Lot             string
 	Bid             string
 	Gal             string
