@@ -86,13 +86,10 @@ var _ = Describe("Jug storage repository", func() {
 				Expect(err).To(MatchError(utils.ErrMetadataMalformed{MissingData: constants.Ilk}))
 			})
 
-			rawRho := rand.Int()
 			shared_behaviors.SharedIlkTriggerTests(shared_behaviors.IlkTriggerTestInput{
-				Repository:       &repo,
-				Metadata:         utils.GetStorageValueMetadata(jug.IlkRho, map[utils.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex}, utils.Uint256),
-				PropertyName:     "Rho",
-				PropertyValueOne: strconv.Itoa(rawRho),
-				PropertyValueTwo: strconv.Itoa(rawRho + 1),
+				Repository:    &repo,
+				Metadata:      utils.GetStorageValueMetadata(jug.IlkRho, map[utils.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex}, utils.Uint256),
+				PropertyValue: strconv.Itoa(rand.Int()),
 			})
 		})
 
@@ -133,13 +130,10 @@ var _ = Describe("Jug storage repository", func() {
 				Expect(err).To(MatchError(utils.ErrMetadataMalformed{MissingData: constants.Ilk}))
 			})
 
-			rawDuty := rand.Int()
 			shared_behaviors.SharedIlkTriggerTests(shared_behaviors.IlkTriggerTestInput{
-				Repository:       &repo,
-				Metadata:         utils.GetStorageValueMetadata(jug.IlkDuty, map[utils.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex}, utils.Uint256),
-				PropertyName:     "Duty",
-				PropertyValueOne: strconv.Itoa(rawDuty),
-				PropertyValueTwo: strconv.Itoa(rawDuty + 1),
+				Repository:    &repo,
+				Metadata:      utils.GetStorageValueMetadata(jug.IlkDuty, map[utils.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex}, utils.Uint256),
+				PropertyValue: strconv.Itoa(rand.Int()),
 			})
 		})
 	})

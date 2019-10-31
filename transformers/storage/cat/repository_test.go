@@ -18,13 +18,12 @@ import (
 
 var _ = Describe("Cat storage repository", func() {
 	var (
-		db                 *postgres.DB
-		repo               cat.CatStorageRepository
-		fakeBlockNumber    = 123
-		fakeBlockHash      = "expected_block_hash"
-		fakeAddress        = "0x12345"
-		anotherFakeAddress = "0xedcba"
-		fakeUint256        = "12345"
+		db              *postgres.DB
+		repo            cat.CatStorageRepository
+		fakeBlockNumber = 123
+		fakeBlockHash   = "expected_block_hash"
+		fakeAddress     = "0x12345"
+		fakeUint256     = "12345"
 	)
 
 	BeforeEach(func() {
@@ -157,11 +156,9 @@ var _ = Describe("Cat storage repository", func() {
 			})
 
 			shared_behaviors.SharedIlkTriggerTests(shared_behaviors.IlkTriggerTestInput{
-				Repository:       &repo,
-				Metadata:         utils.GetStorageValueMetadata(cat.IlkFlip, map[utils.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex}, utils.Address),
-				PropertyName:     "Flip",
-				PropertyValueOne: fakeAddress,
-				PropertyValueTwo: anotherFakeAddress,
+				Repository:    &repo,
+				Metadata:      utils.GetStorageValueMetadata(cat.IlkFlip, map[utils.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex}, utils.Address),
+				PropertyValue: fakeAddress,
 			})
 		})
 
@@ -201,13 +198,10 @@ var _ = Describe("Cat storage repository", func() {
 				Expect(err).To(MatchError(utils.ErrMetadataMalformed{MissingData: constants.Ilk}))
 			})
 
-			rawChop := rand.Int()
 			shared_behaviors.SharedIlkTriggerTests(shared_behaviors.IlkTriggerTestInput{
-				Repository:       &repo,
-				Metadata:         utils.GetStorageValueMetadata(cat.IlkChop, map[utils.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex}, utils.Uint256),
-				PropertyName:     "Chop",
-				PropertyValueOne: strconv.Itoa(rawChop),
-				PropertyValueTwo: strconv.Itoa(rawChop + 1),
+				Repository:    &repo,
+				Metadata:      utils.GetStorageValueMetadata(cat.IlkChop, map[utils.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex}, utils.Uint256),
+				PropertyValue: strconv.Itoa(rand.Int()),
 			})
 		})
 
@@ -247,13 +241,10 @@ var _ = Describe("Cat storage repository", func() {
 				Expect(err).To(MatchError(utils.ErrMetadataMalformed{MissingData: constants.Ilk}))
 			})
 
-			rawLump := rand.Int()
 			shared_behaviors.SharedIlkTriggerTests(shared_behaviors.IlkTriggerTestInput{
-				Repository:       &repo,
-				Metadata:         utils.GetStorageValueMetadata(cat.IlkLump, map[utils.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex}, utils.Uint256),
-				PropertyName:     "Lump",
-				PropertyValueOne: strconv.Itoa(rawLump),
-				PropertyValueTwo: strconv.Itoa(rawLump + 1),
+				Repository:    &repo,
+				Metadata:      utils.GetStorageValueMetadata(cat.IlkLump, map[utils.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex}, utils.Uint256),
+				PropertyValue: strconv.Itoa(rand.Int()),
 			})
 		})
 	})

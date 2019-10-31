@@ -1,6 +1,9 @@
 package test_helpers
 
 import (
+	"github.com/vulcanize/vulcanizedb/pkg/core"
+	"math/rand"
+	"strconv"
 	"time"
 
 	. "github.com/onsi/gomega"
@@ -14,8 +17,14 @@ func FormatTimestamp(timestamp int64) string {
 }
 
 func CreateHeader(timestamp int64, blockNumber int, db *postgres.DB) {
+	CreateHeaderWithHash(strconv.Itoa(rand.Int()), timestamp, blockNumber, db)
+}
+
+func CreateHeaderWithHash(hash string, timestamp int64, blockNumber int, db *postgres.DB) core.Header {
 	fakeHeader := fakes.GetFakeHeaderWithTimestamp(timestamp, int64(blockNumber))
+	fakeHeader.Hash = hash
 	headerRepo := repositories.NewHeaderRepository(db)
 	_, headerErr := headerRepo.CreateOrUpdateHeader(fakeHeader)
 	Expect(headerErr).NotTo(HaveOccurred())
+	return fakeHeader
 }

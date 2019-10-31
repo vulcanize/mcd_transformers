@@ -34,13 +34,12 @@ import (
 
 var _ = Describe("Spot storage repository", func() {
 	var (
-		db                 *postgres.DB
-		repo               spot.SpotStorageRepository
-		fakeAddress        = "0x12345"
-		anotherFakeAddress = "0xedcba"
-		fakeBlockNumber    = 123
-		fakeBlockHash      = "expected_block_hash"
-		fakeUint256        = "12345"
+		db              *postgres.DB
+		repo            spot.SpotStorageRepository
+		fakeAddress     = "0x12345"
+		fakeBlockNumber = 123
+		fakeBlockHash   = "expected_block_hash"
+		fakeUint256     = "12345"
 	)
 
 	BeforeEach(func() {
@@ -88,11 +87,9 @@ var _ = Describe("Spot storage repository", func() {
 			})
 
 			shared_behaviors.SharedIlkTriggerTests(shared_behaviors.IlkTriggerTestInput{
-				Repository:       &repo,
-				Metadata:         utils.GetStorageValueMetadata(spot.IlkPip, map[utils.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex}, utils.Address),
-				PropertyName:     "Pip",
-				PropertyValueOne: fakeAddress,
-				PropertyValueTwo: anotherFakeAddress,
+				Repository:    &repo,
+				Metadata:      utils.GetStorageValueMetadata(spot.IlkPip, map[utils.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex}, utils.Address),
+				PropertyValue: fakeAddress,
 			})
 		})
 
@@ -133,13 +130,10 @@ var _ = Describe("Spot storage repository", func() {
 				Expect(err).To(MatchError(utils.ErrMetadataMalformed{MissingData: constants.Ilk}))
 			})
 
-			rawMat := rand.Int()
 			shared_behaviors.SharedIlkTriggerTests(shared_behaviors.IlkTriggerTestInput{
-				Repository:       &repo,
-				Metadata:         utils.GetStorageValueMetadata(spot.IlkMat, map[utils.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex}, utils.Uint256),
-				PropertyName:     "Mat",
-				PropertyValueOne: strconv.Itoa(rawMat),
-				PropertyValueTwo: strconv.Itoa(rawMat + 1),
+				Repository:    &repo,
+				Metadata:      utils.GetStorageValueMetadata(spot.IlkMat, map[utils.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex}, utils.Uint256),
+				PropertyValue: strconv.Itoa(rand.Int()),
 			})
 		})
 	})

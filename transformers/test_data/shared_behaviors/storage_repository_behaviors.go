@@ -1,8 +1,8 @@
 package shared_behaviors
 
 import (
-	"database/sql"
 	"fmt"
+	"github.com/ethereum/go-ethereum/common"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/vulcanize/mcd_transformers/test_config"
@@ -10,10 +10,10 @@ import (
 	. "github.com/vulcanize/mcd_transformers/transformers/storage/test_helpers"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/factories/storage"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/storage/utils"
+	"github.com/vulcanize/vulcanizedb/pkg/core"
 	"github.com/vulcanize/vulcanizedb/pkg/fakes"
 	"math/rand"
-	"reflect"
-	"strings"
+	"strconv"
 )
 
 type StorageVariableBehaviorInputs struct {
@@ -78,135 +78,88 @@ func SharedStorageRepositoryVariableBehaviors(inputs *StorageVariableBehaviorInp
 }
 
 type IlkTriggerTestInput struct {
-	Repository       storage.Repository
-	Metadata         utils.StorageValueMetadata
-	PropertyName     string
-	PropertyValueOne string
-	PropertyValueTwo string
+	Repository    storage.Repository
+	Metadata      utils.StorageValueMetadata
+	PropertyValue string
 }
 
 func SharedIlkTriggerTests(input IlkTriggerTestInput) {
 	Describe("updating current_ilk_state trigger table", func() {
 		var (
-			repo            = input.Repository
-			database        = test_config.NewTestDB(test_config.NewTestNode())
-			fakeBlockNumber = rand.Int()
-			fakeBlockHash   = "expected_block_hash"
-			columnName      = strings.ToLower(input.PropertyName)
-			setUpStateQuery = fmt.Sprintf(`INSERT INTO api.current_ilk_state (ilk_identifier, %s, created, updated) VALUES ($1, $2, $3::TIMESTAMP, $3::TIMESTAMP)`, columnName)
-			getStateQuery   = fmt.Sprintf(`SELECT ilk_identifier, %s, created, updated FROM api.current_ilk_state`, columnName)
+			blockOne,
+			blockTwo int
+			headerOne,
+			headerTwo core.Header
+			repo          = input.Repository
+			database      = test_config.NewTestDB(test_config.NewTestNode())
+			hashOne       = common.BytesToHash([]byte{1, 2, 3, 4, 5})
+			hashTwo       = common.BytesToHash([]byte{5, 4, 3, 2, 1})
+			getStateQuery = `SELECT ilk_identifier, block_number, rate, art, spot, line, dust, chop, lump, flip, rho, duty, pip, mat, updated FROM api.ilk_state_history ORDER BY block_number`
 		)
 
 		BeforeEach(func() {
 			test_config.CleanTestDB(database)
 			repo.SetDB(database)
+			blockOne = rand.Int()
+			blockTwo = blockOne + 1
+			rawTimestampOne := int64(rand.Int31())
+			rawTimestampTwo := rawTimestampOne + 1
+			headerOne = CreateHeaderWithHash(hashOne.String(), rawTimestampOne, blockOne, database)
+			headerTwo = CreateHeaderWithHash(hashTwo.String(), rawTimestampTwo, blockTwo, database)
 		})
 
-		It("inserts a row for new ilk identifier", func() {
-			rawTimestamp := int64(rand.Int31())
-			CreateHeader(rawTimestamp, fakeBlockNumber, database)
-			expectedTime := sql.NullString{String: FormatTimestamp(rawTimestamp), Valid: true}
+		It("inserts a row for new ilk-block", func() {
+			initialIlkValues := test_helpers.GetIlkValues(0)
+			test_helpers.CreateIlk(database, headerOne, initialIlkValues, test_helpers.FakeIlkVatMetadatas,
+				test_helpers.FakeIlkCatMetadatas, test_helpers.FakeIlkJugMetadatas, test_helpers.FakeIlkSpotMetadatas)
 
-			err := repo.Create(fakeBlockNumber, fakeBlockHash, input.Metadata, input.PropertyValueOne)
+			err := repo.Create(blockTwo, hashTwo.String(), input.Metadata, input.PropertyValue)
 			Expect(err).NotTo(HaveOccurred())
 
-			var ilkState test_helpers.IlkState
-			queryErr := database.Get(&ilkState, getStateQuery)
+			var ilkStates []test_helpers.IlkState
+			queryErr := database.Select(&ilkStates, getStateQuery)
 			Expect(queryErr).NotTo(HaveOccurred())
-			Expect(ilkState.IlkIdentifier).To(Equal(test_helpers.FakeIlk.Identifier))
-			Expect(getIlkProperty(ilkState, input.PropertyName)).To(Equal(input.PropertyValueOne))
-			Expect(ilkState.Created).To(Equal(expectedTime))
-			Expect(ilkState.Updated).To(Equal(expectedTime))
+			Expect(len(ilkStates)).To(Equal(2))
+			initialIlkValues[input.Metadata.Name] = input.PropertyValue
+			expectedIlk := test_helpers.IlkStateFromValues(test_helpers.FakeIlk.Hex,
+				headerTwo.Timestamp, headerOne.Timestamp, initialIlkValues)
+			assertIlk(ilkStates[1], expectedIlk, headerTwo.BlockNumber)
 		})
 
-		It("updates time created if new diff is from earlier block", func() {
-			rawTimestamp := int64(rand.Int31())
-			CreateHeader(rawTimestamp, fakeBlockNumber, database)
-			formattedTimestamp := FormatTimestamp(rawTimestamp)
-			expectedTimeUpdated := sql.NullString{String: formattedTimestamp, Valid: true}
+		It("updates row if ilk-block combination already exists in table", func() {
+			initialIlkValues := test_helpers.GetIlkValues(0)
+			test_helpers.CreateIlk(database, headerOne, initialIlkValues, test_helpers.FakeIlkVatMetadatas,
+				test_helpers.FakeIlkCatMetadatas, test_helpers.FakeIlkJugMetadatas, test_helpers.FakeIlkSpotMetadatas)
 
-			// set up old ilk state in later block
-			_, insertErr := database.Exec(setUpStateQuery,
-				test_helpers.FakeIlk.Identifier, input.PropertyValueOne, formattedTimestamp)
-			Expect(insertErr).NotTo(HaveOccurred())
-
-			// set up earlier header
-			earlierBlockNumber := fakeBlockNumber - 1
-			earlierTimestamp := rawTimestamp - 1
-			CreateHeader(earlierTimestamp, earlierBlockNumber, database)
-			formattedEarlierTimestamp := FormatTimestamp(earlierTimestamp)
-			expectedTimeCreated := sql.NullString{String: formattedEarlierTimestamp, Valid: true}
-
-			// trigger new ilk state from earlier block
-			err := repo.Create(earlierBlockNumber, fakeBlockHash, input.Metadata, input.PropertyValueTwo)
+			err := repo.Create(blockOne, hashOne.String(), input.Metadata, input.PropertyValue)
 			Expect(err).NotTo(HaveOccurred())
 
-			var ilkState test_helpers.IlkState
-			queryErr := database.Get(&ilkState, getStateQuery)
+			var ilkStates []test_helpers.IlkState
+			queryErr := database.Select(&ilkStates, getStateQuery)
 			Expect(queryErr).NotTo(HaveOccurred())
-			Expect(ilkState.IlkIdentifier).To(Equal(test_helpers.FakeIlk.Identifier))
-			Expect(getIlkProperty(ilkState, input.PropertyName)).To(Equal(input.PropertyValueOne))
-			Expect(ilkState.Created).To(Equal(expectedTimeCreated))
-			Expect(ilkState.Updated).To(Equal(expectedTimeUpdated))
-		})
-
-		It("updates value and time updated if new diff is from later block", func() {
-			rawTimestamp := int64(rand.Int31())
-			CreateHeader(rawTimestamp, fakeBlockNumber, database)
-			formattedTimestamp := FormatTimestamp(rawTimestamp)
-			expectedTimeCreated := sql.NullString{String: formattedTimestamp, Valid: true}
-
-			// set up old ilk state in earlier block
-			_, insertErr := database.Exec(setUpStateQuery,
-				test_helpers.FakeIlk.Identifier, input.PropertyValueOne, formattedTimestamp)
-			Expect(insertErr).NotTo(HaveOccurred())
-
-			// set up later header
-			laterBlockNumber := fakeBlockNumber + 1
-			laterTimestamp := rawTimestamp + 1
-			CreateHeader(laterTimestamp, laterBlockNumber, database)
-			formattedLaterTimestamp := FormatTimestamp(laterTimestamp)
-			expectedTimeUpdated := sql.NullString{String: formattedLaterTimestamp, Valid: true}
-
-			// trigger new ilk state from later block
-			err := repo.Create(laterBlockNumber, fakeBlockHash, input.Metadata, input.PropertyValueTwo)
-			Expect(err).NotTo(HaveOccurred())
-
-			var ilkState test_helpers.IlkState
-			queryErr := database.Get(&ilkState, getStateQuery)
-			Expect(queryErr).NotTo(HaveOccurred())
-			Expect(ilkState.IlkIdentifier).To(Equal(test_helpers.FakeIlk.Identifier))
-			Expect(getIlkProperty(ilkState, input.PropertyName)).To(Equal(input.PropertyValueTwo))
-			Expect(ilkState.Created).To(Equal(expectedTimeCreated))
-			Expect(ilkState.Updated).To(Equal(expectedTimeUpdated))
-		})
-
-		It("otherwise leaves row as is", func() {
-			rawTimestamp := int64(rand.Int31())
-			CreateHeader(rawTimestamp, fakeBlockNumber, database)
-			formattedTimestamp := FormatTimestamp(rawTimestamp)
-			expectedTime := sql.NullString{String: formattedTimestamp, Valid: true}
-
-			_, insertErr := database.Exec(setUpStateQuery,
-				test_helpers.FakeIlk.Identifier, input.PropertyValueOne, formattedTimestamp)
-			Expect(insertErr).NotTo(HaveOccurred())
-
-			err := repo.Create(fakeBlockNumber, fakeBlockHash, input.Metadata, input.PropertyValueTwo)
-			Expect(err).NotTo(HaveOccurred())
-
-			var ilkState test_helpers.IlkState
-			queryErr := database.Get(&ilkState, getStateQuery)
-			Expect(queryErr).NotTo(HaveOccurred())
-			Expect(ilkState.IlkIdentifier).To(Equal(test_helpers.FakeIlk.Identifier))
-			Expect(getIlkProperty(ilkState, input.PropertyName)).To(Equal(input.PropertyValueOne))
-			Expect(ilkState.Created).To(Equal(expectedTime))
-			Expect(ilkState.Updated).To(Equal(expectedTime))
+			Expect(len(ilkStates)).To(Equal(1))
+			initialIlkValues[input.Metadata.Name] = input.PropertyValue
+			expectedIlk := test_helpers.IlkStateFromValues(test_helpers.FakeIlk.Hex,
+				headerOne.Timestamp, headerOne.Timestamp, initialIlkValues)
+			assertIlk(ilkStates[0], expectedIlk, headerOne.BlockNumber)
 		})
 	})
 }
 
-func getIlkProperty(ilk test_helpers.IlkState, fieldName string) string {
-	r := reflect.ValueOf(ilk)
-	property := reflect.Indirect(r).FieldByName(fieldName)
-	return property.String()
+func assertIlk(actualIlk test_helpers.IlkState, expectedIlk test_helpers.IlkState, expectedBlockNumber int64) {
+	Expect(actualIlk.IlkIdentifier).To(Equal(expectedIlk.IlkIdentifier))
+	Expect(actualIlk.BlockNumber).To(Equal(strconv.FormatInt(expectedBlockNumber, 10)))
+	Expect(actualIlk.Rate).To(Equal(expectedIlk.Rate))
+	Expect(actualIlk.Art).To(Equal(expectedIlk.Art))
+	Expect(actualIlk.Spot).To(Equal(expectedIlk.Spot))
+	Expect(actualIlk.Line).To(Equal(expectedIlk.Line))
+	Expect(actualIlk.Dust).To(Equal(expectedIlk.Dust))
+	Expect(actualIlk.Chop).To(Equal(expectedIlk.Chop))
+	Expect(actualIlk.Lump).To(Equal(expectedIlk.Lump))
+	Expect(actualIlk.Flip).To(Equal(expectedIlk.Flip))
+	Expect(actualIlk.Rho).To(Equal(expectedIlk.Rho))
+	Expect(actualIlk.Duty).To(Equal(expectedIlk.Duty))
+	Expect(actualIlk.Pip).To(Equal(expectedIlk.Pip))
+	Expect(actualIlk.Mat).To(Equal(expectedIlk.Mat))
+	Expect(actualIlk.Updated).To(Equal(expectedIlk.Updated))
 }

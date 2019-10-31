@@ -175,13 +175,10 @@ var _ = Describe("Vat storage repository", func() {
 			Expect(err).To(MatchError(utils.ErrMetadataMalformed{MissingData: constants.Ilk}))
 		})
 
-		rawArt := rand.Int()
 		shared_behaviors.SharedIlkTriggerTests(shared_behaviors.IlkTriggerTestInput{
-			Repository:       &repo,
-			Metadata:         utils.GetStorageValueMetadata(vat.IlkArt, map[utils.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex}, utils.Uint256),
-			PropertyName:     "Art",
-			PropertyValueOne: strconv.Itoa(rawArt),
-			PropertyValueTwo: strconv.Itoa(rawArt + 1),
+			Repository:    &repo,
+			Metadata:      utils.GetStorageValueMetadata(vat.IlkArt, map[utils.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex}, utils.Uint256),
+			PropertyValue: strconv.Itoa(rand.Int()),
 		})
 	})
 
@@ -224,13 +221,10 @@ var _ = Describe("Vat storage repository", func() {
 			Expect(err).To(MatchError(utils.ErrMetadataMalformed{MissingData: constants.Ilk}))
 		})
 
-		rawDust := rand.Int()
 		shared_behaviors.SharedIlkTriggerTests(shared_behaviors.IlkTriggerTestInput{
-			Repository:       &repo,
-			Metadata:         utils.GetStorageValueMetadata(vat.IlkDust, map[utils.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex}, utils.Uint256),
-			PropertyName:     "Dust",
-			PropertyValueOne: strconv.Itoa(rawDust),
-			PropertyValueTwo: strconv.Itoa(rawDust + 1),
+			Repository:    &repo,
+			Metadata:      utils.GetStorageValueMetadata(vat.IlkDust, map[utils.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex}, utils.Uint256),
+			PropertyValue: strconv.Itoa(rand.Int()),
 		})
 	})
 
@@ -273,13 +267,10 @@ var _ = Describe("Vat storage repository", func() {
 			Expect(err).To(MatchError(utils.ErrMetadataMalformed{MissingData: constants.Ilk}))
 		})
 
-		rawLine := rand.Int()
 		shared_behaviors.SharedIlkTriggerTests(shared_behaviors.IlkTriggerTestInput{
-			Repository:       &repo,
-			Metadata:         utils.GetStorageValueMetadata(vat.IlkLine, map[utils.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex}, utils.Uint256),
-			PropertyName:     "Line",
-			PropertyValueOne: strconv.Itoa(rawLine),
-			PropertyValueTwo: strconv.Itoa(rawLine + 1),
+			Repository:    &repo,
+			Metadata:      utils.GetStorageValueMetadata(vat.IlkLine, map[utils.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex}, utils.Uint256),
+			PropertyValue: strconv.Itoa(rand.Int()),
 		})
 	})
 
@@ -322,13 +313,10 @@ var _ = Describe("Vat storage repository", func() {
 			Expect(err).To(MatchError(utils.ErrMetadataMalformed{MissingData: constants.Ilk}))
 		})
 
-		rawRate := rand.Int()
 		shared_behaviors.SharedIlkTriggerTests(shared_behaviors.IlkTriggerTestInput{
-			Repository:       &repo,
-			Metadata:         utils.GetStorageValueMetadata(vat.IlkRate, map[utils.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex}, utils.Uint256),
-			PropertyName:     "Rate",
-			PropertyValueOne: strconv.Itoa(rawRate),
-			PropertyValueTwo: strconv.Itoa(rawRate + 1),
+			Repository:    &repo,
+			Metadata:      utils.GetStorageValueMetadata(vat.IlkRate, map[utils.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex}, utils.Uint256),
+			PropertyValue: strconv.Itoa(rand.Int()),
 		})
 	})
 
@@ -371,13 +359,10 @@ var _ = Describe("Vat storage repository", func() {
 			Expect(err).To(MatchError(utils.ErrMetadataMalformed{MissingData: constants.Ilk}))
 		})
 
-		rawSpot := rand.Int()
 		shared_behaviors.SharedIlkTriggerTests(shared_behaviors.IlkTriggerTestInput{
-			Repository:       &repo,
-			Metadata:         utils.GetStorageValueMetadata(vat.IlkSpot, map[utils.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex}, utils.Uint256),
-			PropertyName:     "Spot",
-			PropertyValueOne: strconv.Itoa(rawSpot),
-			PropertyValueTwo: strconv.Itoa(rawSpot + 1),
+			Repository:    &repo,
+			Metadata:      utils.GetStorageValueMetadata(vat.IlkSpot, map[utils.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex}, utils.Uint256),
+			PropertyValue: strconv.Itoa(rand.Int()),
 		})
 	})
 
