@@ -84,7 +84,7 @@ type IlkTriggerTestInput struct {
 }
 
 func SharedIlkTriggerTests(input IlkTriggerTestInput) {
-	Describe("updating current_ilk_state trigger table", func() {
+	Describe("updating ilk_state_history trigger table", func() {
 		var (
 			blockOne,
 			blockTwo int
