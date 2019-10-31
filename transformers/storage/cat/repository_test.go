@@ -158,6 +158,7 @@ var _ = Describe("Cat storage repository", func() {
 			shared_behaviors.SharedIlkTriggerTests(shared_behaviors.IlkTriggerTestInput{
 				Repository:    &repo,
 				Metadata:      utils.GetStorageValueMetadata(cat.IlkFlip, map[utils.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex}, utils.Address),
+				PropertyName:  "Flip",
 				PropertyValue: fakeAddress,
 			})
 		})
@@ -201,6 +202,7 @@ var _ = Describe("Cat storage repository", func() {
 			shared_behaviors.SharedIlkTriggerTests(shared_behaviors.IlkTriggerTestInput{
 				Repository:    &repo,
 				Metadata:      utils.GetStorageValueMetadata(cat.IlkChop, map[utils.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex}, utils.Uint256),
+				PropertyName:  "Chop",
 				PropertyValue: strconv.Itoa(rand.Int()),
 			})
 		})
@@ -244,6 +246,7 @@ var _ = Describe("Cat storage repository", func() {
 			shared_behaviors.SharedIlkTriggerTests(shared_behaviors.IlkTriggerTestInput{
 				Repository:    &repo,
 				Metadata:      utils.GetStorageValueMetadata(cat.IlkLump, map[utils.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex}, utils.Uint256),
+				PropertyName:  "Lump",
 				PropertyValue: strconv.Itoa(rand.Int()),
 			})
 		})

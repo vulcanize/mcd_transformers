@@ -2744,7 +2744,7 @@ CREATE FUNCTION maker.insert_ilk_duties() RETURNS trigger
     AS $$
 BEGIN
     PERFORM maker.insert_new_duty(NEW);
-    PERFORM maker.update_later_rates(NEW);
+    PERFORM maker.update_later_duties(NEW);
     RETURN NULL;
 END
 $$;
@@ -2759,7 +2759,7 @@ CREATE FUNCTION maker.insert_ilk_flips() RETURNS trigger
     AS $$
 BEGIN
     PERFORM maker.insert_new_flip(NEW);
-    PERFORM maker.update_later_flips();
+    PERFORM maker.update_later_flips(NEW);
     RETURN NULL;
 END
 $$;
@@ -4103,7 +4103,7 @@ CREATE FUNCTION maker.update_later_arts(new_diff maker.vat_ilk_art) RETURNS make
     LANGUAGE plpgsql
     AS $$
 DECLARE
-    diff_ilk_identifier  TEXT   := (
+    diff_ilk_identifier TEXT   := (
         SELECT identifier
         FROM maker.ilks
         WHERE ilks.id = new_diff.ilk_id);
@@ -4306,7 +4306,7 @@ CREATE FUNCTION maker.update_later_mats(new_diff maker.spot_ilk_mat) RETURNS mak
     LANGUAGE plpgsql
     AS $$
 DECLARE
-    diff_ilk_identifier  TEXT   := (
+    diff_ilk_identifier TEXT   := (
         SELECT identifier
         FROM maker.ilks
         WHERE ilks.id = new_diff.ilk_id);
@@ -4335,7 +4335,7 @@ CREATE FUNCTION maker.update_later_pips(new_diff maker.spot_ilk_pip) RETURNS mak
     LANGUAGE plpgsql
     AS $$
 DECLARE
-    diff_ilk_identifier  TEXT   := (
+    diff_ilk_identifier TEXT   := (
         SELECT identifier
         FROM maker.ilks
         WHERE ilks.id = new_diff.ilk_id);
@@ -4393,7 +4393,7 @@ CREATE FUNCTION maker.update_later_rhos(new_diff maker.jug_ilk_rho) RETURNS make
     LANGUAGE plpgsql
     AS $$
 DECLARE
-    diff_ilk_identifier  TEXT   := (
+    diff_ilk_identifier TEXT   := (
         SELECT identifier
         FROM maker.ilks
         WHERE ilks.id = new_diff.ilk_id);

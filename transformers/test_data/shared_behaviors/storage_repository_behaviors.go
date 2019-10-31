@@ -13,6 +13,7 @@ import (
 	"github.com/vulcanize/vulcanizedb/pkg/core"
 	"github.com/vulcanize/vulcanizedb/pkg/fakes"
 	"math/rand"
+	"reflect"
 	"strconv"
 )
 
@@ -80,6 +81,7 @@ func SharedStorageRepositoryVariableBehaviors(inputs *StorageVariableBehaviorInp
 type IlkTriggerTestInput struct {
 	Repository    storage.Repository
 	Metadata      utils.StorageValueMetadata
+	PropertyName  string
 	PropertyValue string
 }
 
@@ -90,11 +92,13 @@ func SharedIlkTriggerTests(input IlkTriggerTestInput) {
 			blockTwo int
 			headerOne,
 			headerTwo core.Header
-			repo          = input.Repository
-			database      = test_config.NewTestDB(test_config.NewTestNode())
-			hashOne       = common.BytesToHash([]byte{1, 2, 3, 4, 5})
-			hashTwo       = common.BytesToHash([]byte{5, 4, 3, 2, 1})
-			getStateQuery = `SELECT ilk_identifier, block_number, rate, art, spot, line, dust, chop, lump, flip, rho, duty, pip, mat, updated FROM api.ilk_state_history ORDER BY block_number`
+			repo             = input.Repository
+			database         = test_config.NewTestDB(test_config.NewTestNode())
+			hashOne          = common.BytesToHash([]byte{1, 2, 3, 4, 5})
+			hashTwo          = common.BytesToHash([]byte{5, 4, 3, 2, 1})
+			getStateQuery    = `SELECT ilk_identifier, block_number, rate, art, spot, line, dust, chop, lump, flip, rho, duty, pip, mat, updated FROM api.ilk_state_history ORDER BY block_number`
+			getFieldQuery    = fmt.Sprintf(`SELECT %s FROM api.ilk_state_history ORDER BY block_number`, input.Metadata.Name)
+			insertFieldQuery = fmt.Sprintf(`INSERT INTO api.ilk_state_history (ilk_identifier, block_number, %s) VALUES ($1, $2, $3)`, input.Metadata.Name)
 		)
 
 		BeforeEach(func() {
@@ -143,7 +147,76 @@ func SharedIlkTriggerTests(input IlkTriggerTestInput) {
 				headerOne.Timestamp, headerOne.Timestamp, initialIlkValues)
 			assertIlk(ilkStates[0], expectedIlk, headerOne.BlockNumber)
 		})
+
+		It("updates field in subsequent blocks", func() {
+			initialIlkValues := test_helpers.GetIlkValues(0)
+			_, setupErr := database.Exec(insertFieldQuery,
+				test_helpers.FakeIlk.Identifier, headerTwo.BlockNumber, initialIlkValues[input.Metadata.Name])
+			Expect(setupErr).NotTo(HaveOccurred())
+
+			err := repo.Create(blockOne, hashOne.String(), input.Metadata, input.PropertyValue)
+			Expect(err).NotTo(HaveOccurred())
+
+			var ilkStates []test_helpers.IlkState
+			queryErr := database.Select(&ilkStates, getFieldQuery)
+			Expect(queryErr).NotTo(HaveOccurred())
+			Expect(len(ilkStates)).To(Equal(2))
+			Expect(getIlkProperty(ilkStates[1], input.PropertyName)).To(Equal(input.PropertyValue))
+		})
+
+		It("ignores rows from blocks after the next time the field is updated", func() {
+			initialIlkValues := test_helpers.GetIlkValues(0)
+			setupErr := repo.Create(blockTwo, hashTwo.String(), input.Metadata, initialIlkValues[input.Metadata.Name])
+			Expect(setupErr).NotTo(HaveOccurred())
+
+			err := repo.Create(blockOne, hashOne.String(), input.Metadata, input.PropertyValue)
+			Expect(err).NotTo(HaveOccurred())
+
+			var ilkStates []test_helpers.IlkState
+			queryErr := database.Select(&ilkStates, getFieldQuery)
+			Expect(queryErr).NotTo(HaveOccurred())
+			Expect(len(ilkStates)).To(Equal(2))
+			Expect(getIlkProperty(ilkStates[1], input.PropertyName)).To(Equal(initialIlkValues[input.Metadata.Name]))
+		})
+
+		It("ignores rows from different ilk", func() {
+			initialIlkValues := test_helpers.GetIlkValues(0)
+			_, setupErr := database.Exec(insertFieldQuery,
+				test_helpers.AnotherFakeIlk.Identifier, headerTwo.BlockNumber, initialIlkValues[input.Metadata.Name])
+			Expect(setupErr).NotTo(HaveOccurred())
+
+			err := repo.Create(blockOne, hashOne.String(), input.Metadata, input.PropertyValue)
+			Expect(err).NotTo(HaveOccurred())
+
+			var ilkStates []test_helpers.IlkState
+			queryErr := database.Select(&ilkStates, getFieldQuery)
+			Expect(queryErr).NotTo(HaveOccurred())
+			Expect(len(ilkStates)).To(Equal(2))
+			Expect(getIlkProperty(ilkStates[1], input.PropertyName)).To(Equal(initialIlkValues[input.Metadata.Name]))
+		})
+
+		It("ignores rows from earlier blocks", func() {
+			initialIlkValues := test_helpers.GetIlkValues(0)
+			_, setupErr := database.Exec(insertFieldQuery,
+				test_helpers.FakeIlk.Identifier, headerOne.BlockNumber, initialIlkValues[input.Metadata.Name])
+			Expect(setupErr).NotTo(HaveOccurred())
+
+			err := repo.Create(blockTwo, hashTwo.String(), input.Metadata, input.PropertyValue)
+			Expect(err).NotTo(HaveOccurred())
+
+			var ilkStates []test_helpers.IlkState
+			queryErr := database.Select(&ilkStates, getFieldQuery)
+			Expect(queryErr).NotTo(HaveOccurred())
+			Expect(len(ilkStates)).To(Equal(2))
+			Expect(getIlkProperty(ilkStates[0], input.PropertyName)).To(Equal(initialIlkValues[input.Metadata.Name]))
+		})
 	})
+}
+
+func getIlkProperty(ilk test_helpers.IlkState, fieldName string) string {
+	r := reflect.ValueOf(ilk)
+	property := reflect.Indirect(r).FieldByName(fieldName)
+	return property.String()
 }
 
 func assertIlk(actualIlk test_helpers.IlkState, expectedIlk test_helpers.IlkState, expectedBlockNumber int64) {

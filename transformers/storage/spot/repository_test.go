@@ -89,6 +89,7 @@ var _ = Describe("Spot storage repository", func() {
 			shared_behaviors.SharedIlkTriggerTests(shared_behaviors.IlkTriggerTestInput{
 				Repository:    &repo,
 				Metadata:      utils.GetStorageValueMetadata(spot.IlkPip, map[utils.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex}, utils.Address),
+				PropertyName:  "Pip",
 				PropertyValue: fakeAddress,
 			})
 		})
@@ -133,6 +134,7 @@ var _ = Describe("Spot storage repository", func() {
 			shared_behaviors.SharedIlkTriggerTests(shared_behaviors.IlkTriggerTestInput{
 				Repository:    &repo,
 				Metadata:      utils.GetStorageValueMetadata(spot.IlkMat, map[utils.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex}, utils.Uint256),
+				PropertyName:  "Mat",
 				PropertyValue: strconv.Itoa(rand.Int()),
 			})
 		})

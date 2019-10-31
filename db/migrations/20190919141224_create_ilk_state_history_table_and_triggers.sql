@@ -877,7 +877,7 @@ AS
 $$
 BEGIN
     PERFORM maker.insert_new_flip(NEW);
-    PERFORM maker.update_later_flips();
+    PERFORM maker.update_later_flips(NEW);
     RETURN NULL;
 END
 $$
@@ -1055,7 +1055,7 @@ AS
 $$
 BEGIN
     PERFORM maker.insert_new_duty(NEW);
-    PERFORM maker.update_later_rates(NEW);
+    PERFORM maker.update_later_duties(NEW);
     RETURN NULL;
 END
 $$

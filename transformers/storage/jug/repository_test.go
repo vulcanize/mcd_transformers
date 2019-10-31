@@ -89,6 +89,7 @@ var _ = Describe("Jug storage repository", func() {
 			shared_behaviors.SharedIlkTriggerTests(shared_behaviors.IlkTriggerTestInput{
 				Repository:    &repo,
 				Metadata:      utils.GetStorageValueMetadata(jug.IlkRho, map[utils.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex}, utils.Uint256),
+				PropertyName:  "Rho",
 				PropertyValue: strconv.Itoa(rand.Int()),
 			})
 		})
@@ -133,6 +134,7 @@ var _ = Describe("Jug storage repository", func() {
 			shared_behaviors.SharedIlkTriggerTests(shared_behaviors.IlkTriggerTestInput{
 				Repository:    &repo,
 				Metadata:      utils.GetStorageValueMetadata(jug.IlkDuty, map[utils.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex}, utils.Uint256),
+				PropertyName:  "Duty",
 				PropertyValue: strconv.Itoa(rand.Int()),
 			})
 		})
