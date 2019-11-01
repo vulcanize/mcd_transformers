@@ -18,9 +18,9 @@ package storage
 
 import (
 	"errors"
-	repository2 "github.com/vulcanize/vulcanizedb/libraries/shared/repository"
 	"strconv"
 
+	"github.com/vulcanize/vulcanizedb/libraries/shared/repository"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
 )
 
@@ -50,13 +50,13 @@ type MakerStorageRepository struct {
 	db *postgres.DB
 }
 
-func (repository *MakerStorageRepository) GetFlapBidIDs(contractAddress string) ([]string, error) {
+func (repo *MakerStorageRepository) GetFlapBidIDs(contractAddress string) ([]string, error) {
 	var bidIDs []string
-	addressID, addressErr := repository.GetOrCreateAddress(contractAddress)
+	addressID, addressErr := repo.GetOrCreateAddress(contractAddress)
 	if addressErr != nil {
 		return []string{}, addressErr
 	}
-	err := repository.db.Select(&bidIDs, `
+	err := repo.db.Select(&bidIDs, `
 		SELECT bid_id FROM maker.flap_kick WHERE address_id = $1
 		UNION
 		SELECT kicks FROM maker.flap_kicks WHERE address_id = $1
@@ -69,9 +69,9 @@ func (repository *MakerStorageRepository) GetFlapBidIDs(contractAddress string) 
 	return bidIDs, err
 }
 
-func (repository *MakerStorageRepository) GetDaiKeys() ([]string, error) {
+func (repo *MakerStorageRepository) GetDaiKeys() ([]string, error) {
 	var daiKeys []string
-	err := repository.db.Select(&daiKeys, `
+	err := repo.db.Select(&daiKeys, `
 		SELECT DISTINCT src FROM maker.vat_move
 		UNION
 		SELECT DISTINCT dst FROM maker.vat_move
@@ -91,9 +91,9 @@ func (repository *MakerStorageRepository) GetDaiKeys() ([]string, error) {
 	return daiKeys, err
 }
 
-func (repository *MakerStorageRepository) GetGemKeys() ([]Urn, error) {
+func (repo *MakerStorageRepository) GetGemKeys() ([]Urn, error) {
 	var gems []Urn
-	err := repository.db.Select(&gems, `
+	err := repo.db.Select(&gems, `
 		SELECT DISTINCT ilks.ilk, slip.usr AS identifier
 		FROM maker.vat_slip slip
 		INNER JOIN maker.ilks ilks ON ilks.id = slip.ilk_id
@@ -119,15 +119,15 @@ func (repository *MakerStorageRepository) GetGemKeys() ([]Urn, error) {
 	return gems, err
 }
 
-func (repository MakerStorageRepository) GetIlks() ([]string, error) {
+func (repo MakerStorageRepository) GetIlks() ([]string, error) {
 	var ilks []string
-	err := repository.db.Select(&ilks, `SELECT DISTINCT ilk FROM maker.ilks`)
+	err := repo.db.Select(&ilks, `SELECT DISTINCT ilk FROM maker.ilks`)
 	return ilks, err
 }
 
-func (repository *MakerStorageRepository) GetVatSinKeys() ([]string, error) {
+func (repo *MakerStorageRepository) GetVatSinKeys() ([]string, error) {
 	var sinKeys []string
-	err := repository.db.Select(&sinKeys, `
+	err := repo.db.Select(&sinKeys, `
 		SELECT DISTINCT w FROM maker.vat_grab
 		UNION
 		SELECT DISTINCT u FROM maker.vat_suck
@@ -139,9 +139,9 @@ func (repository *MakerStorageRepository) GetVatSinKeys() ([]string, error) {
 	return sinKeys, err
 }
 
-func (repository *MakerStorageRepository) GetVowSinKeys() ([]string, error) {
+func (repo *MakerStorageRepository) GetVowSinKeys() ([]string, error) {
 	var sinKeys []string
-	err := repository.db.Select(&sinKeys, `
+	err := repo.db.Select(&sinKeys, `
 		SELECT DISTINCT era FROM maker.vow_flog
 		UNION
 		SELECT DISTINCT headers.block_timestamp
@@ -150,9 +150,9 @@ func (repository *MakerStorageRepository) GetVowSinKeys() ([]string, error) {
 	return sinKeys, err
 }
 
-func (repository *MakerStorageRepository) GetUrns() ([]Urn, error) {
+func (repo *MakerStorageRepository) GetUrns() ([]Urn, error) {
 	var urns []Urn
-	err := repository.db.Select(&urns, `
+	err := repo.db.Select(&urns, `
 		SELECT DISTINCT ilks.ilk, urns.identifier
 		FROM maker.urns
 		JOIN maker.ilks on maker.ilks.id = maker.urns.ilk_id
@@ -167,10 +167,10 @@ func (repository *MakerStorageRepository) GetUrns() ([]Urn, error) {
 	return urns, err
 }
 
-func (repository *MakerStorageRepository) GetCDPIs() ([]string, error) {
+func (repo *MakerStorageRepository) GetCDPIs() ([]string, error) {
 	nullValue := 0
 	var maxCDPI int
-	readErr := repository.db.Get(&maxCDPI, `
+	readErr := repo.db.Get(&maxCDPI, `
 		SELECT COALESCE(MAX(cdpi), $1)
 		FROM maker.cdp_manager_cdpi`, nullValue)
 	if readErr != nil {
@@ -182,21 +182,21 @@ func (repository *MakerStorageRepository) GetCDPIs() ([]string, error) {
 	return rangeIntsAsStrings(1, maxCDPI), readErr
 }
 
-func (repository *MakerStorageRepository) GetOwners() ([]string, error) {
+func (repo *MakerStorageRepository) GetOwners() ([]string, error) {
 	var owners []string
-	err := repository.db.Select(&owners, `
+	err := repo.db.Select(&owners, `
 		SELECT DISTINCT owner
 		FROM maker.cdp_manager_owns`)
 	return owners, err
 }
 
-func (repository *MakerStorageRepository) GetFlipBidIDs(contractAddress string) ([]string, error) {
+func (repo *MakerStorageRepository) GetFlipBidIDs(contractAddress string) ([]string, error) {
 	var bidIds []string
-	addressID, addressErr := repository.GetOrCreateAddress(contractAddress)
+	addressID, addressErr := repo.GetOrCreateAddress(contractAddress)
 	if addressErr != nil {
 		return []string{}, addressErr
 	}
-	err := repository.db.Select(&bidIds, `
+	err := repo.db.Select(&bidIds, `
    		SELECT DISTINCT bid_id FROM maker.tick
 		WHERE address_id = $1
 		UNION
@@ -220,13 +220,13 @@ func (repository *MakerStorageRepository) GetFlipBidIDs(contractAddress string) 
 	return bidIds, err
 }
 
-func (repository *MakerStorageRepository) GetFlopBidIDs(contractAddress string) ([]string, error) {
+func (repo *MakerStorageRepository) GetFlopBidIDs(contractAddress string) ([]string, error) {
 	var bidIDs []string
-	addressID, addressErr := repository.GetOrCreateAddress(contractAddress)
+	addressID, addressErr := repo.GetOrCreateAddress(contractAddress)
 	if addressErr != nil {
 		return []string{}, addressErr
 	}
-	err := repository.db.Select(&bidIDs, `
+	err := repo.db.Select(&bidIDs, `
 		SELECT bid_id FROM maker.flop_kick
 		WHERE address_id = $1
 		UNION
@@ -244,12 +244,12 @@ func (repository *MakerStorageRepository) GetFlopBidIDs(contractAddress string) 
 	return bidIDs, err
 }
 
-func (repository *MakerStorageRepository) GetOrCreateAddress(contractAddress string) (int64, error) {
-	return repository2.GetOrCreateAddress(repository.db, contractAddress)
+func (repo *MakerStorageRepository) GetOrCreateAddress(contractAddress string) (int64, error) {
+	return repository.GetOrCreateAddress(repo.db, contractAddress)
 }
 
-func (repository *MakerStorageRepository) SetDB(db *postgres.DB) {
-	repository.db = db
+func (repo *MakerStorageRepository) SetDB(db *postgres.DB) {
+	repo.db = db
 }
 
 func rangeIntsAsStrings(start, end int) []string {

@@ -17,11 +17,10 @@
 package initializer
 
 import (
-	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
-	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
-
 	"github.com/vulcanize/mcd_transformers/transformers/events/vat_flux"
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
+	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
 )
 
 var EventTransformerInitializer transformer.EventTransformerInitializer = shared.EventTransformer{

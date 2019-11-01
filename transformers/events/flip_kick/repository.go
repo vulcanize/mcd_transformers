@@ -17,9 +17,8 @@
 package flip_kick
 
 import (
-	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
-
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
+	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
 )
 
 var InsertFlipKickQuery = `INSERT into maker.flip_kick (header_id, bid_id, lot, bid, tab, usr, gal, address_id, log_id)

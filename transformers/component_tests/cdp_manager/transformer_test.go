@@ -17,6 +17,9 @@
 package cdp_manager
 
 import (
+	"math/rand"
+	"strconv"
+
 	"github.com/ethereum/go-ethereum/common"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -28,8 +31,6 @@ import (
 	"github.com/vulcanize/vulcanizedb/libraries/shared/factories/storage"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/storage/utils"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
-	"math/rand"
-	"strconv"
 )
 
 var _ = Describe("Executing the transformer", func() {

@@ -17,6 +17,9 @@
 package queries
 
 import (
+	"math/rand"
+	"strconv"
+
 	"github.com/ethereum/go-ethereum/common"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -36,8 +39,6 @@ import (
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres/repositories"
 	"github.com/vulcanize/vulcanizedb/pkg/fakes"
-	"math/rand"
-	"strconv"
 )
 
 var _ = Describe("All flip bid events query", func() {

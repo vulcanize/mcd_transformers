@@ -17,9 +17,8 @@
 package base
 
 import (
-	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
-
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
+	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
 )
 
 type JugFileBaseRepository struct {

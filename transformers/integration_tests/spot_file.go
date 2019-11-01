@@ -17,6 +17,8 @@
 package integration_tests
 
 import (
+	"strconv"
+
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
 	. "github.com/onsi/ginkgo"
@@ -31,7 +33,6 @@ import (
 	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
 	"github.com/vulcanize/vulcanizedb/pkg/core"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
-	"strconv"
 )
 
 var _ = Describe("SpotFile EventTransformers", func() {

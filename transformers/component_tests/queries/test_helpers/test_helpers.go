@@ -18,6 +18,10 @@ package test_helpers
 
 import (
 	"database/sql"
+	"math/rand"
+	"strconv"
+	"time"
+
 	. "github.com/onsi/gomega"
 	"github.com/vulcanize/mcd_transformers/transformers/events/deal"
 	"github.com/vulcanize/mcd_transformers/transformers/events/dent"
@@ -45,9 +49,6 @@ import (
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres/repositories"
 	"github.com/vulcanize/vulcanizedb/pkg/fakes"
-	"math/rand"
-	"strconv"
-	"time"
 )
 
 var (

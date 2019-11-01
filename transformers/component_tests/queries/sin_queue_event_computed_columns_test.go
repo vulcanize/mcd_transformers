@@ -18,6 +18,9 @@ package queries
 
 import (
 	"database/sql"
+	"math/rand"
+	"strconv"
+
 	"github.com/ethereum/go-ethereum/core/types"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -31,8 +34,6 @@ import (
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres/repositories"
 	"github.com/vulcanize/vulcanizedb/pkg/fakes"
-	"math/rand"
-	"strconv"
 )
 
 var _ = Describe("Sin queue event computed columns", func() {

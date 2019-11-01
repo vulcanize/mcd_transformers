@@ -17,12 +17,12 @@
 package base_test
 
 import (
-	log "github.com/sirupsen/logrus"
 	"io/ioutil"
 	"testing"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	"github.com/sirupsen/logrus"
 )
 
 func TestBase(t *testing.T) {
@@ -31,5 +31,5 @@ func TestBase(t *testing.T) {
 }
 
 var _ = BeforeSuite(func() {
-	log.SetOutput(ioutil.Discard)
+	logrus.SetOutput(ioutil.Discard)
 })

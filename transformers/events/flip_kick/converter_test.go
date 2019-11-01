@@ -17,16 +17,15 @@
 package flip_kick_test
 
 import (
-	"github.com/vulcanize/vulcanizedb/pkg/core"
 	"strings"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-
 	"github.com/vulcanize/mcd_transformers/transformers/events/flip_kick"
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
+	"github.com/vulcanize/vulcanizedb/pkg/core"
 )
 
 var _ = Describe("FlipKick Converter", func() {

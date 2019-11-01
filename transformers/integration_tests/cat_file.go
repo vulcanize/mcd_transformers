@@ -17,6 +17,8 @@
 package integration_tests
 
 import (
+	"strconv"
+
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
 	. "github.com/onsi/ginkgo"
@@ -33,7 +35,6 @@ import (
 	"github.com/vulcanize/vulcanizedb/pkg/core"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
 	"github.com/vulcanize/vulcanizedb/pkg/eth/client"
-	"strconv"
 )
 
 var _ = Describe("Cat File transformer", func() {

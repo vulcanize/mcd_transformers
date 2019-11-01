@@ -17,6 +17,9 @@
 package integration_tests
 
 import (
+	"plugin"
+	"time"
+
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/spf13/viper"
@@ -33,8 +36,6 @@ import (
 	"github.com/vulcanize/vulcanizedb/pkg/fs"
 	p2 "github.com/vulcanize/vulcanizedb/pkg/plugin"
 	"github.com/vulcanize/vulcanizedb/pkg/plugin/helpers"
-	"plugin"
-	"time"
 )
 
 var eventConfig = config.Plugin{

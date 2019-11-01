@@ -17,9 +17,8 @@
 package flap_kick
 
 import (
-	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
-
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
+	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
 )
 
 const InsertFlapKickQuery = `INSERT into maker.flap_kick

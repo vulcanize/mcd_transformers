@@ -2,8 +2,9 @@ package shared_behaviors
 
 import (
 	"fmt"
-	"github.com/vulcanize/vulcanizedb/libraries/shared/factories/storage"
 	"math/rand"
+
+	"github.com/vulcanize/vulcanizedb/libraries/shared/factories/storage"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"

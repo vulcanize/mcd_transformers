@@ -19,11 +19,10 @@ package vat_move_test
 import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/vulcanize/vulcanizedb/pkg/core"
-
 	"github.com/vulcanize/mcd_transformers/transformers/events/vat_move"
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
+	"github.com/vulcanize/vulcanizedb/pkg/core"
 )
 
 var _ = Describe("Vat move converter", func() {

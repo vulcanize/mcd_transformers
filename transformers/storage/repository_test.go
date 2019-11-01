@@ -17,6 +17,10 @@
 package storage_test
 
 import (
+	"math/big"
+	"math/rand"
+	"strconv"
+
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
 	. "github.com/onsi/ginkgo"
@@ -36,9 +40,6 @@ import (
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres/repositories"
 	"github.com/vulcanize/vulcanizedb/pkg/fakes"
-	"math/big"
-	"math/rand"
-	"strconv"
 )
 
 var _ = Describe("Maker storage repository", func() {

@@ -17,6 +17,9 @@
 package cdp_manager_test
 
 import (
+	"math/rand"
+	"strconv"
+
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/crypto"
 	. "github.com/onsi/ginkgo"
@@ -29,8 +32,6 @@ import (
 	"github.com/vulcanize/vulcanizedb/libraries/shared/factories/storage"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/storage/utils"
 	"github.com/vulcanize/vulcanizedb/pkg/fakes"
-	"math/rand"
-	"strconv"
 )
 
 var _ = Describe("CDP Manager storage keys loader", func() {

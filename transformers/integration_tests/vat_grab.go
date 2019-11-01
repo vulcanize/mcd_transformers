@@ -17,6 +17,9 @@
 package integration_tests
 
 import (
+	"math/big"
+	"strconv"
+
 	"github.com/ethereum/go-ethereum/common"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -27,8 +30,6 @@ import (
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/fetcher"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
-	"math/big"
-	"strconv"
 )
 
 var _ = XDescribe("Vat Grab Transformer", func() {

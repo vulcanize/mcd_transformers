@@ -18,6 +18,10 @@ package cdp_manager_test
 
 import (
 	"database/sql"
+	"math/rand"
+	"strconv"
+	"time"
+
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/vulcanize/mcd_transformers/test_config"
@@ -32,9 +36,6 @@ import (
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres/repositories"
 	"github.com/vulcanize/vulcanizedb/pkg/fakes"
-	"math/rand"
-	"strconv"
-	"time"
 )
 
 var _ = Describe("CDP Manager storage repository", func() {

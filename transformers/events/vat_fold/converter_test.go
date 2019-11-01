@@ -19,12 +19,11 @@ package vat_fold_test
 import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/vulcanize/vulcanizedb/pkg/core"
-
 	"github.com/vulcanize/mcd_transformers/transformers/events/vat_fold"
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
+	"github.com/vulcanize/vulcanizedb/pkg/core"
 )
 
 var _ = Describe("Vat fold converter", func() {

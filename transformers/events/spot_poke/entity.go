@@ -16,9 +16,7 @@
 
 package spot_poke
 
-import (
-	"math/big"
-)
+import "math/big"
 
 type SpotPokeEntity struct {
 	Ilk      [32]byte

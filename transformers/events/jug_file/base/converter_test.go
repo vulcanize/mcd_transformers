@@ -17,17 +17,15 @@
 package base_test
 
 import (
-	. "github.com/onsi/ginkgo"
-	. "github.com/onsi/gomega"
-	"github.com/vulcanize/vulcanizedb/pkg/core"
-
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
-
+	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/gomega"
 	"github.com/vulcanize/mcd_transformers/transformers/events/jug_file/base"
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
+	"github.com/vulcanize/vulcanizedb/pkg/core"
 )
 
 var _ = Describe("Jug file base converter", func() {

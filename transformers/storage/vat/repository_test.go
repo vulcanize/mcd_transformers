@@ -18,6 +18,9 @@ package vat_test
 
 import (
 	"database/sql"
+	"math/rand"
+	"strconv"
+
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/vulcanize/mcd_transformers/test_config"
@@ -28,8 +31,6 @@ import (
 	"github.com/vulcanize/mcd_transformers/transformers/storage/vat"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/storage/utils"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
-	"math/rand"
-	"strconv"
 )
 
 var _ = Describe("Vat storage repository", func() {
