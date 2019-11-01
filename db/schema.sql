@@ -4444,6 +4444,34 @@ $$;
 
 
 --
+-- Name: update_time_created(); Type: FUNCTION; Schema: maker; Owner: -
+--
+
+CREATE FUNCTION maker.update_time_created() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+DECLARE
+    diff_ilk_identifier TEXT      := (
+        SELECT identifier
+        FROM maker.ilks
+        WHERE ilks.id = NEW.ilk_id);
+    diff_timestamp      TIMESTAMP := (
+        SELECT api.epoch_to_datetime(block_timestamp)
+        FROM public.headers
+        WHERE headers.id = NEW.header_id);
+BEGIN
+    UPDATE api.ilk_state_history
+    SET created = diff_timestamp
+    FROM public.headers
+    WHERE headers.block_number = ilk_state_history.block_number
+      AND ilk_state_history.ilk_identifier = diff_ilk_identifier
+      AND ilk_state_history.created IS NULL;
+    RETURN NULL;
+END
+$$;
+
+
+--
 -- Name: get_block_timestamp(character varying); Type: FUNCTION; Schema: public; Owner: -
 --
 
@@ -4947,12 +4975,10 @@ $$;
 CREATE FUNCTION public.ilk_time_created(ilk_id integer) RETURNS timestamp without time zone
     LANGUAGE sql
     AS $$
-SELECT api.epoch_to_datetime(block_timestamp)
+SELECT api.epoch_to_datetime(MIN(block_timestamp))
 FROM public.headers
          LEFT JOIN maker.vat_init ON vat_init.header_id = headers.id
 WHERE vat_init.ilk_id = ilk_time_created.ilk_id
-ORDER BY headers.block_number
-LIMIT 1
 $$;
 
 
@@ -14617,6 +14643,13 @@ CREATE TRIGGER ilk_duty AFTER INSERT OR UPDATE ON maker.jug_ilk_duty FOR EACH RO
 --
 
 CREATE TRIGGER ilk_flip AFTER INSERT OR UPDATE ON maker.cat_ilk_flip FOR EACH ROW EXECUTE PROCEDURE maker.insert_ilk_flips();
+
+
+--
+-- Name: vat_init ilk_init; Type: TRIGGER; Schema: maker; Owner: -
+--
+
+CREATE TRIGGER ilk_init AFTER INSERT OR UPDATE ON maker.vat_init FOR EACH ROW EXECUTE PROCEDURE maker.update_time_created();
 
 
 --
