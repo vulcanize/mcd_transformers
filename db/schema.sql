@@ -1398,6 +1398,87 @@ FROM api.get_urn(event.ilk_identifier, event.urn_identifier, event.block_height)
 $$;
 
 
+SET default_tablespace = '';
+
+SET default_with_oids = false;
+
+--
+-- Name: current_urn_state; Type: TABLE; Schema: api; Owner: -
+--
+
+CREATE TABLE api.current_urn_state (
+    urn_identifier text NOT NULL,
+    ilk_identifier text NOT NULL,
+    ink numeric,
+    art numeric,
+    created timestamp without time zone,
+    updated timestamp without time zone
+);
+
+
+--
+-- Name: TABLE current_urn_state; Type: COMMENT; Schema: api; Owner: -
+--
+
+COMMENT ON TABLE api.current_urn_state IS '@omit create,update,delete';
+
+
+--
+-- Name: COLUMN current_urn_state.urn_identifier; Type: COMMENT; Schema: api; Owner: -
+--
+
+COMMENT ON COLUMN api.current_urn_state.urn_identifier IS '@name id';
+
+
+--
+-- Name: COLUMN current_urn_state.ilk_identifier; Type: COMMENT; Schema: api; Owner: -
+--
+
+COMMENT ON COLUMN api.current_urn_state.ilk_identifier IS '@omit';
+
+
+--
+-- Name: current_urn_state_bites(api.current_urn_state, integer, integer); Type: FUNCTION; Schema: api; Owner: -
+--
+
+CREATE FUNCTION api.current_urn_state_bites(state api.current_urn_state, max_results integer DEFAULT NULL::integer, result_offset integer DEFAULT 0) RETURNS SETOF api.bite_event
+    LANGUAGE sql STABLE
+    AS $$
+SELECT *
+FROM api.urn_bites(state.ilk_identifier, state.urn_identifier)
+LIMIT max_results
+OFFSET
+result_offset
+$$;
+
+
+--
+-- Name: current_urn_state_frobs(api.current_urn_state, integer, integer); Type: FUNCTION; Schema: api; Owner: -
+--
+
+CREATE FUNCTION api.current_urn_state_frobs(state api.current_urn_state, max_results integer DEFAULT NULL::integer, result_offset integer DEFAULT 0) RETURNS SETOF api.frob_event
+    LANGUAGE sql STABLE
+    AS $$
+SELECT *
+FROM api.urn_frobs(state.ilk_identifier, state.urn_identifier)
+LIMIT max_results
+OFFSET
+result_offset
+$$;
+
+
+--
+-- Name: current_urn_state_ilk(api.current_urn_state); Type: FUNCTION; Schema: api; Owner: -
+--
+
+CREATE FUNCTION api.current_urn_state_ilk(state api.current_urn_state) RETURNS api.ilk_state
+    LANGUAGE sql STABLE
+    AS $$
+SELECT *
+FROM api.get_ilk(state.ilk_identifier)
+$$;
+
+
 --
 -- Name: epoch_to_datetime(numeric); Type: FUNCTION; Schema: api; Owner: -
 --
@@ -2159,10 +2240,6 @@ ORDER BY block_height DESC
 LIMIT ilk_state_frobs.max_results OFFSET ilk_state_frobs.result_offset
 $$;
 
-
-SET default_tablespace = '';
-
-SET default_with_oids = false;
 
 --
 -- Name: ilk_state_history; Type: TABLE; Schema: api; Owner: -
@@ -4091,6 +4168,83 @@ BEGIN
             (SELECT created FROM created))
     ON CONFLICT (bid_id, block_number) DO UPDATE SET tic = NEW.tic;
     return NEW;
+END
+$$;
+
+
+--
+-- Name: insert_urn_art(); Type: FUNCTION; Schema: maker; Owner: -
+--
+
+CREATE FUNCTION maker.insert_urn_art() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+DECLARE
+    new_block_timestamp TIMESTAMP := (
+        SELECT api.epoch_to_datetime(block_timestamp)
+        FROM public.headers
+        WHERE block_number = NEW.block_number);
+BEGIN
+    WITH ilk AS (
+        SELECT ilks.id, ilks.identifier
+        FROM maker.urns
+                 LEFT JOIN maker.ilks ON ilks.id = urns.ilk_id
+        WHERE urns.id = NEW.urn_id)
+    INSERT
+    INTO api.current_urn_state (urn_identifier, ilk_identifier, art, created, updated)
+    VALUES ((SELECT identifier FROM maker.urns WHERE id = NEW.urn_id),
+            (SELECT identifier FROM ilk),
+            NEW.art,
+            new_block_timestamp,
+            new_block_timestamp)
+    ON CONFLICT (urn_identifier, ilk_identifier)
+        DO UPDATE
+        SET art     = (
+            CASE
+                WHEN current_urn_state.art IS NULL OR current_urn_state.updated < new_block_timestamp
+                    THEN NEW.art
+                ELSE current_urn_state.art END),
+            updated = GREATEST(new_block_timestamp, current_urn_state.updated);
+    RETURN NEW;
+END
+$$;
+
+
+--
+-- Name: insert_urn_ink(); Type: FUNCTION; Schema: maker; Owner: -
+--
+
+CREATE FUNCTION maker.insert_urn_ink() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+DECLARE
+    new_block_timestamp TIMESTAMP := (
+        SELECT api.epoch_to_datetime(block_timestamp)
+        FROM public.headers
+        WHERE block_number = NEW.block_number);
+BEGIN
+    WITH ilk AS (
+        SELECT ilks.id, ilks.identifier
+        FROM maker.urns
+                 LEFT JOIN maker.ilks ON ilks.id = urns.ilk_id
+        WHERE urns.id = NEW.urn_id)
+    INSERT
+    INTO api.current_urn_state (urn_identifier, ilk_identifier, ink, created, updated)
+    VALUES ((SELECT identifier FROM maker.urns WHERE id = NEW.urn_id),
+            (SELECT identifier FROM ilk),
+            NEW.ink,
+            new_block_timestamp,
+            new_block_timestamp)
+    ON CONFLICT (urn_identifier, ilk_identifier)
+        DO UPDATE
+        SET ink     = (
+            CASE
+                WHEN current_urn_state.ink IS NULL OR current_urn_state.updated < new_block_timestamp
+                    THEN NEW.ink
+                ELSE current_urn_state.ink END),
+            created = LEAST(new_block_timestamp, current_urn_state.created),
+            updated = GREATEST(new_block_timestamp, current_urn_state.updated);
+    RETURN NEW;
 END
 $$;
 
@@ -10946,6 +11100,14 @@ ALTER TABLE ONLY public.watched_logs ALTER COLUMN id SET DEFAULT nextval('public
 
 
 --
+-- Name: current_urn_state current_urn_state_pkey; Type: CONSTRAINT; Schema: api; Owner: -
+--
+
+ALTER TABLE ONLY api.current_urn_state
+    ADD CONSTRAINT current_urn_state_pkey PRIMARY KEY (urn_identifier, ilk_identifier);
+
+
+--
 -- Name: ilk_state_history ilk_state_history_pkey; Type: CONSTRAINT; Schema: api; Owner: -
 --
 
@@ -14727,6 +14889,20 @@ CREATE TRIGGER managed_cdp_urn AFTER INSERT OR UPDATE ON maker.cdp_manager_urns 
 --
 
 CREATE TRIGGER managed_cdp_usr AFTER INSERT OR UPDATE ON maker.cdp_manager_owns FOR EACH ROW EXECUTE PROCEDURE maker.insert_cdp_usr();
+
+
+--
+-- Name: vat_urn_art urn_art; Type: TRIGGER; Schema: maker; Owner: -
+--
+
+CREATE TRIGGER urn_art AFTER INSERT OR UPDATE ON maker.vat_urn_art FOR EACH ROW EXECUTE PROCEDURE maker.insert_urn_art();
+
+
+--
+-- Name: vat_urn_ink urn_ink; Type: TRIGGER; Schema: maker; Owner: -
+--
+
+CREATE TRIGGER urn_ink AFTER INSERT OR UPDATE ON maker.vat_urn_ink FOR EACH ROW EXECUTE PROCEDURE maker.insert_urn_ink();
 
 
 --

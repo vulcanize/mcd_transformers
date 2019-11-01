@@ -40,7 +40,7 @@ import (
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
 )
 
-var _ = Describe("Urn state computed columns", func() {
+var _ = Describe("current_urn_state computed columns", func() {
 	var (
 		db               *postgres.DB
 		fakeBlock        int
@@ -76,7 +76,7 @@ var _ = Describe("Urn state computed columns", func() {
 		Expect(closeErr).NotTo(HaveOccurred())
 	})
 
-	Describe("urn_state_ilk", func() {
+	Describe("current_urn_state_ilk", func() {
 		It("returns the ilk for an urn", func() {
 			ilkValues := test_helpers.GetIlkValues(0)
 			test_helpers.CreateIlk(db, fakeHeader, ilkValues, test_helpers.FakeIlkVatMetadatas,
@@ -99,16 +99,16 @@ var _ = Describe("Urn state computed columns", func() {
 			var result test_helpers.IlkState
 			getIlkErr := db.Get(&result,
 				`SELECT ilk_identifier, rate, art, spot, line, dust, chop, lump, flip, rho, duty, pip, mat, created, updated
-					FROM api.urn_state_ilk(
-					(SELECT (urn_identifier, ilk_identifier, block_height, ink, art, created, updated)::api.urn_state
-					FROM api.get_urn($1, $2, $3)))`, test_helpers.FakeIlk.Identifier, fakeGuy, fakeHeader.BlockNumber)
+					FROM api.current_urn_state_ilk(
+					(SELECT (urn_identifier, ilk_identifier, ink, art, created, updated)::api.current_urn_state
+					FROM api.current_urn_state))`)
 
 			Expect(getIlkErr).NotTo(HaveOccurred())
 			Expect(result).To(Equal(expectedIlk))
 		})
 	})
 
-	Describe("urn_state_frobs", func() {
+	Describe("current_urn_state_frobs", func() {
 		It("returns frobs for an urn_state", func() {
 			urnSetupData := test_helpers.GetUrnSetupData(fakeBlock, 1)
 			urnSetupData.Header.Hash = fakeHeader.Hash
@@ -127,10 +127,9 @@ var _ = Describe("Urn state computed columns", func() {
 
 			var actualFrobs test_helpers.FrobEvent
 			getFrobsErr := db.Get(&actualFrobs,
-				`SELECT ilk_identifier, urn_identifier, dink, dart FROM api.urn_state_frobs(
-                        (SELECT (urn_identifier, ilk_identifier, block_height, ink, art, created, updated)::api.urn_state
-                         FROM api.all_urns($1))
-                    )`, fakeBlock)
+				`SELECT ilk_identifier, urn_identifier, dink, dart FROM api.current_urn_state_frobs(
+                        (SELECT (urn_identifier, ilk_identifier, ink, art, created, updated)::api.current_urn_state
+                         FROM api.current_urn_state))`)
 			Expect(getFrobsErr).NotTo(HaveOccurred())
 
 			expectedFrobs := test_helpers.FrobEvent{
@@ -183,9 +182,9 @@ var _ = Describe("Urn state computed columns", func() {
 				maxResults := 1
 				var actualFrobs []test_helpers.FrobEvent
 				getFrobsErr := db.Select(&actualFrobs,
-					`SELECT ilk_identifier, urn_identifier, dink, dart FROM api.urn_state_frobs(
-						(SELECT (urn_identifier, ilk_identifier, block_height, ink, art, created, updated)::api.urn_state
-						 FROM api.get_urn($1, $2)), $3)`, test_helpers.FakeIlk.Identifier, fakeGuy, maxResults)
+					`SELECT ilk_identifier, urn_identifier, dink, dart FROM api.current_urn_state_frobs(
+						(SELECT (urn_identifier, ilk_identifier, ink, art, created, updated)::api.current_urn_state
+						 FROM api.current_urn_state), $1)`, maxResults)
 				Expect(getFrobsErr).NotTo(HaveOccurred())
 
 				expectedFrob := test_helpers.FrobEvent{
@@ -202,10 +201,9 @@ var _ = Describe("Urn state computed columns", func() {
 				resultOffset := 1
 				var actualFrobs []test_helpers.FrobEvent
 				getFrobsErr := db.Select(&actualFrobs,
-					`SELECT ilk_identifier, urn_identifier, dink, dart FROM api.urn_state_frobs(
-						(SELECT (urn_identifier, ilk_identifier, block_height, ink, art, created, updated)::api.urn_state
-						 FROM api.get_urn($1, $2)), $3, $4)`,
-					test_helpers.FakeIlk.Identifier, fakeGuy, maxResults, resultOffset)
+					`SELECT ilk_identifier, urn_identifier, dink, dart FROM api.current_urn_state_frobs(
+						(SELECT (urn_identifier, ilk_identifier, ink, art, created, updated)::api.current_urn_state
+						 FROM api.current_urn_state), $1, $2)`, maxResults, resultOffset)
 				Expect(getFrobsErr).NotTo(HaveOccurred())
 
 				expectedFrobs := test_helpers.FrobEvent{
@@ -219,7 +217,7 @@ var _ = Describe("Urn state computed columns", func() {
 		})
 	})
 
-	Describe("urn_state_bites", func() {
+	Describe("current_urn_state_bites", func() {
 		It("returns bites for an urn_state", func() {
 			urnSetupData := test_helpers.GetUrnSetupData(fakeBlock, 1)
 			urnSetupData.Header.Hash = fakeHeader.Hash
@@ -234,10 +232,9 @@ var _ = Describe("Urn state computed columns", func() {
 
 			var actualBites test_helpers.BiteEvent
 			getBitesErr := db.Get(&actualBites, `
-				SELECT ilk_identifier, urn_identifier, ink, art, tab FROM api.urn_state_bites(
-				    (SELECT (urn_identifier, ilk_identifier, block_height, ink, art, created, updated)::api.urn_state
-				    FROM api.all_urns($1)))`,
-				fakeBlock)
+				SELECT ilk_identifier, urn_identifier, ink, art, tab FROM api.current_urn_state_bites(
+				    (SELECT (urn_identifier, ilk_identifier, ink, art, created, updated)::api.current_urn_state
+				    FROM api.current_urn_state))`)
 			Expect(getBitesErr).NotTo(HaveOccurred())
 
 			expectedBites := test_helpers.BiteEvent{
@@ -259,7 +256,6 @@ var _ = Describe("Urn state computed columns", func() {
 				urnSetupData.Header.Hash = fakeHeader.Hash
 				urnMetadata := test_helpers.GetUrnMetadata(test_helpers.FakeIlk.Hex, fakeGuy)
 				test_helpers.CreateUrn(urnSetupData, urnMetadata, vatRepository, headerRepository)
-
 				biteRepo := bite.Repository{}
 				biteRepo.SetDB(db)
 
@@ -283,10 +279,9 @@ var _ = Describe("Urn state computed columns", func() {
 				maxResults := 1
 				var actualBites []test_helpers.BiteEvent
 				getBitesErr := db.Select(&actualBites, `
-					SELECT ilk_identifier, urn_identifier, ink, art, tab FROM api.urn_state_bites(
-						(SELECT (urn_identifier, ilk_identifier, block_height, ink, art, created, updated)::api.urn_state
-						 FROM api.get_urn($1, $2)), $3)`,
-					test_helpers.FakeIlk.Identifier, fakeGuy, maxResults)
+					SELECT ilk_identifier, urn_identifier, ink, art, tab FROM api.current_urn_state_bites(
+						(SELECT (urn_identifier, ilk_identifier, ink, art, created, updated)::api.current_urn_state
+						 FROM api.current_urn_state), $1)`, maxResults)
 				Expect(getBitesErr).NotTo(HaveOccurred())
 
 				expectedBite := test_helpers.BiteEvent{
@@ -304,10 +299,9 @@ var _ = Describe("Urn state computed columns", func() {
 				resultOffset := 1
 				var actualBites []test_helpers.BiteEvent
 				getBitesErr := db.Select(&actualBites, `
-					SELECT ilk_identifier, urn_identifier, ink, art, tab FROM api.urn_state_bites(
-						(SELECT (urn_identifier, ilk_identifier, block_height, ink, art, created, updated)::api.urn_state
-						 FROM api.get_urn($1, $2)), $3, $4)`,
-					test_helpers.FakeIlk.Identifier, fakeGuy, maxResults, resultOffset)
+					SELECT ilk_identifier, urn_identifier, ink, art, tab FROM api.current_urn_state_bites(
+						(SELECT (urn_identifier, ilk_identifier, ink, art, created, updated)::api.current_urn_state
+						 FROM api.current_urn_state), $1, $2)`, maxResults, resultOffset)
 				Expect(getBitesErr).NotTo(HaveOccurred())
 
 				expectedBite := test_helpers.BiteEvent{

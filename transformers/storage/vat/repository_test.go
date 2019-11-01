@@ -17,6 +17,7 @@
 package vat_test
 
 import (
+	"database/sql"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/vulcanize/mcd_transformers/test_config"
@@ -25,6 +26,7 @@ import (
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	. "github.com/vulcanize/mcd_transformers/transformers/storage/test_helpers"
 	"github.com/vulcanize/mcd_transformers/transformers/storage/vat"
+	"github.com/vulcanize/mcd_transformers/transformers/test_data"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data/shared_behaviors"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/storage/utils"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
@@ -36,9 +38,9 @@ var _ = Describe("Vat storage repository", func() {
 	var (
 		db              *postgres.DB
 		repo            vat.VatStorageRepository
+		fakeGuy         string
 		fakeBlockNumber = rand.Int()
 		fakeBlockHash   = "expected_block_hash"
-		fakeGuy         = "fake_urn"
 		fakeUint256     = "12345"
 	)
 
@@ -47,6 +49,7 @@ var _ = Describe("Vat storage repository", func() {
 		test_config.CleanTestDB(db)
 		repo = vat.VatStorageRepository{}
 		repo.SetDB(db)
+		fakeGuy = test_data.RandomString(10)
 	})
 
 	Describe("dai", func() {
@@ -461,6 +464,61 @@ var _ = Describe("Vat storage repository", func() {
 			Expect(err).To(HaveOccurred())
 			Expect(err).To(MatchError(utils.ErrMetadataMalformed{MissingData: constants.Guy}))
 		})
+
+		Describe("updating current_urn_state trigger table", func() {
+			var (
+				urnId, rawTimestamp int64
+			)
+
+			BeforeEach(func() {
+				rawTimestamp = int64(rand.Int31())
+				CreateHeader(rawTimestamp, fakeBlockNumber, db)
+				var urnErr error
+				urnId, urnErr = shared.GetOrCreateUrn(fakeGuy, test_helpers.FakeIlk.Hex, db)
+				Expect(urnErr).NotTo(HaveOccurred())
+			})
+
+			It("inserts art, ilk values, and timestamp if urn is not yet in table", func() {
+				_, urnArtErr := db.Exec(`INSERT INTO maker.vat_urn_art (block_number, urn_id, art) VALUES ($1, $2, $3)`,
+					fakeBlockNumber, urnId, fakeUint256)
+				Expect(urnArtErr).NotTo(HaveOccurred())
+
+				expectedTime := sql.NullString{String: FormatTimestamp(rawTimestamp), Valid: true}
+				var urnState currentUrnState
+				queryErr := db.Get(&urnState, `SELECT urn_identifier, ilk_identifier, art, created, updated FROM api.current_urn_state`)
+				Expect(queryErr).NotTo(HaveOccurred())
+				Expect(urnState.UrnIdentifier).To(Equal(fakeGuy))
+				Expect(urnState.IlkIdentifier).To(Equal(test_helpers.FakeIlk.Identifier))
+				Expect(urnState.Art).To(Equal(fakeUint256))
+				Expect(urnState.Created).To(Equal(expectedTime))
+				Expect(urnState.Updated).To(Equal(expectedTime))
+			})
+
+			It("sets art and time updated if new diff is from later block", func() {
+				// set up existing row from earlier block
+				earlierTimestamp := FormatTimestamp(rawTimestamp - 1)
+				_, urnSetupErr := db.Exec(
+					`INSERT INTO api.current_urn_state (urn_identifier, ilk_identifier, art, created, updated) VALUES ($1, $2, $3, $4::TIMESTAMP, $4::TIMESTAMP)`,
+					fakeGuy, test_helpers.FakeIlk.Identifier, rand.Int(), earlierTimestamp)
+				Expect(urnSetupErr).NotTo(HaveOccurred())
+
+				// trigger update to row from later block
+				_, urnArtErr := db.Exec(`INSERT INTO maker.vat_urn_art (block_number, urn_id, art) VALUES ($1, $2, $3)`,
+					fakeBlockNumber, urnId, fakeUint256)
+				Expect(urnArtErr).NotTo(HaveOccurred())
+
+				expectedTimeCreated := sql.NullString{String: earlierTimestamp, Valid: true}
+				expectedTimeUpdated := sql.NullString{String: FormatTimestamp(rawTimestamp), Valid: true}
+				var urnState currentUrnState
+				queryErr := db.Get(&urnState, `SELECT urn_identifier, ilk_identifier, art, created, updated FROM api.current_urn_state`)
+				Expect(queryErr).NotTo(HaveOccurred())
+				Expect(urnState.UrnIdentifier).To(Equal(fakeGuy))
+				Expect(urnState.IlkIdentifier).To(Equal(test_helpers.FakeIlk.Identifier))
+				Expect(urnState.Art).To(Equal(fakeUint256))
+				Expect(urnState.Created).To(Equal(expectedTimeCreated))
+				Expect(urnState.Updated).To(Equal(expectedTimeUpdated))
+			})
+		})
 	})
 
 	Describe("urn ink", func() {
@@ -514,6 +572,85 @@ var _ = Describe("Vat storage repository", func() {
 
 			Expect(err).To(HaveOccurred())
 			Expect(err).To(MatchError(utils.ErrMetadataMalformed{MissingData: constants.Guy}))
+		})
+
+		Describe("updating current_urn_state trigger table", func() {
+			var (
+				urnId, rawTimestamp int64
+			)
+
+			BeforeEach(func() {
+				rawTimestamp = int64(rand.Int31())
+				CreateHeader(rawTimestamp, fakeBlockNumber, db)
+				var urnErr error
+				urnId, urnErr = shared.GetOrCreateUrn(fakeGuy, test_helpers.FakeIlk.Hex, db)
+				Expect(urnErr).NotTo(HaveOccurred())
+			})
+
+			It("inserts ink and timestamp if urn_id is not yet in table", func() {
+				_, urnInkErr := db.Exec(`INSERT INTO maker.vat_urn_ink (block_number, urn_id, ink) VALUES ($1, $2, $3)`,
+					fakeBlockNumber, urnId, fakeUint256)
+				Expect(urnInkErr).NotTo(HaveOccurred())
+
+				expectedTime := sql.NullString{String: FormatTimestamp(rawTimestamp), Valid: true}
+				var urnState currentUrnState
+				queryErr := db.Get(&urnState, `SELECT urn_identifier, ilk_identifier, ink, created, updated FROM api.current_urn_state`)
+				Expect(queryErr).NotTo(HaveOccurred())
+				Expect(urnState.UrnIdentifier).To(Equal(fakeGuy))
+				Expect(urnState.IlkIdentifier).To(Equal(test_helpers.FakeIlk.Identifier))
+				Expect(urnState.Ink).To(Equal(fakeUint256))
+				Expect(urnState.Created).To(Equal(expectedTime))
+				Expect(urnState.Updated).To(Equal(expectedTime))
+			})
+
+			It("sets ink and time updated if new diff is from later block", func() {
+				// set up existing row from earlier block
+				earlierTimestamp := FormatTimestamp(rawTimestamp - 1)
+				_, urnSetupErr := db.Exec(
+					`INSERT INTO api.current_urn_state (urn_identifier, ilk_identifier, ink, created, updated) VALUES ($1, $2, $3, $4::TIMESTAMP, $4::TIMESTAMP)`,
+					fakeGuy, test_helpers.FakeIlk.Identifier, rand.Int(), earlierTimestamp)
+				Expect(urnSetupErr).NotTo(HaveOccurred())
+
+				// trigger update to row from later block
+				_, urnInkErr := db.Exec(`INSERT INTO maker.vat_urn_ink (block_number, urn_id, ink) VALUES ($1, $2, $3)`,
+					fakeBlockNumber, urnId, fakeUint256)
+				Expect(urnInkErr).NotTo(HaveOccurred())
+
+				expectedTimeCreated := sql.NullString{String: earlierTimestamp, Valid: true}
+				expectedTimeUpdated := sql.NullString{String: FormatTimestamp(rawTimestamp), Valid: true}
+				var urnState currentUrnState
+				queryErr := db.Get(&urnState, `SELECT urn_identifier, ilk_identifier, ink, created, updated FROM api.current_urn_state`)
+				Expect(queryErr).NotTo(HaveOccurred())
+				Expect(urnState.UrnIdentifier).To(Equal(fakeGuy))
+				Expect(urnState.IlkIdentifier).To(Equal(test_helpers.FakeIlk.Identifier))
+				Expect(urnState.Ink).To(Equal(fakeUint256))
+				Expect(urnState.Created).To(Equal(expectedTimeCreated))
+				Expect(urnState.Updated).To(Equal(expectedTimeUpdated))
+			})
+
+			It("sets time created if new diff is from earlier block", func() {
+				// set up existing row from later block
+				laterTimestamp := FormatTimestamp(rawTimestamp + 1)
+				_, urnSetupErr := db.Exec(`INSERT INTO api.current_urn_state (urn_identifier, ilk_identifier, ink, created, updated) VALUES ($1, $2, $3, $4::TIMESTAMP, $4::TIMESTAMP)`,
+					fakeGuy, test_helpers.FakeIlk.Identifier, fakeUint256, laterTimestamp)
+				Expect(urnSetupErr).NotTo(HaveOccurred())
+
+				// trigger update to row from earlier block
+				_, urnInkErr := db.Exec(`INSERT INTO maker.vat_urn_ink (block_number, urn_id, ink) VALUES ($1, $2, $3)`,
+					fakeBlockNumber, urnId, rand.Int())
+				Expect(urnInkErr).NotTo(HaveOccurred())
+
+				expectedTimeCreated := sql.NullString{String: FormatTimestamp(rawTimestamp), Valid: true}
+				expectedTimeUpdated := sql.NullString{String: laterTimestamp, Valid: true}
+				var urnState currentUrnState
+				queryErr := db.Get(&urnState, `SELECT urn_identifier, ilk_identifier, ink, created, updated FROM api.current_urn_state`)
+				Expect(queryErr).NotTo(HaveOccurred())
+				Expect(urnState.UrnIdentifier).To(Equal(fakeGuy))
+				Expect(urnState.IlkIdentifier).To(Equal(test_helpers.FakeIlk.Identifier))
+				Expect(urnState.Ink).To(Equal(fakeUint256))
+				Expect(urnState.Created).To(Equal(expectedTimeCreated))
+				Expect(urnState.Updated).To(Equal(expectedTimeUpdated))
+			})
 		})
 	})
 
@@ -613,3 +750,12 @@ var _ = Describe("Vat storage repository", func() {
 		Expect(count).To(Equal(1))
 	})
 })
+
+type currentUrnState struct {
+	UrnIdentifier string `db:"urn_identifier"`
+	IlkIdentifier string `db:"ilk_identifier"`
+	Ink           string
+	Art           string
+	Created       sql.NullString
+	Updated       sql.NullString
+}
