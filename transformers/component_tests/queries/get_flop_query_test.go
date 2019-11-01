@@ -19,7 +19,7 @@ var _ = Describe("get flop query", func() {
 	var (
 		db              *postgres.DB
 		flopKickRepo    flop_kick.FlopKickRepository
-		dealRepo        deal.DealRepository
+		dealRepo        deal.Repository
 		headerRepo      repositories.HeaderRepository
 		contractAddress = "contract address"
 
@@ -43,7 +43,7 @@ var _ = Describe("get flop query", func() {
 		test_config.CleanTestDB(db)
 		flopKickRepo = flop_kick.FlopKickRepository{}
 		flopKickRepo.SetDB(db)
-		dealRepo = deal.DealRepository{}
+		dealRepo = deal.Repository{}
 		dealRepo.SetDB(db)
 		headerRepo = repositories.NewHeaderRepository(db)
 		blockOneHeader.Hash = hashOne

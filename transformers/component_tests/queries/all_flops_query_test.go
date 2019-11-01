@@ -21,7 +21,7 @@ var _ = Describe("All flops query", func() {
 		db              *postgres.DB
 		flopKickRepo    flop_kick.FlopKickRepository
 		flopRepo        flop.FlopStorageRepository
-		dealRepo        deal.DealRepository
+		dealRepo        deal.Repository
 		headerRepo      repositories.HeaderRepository
 		contractAddress = "contract address"
 
@@ -39,7 +39,7 @@ var _ = Describe("All flops query", func() {
 		flopRepo.SetDB(db)
 		flopKickRepo = flop_kick.FlopKickRepository{}
 		flopKickRepo.SetDB(db)
-		dealRepo = deal.DealRepository{}
+		dealRepo = deal.Repository{}
 		dealRepo.SetDB(db)
 		headerRepo = repositories.NewHeaderRepository(db)
 	})

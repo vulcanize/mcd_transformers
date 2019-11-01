@@ -24,10 +24,9 @@ import (
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
 )
 
-type Converter struct{
-	db 		*postgres.DB
+type Converter struct {
+	db *postgres.DB
 }
-
 
 const (
 	logDataRequired   = true
@@ -54,10 +53,10 @@ func (converter Converter) ToModels(_ string, logs []core.HeaderSyncLog) ([]even
 				event.LogFK,
 			},
 			ColumnValues: event.ColumnValues{
-				event.HeaderFK: 			log.HeaderID,
-				constants.BidColumn:    	bidId.String(),
-				constants.AddressColumn:    log.Log.Address.String(),
-				event.LogFK:    			log.ID,
+				event.HeaderFK:          log.HeaderID,
+				constants.BidColumn:     bidId.String(),
+				constants.AddressColumn: log.Log.Address.String(),
+				event.LogFK:             log.ID,
 			},
 		}
 		results = append(results, result)

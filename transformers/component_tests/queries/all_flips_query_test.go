@@ -24,7 +24,7 @@ var _ = Describe("All flips view", func() {
 	var (
 		db              *postgres.DB
 		flipKickRepo    flip_kick.FlipKickRepository
-		dealRepo        deal.DealRepository
+		dealRepo        deal.Repository
 		headerRepo      repositories.HeaderRepository
 		contractAddress = "contract address"
 		hash1           = common.BytesToHash([]byte{5, 4, 3, 2, 1}).String()
@@ -36,7 +36,7 @@ var _ = Describe("All flips view", func() {
 		test_config.CleanTestDB(db)
 		flipKickRepo = flip_kick.FlipKickRepository{}
 		flipKickRepo.SetDB(db)
-		dealRepo = deal.DealRepository{}
+		dealRepo = deal.Repository{}
 		dealRepo.SetDB(db)
 		headerRepo = repositories.NewHeaderRepository(db)
 		rand.Seed(time.Now().UnixNano())

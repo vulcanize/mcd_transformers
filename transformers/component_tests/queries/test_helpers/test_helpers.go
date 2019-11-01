@@ -39,6 +39,7 @@ import (
 	"github.com/vulcanize/mcd_transformers/transformers/storage/spot"
 	"github.com/vulcanize/mcd_transformers/transformers/storage/vat"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/factories/event"
 	vdbStorage "github.com/vulcanize/vulcanizedb/libraries/shared/factories/storage"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/storage/utils"
 	"github.com/vulcanize/vulcanizedb/pkg/core"
@@ -623,13 +624,13 @@ func SetUpFlopBidContext(setupData FlopBidCreationInput) (err error) {
 
 func CreateDeal(input DealCreationInput) (err error) {
 	dealLog := test_data.CreateTestLog(input.DealHeaderId, input.Db)
-	dealModel := test_data.CopyModel(test_data.DealModel)
-	dealModel.ColumnValues["bid_id"] = strconv.Itoa(input.BidId)
+	dealModel := test_data.CopyEventModel(test_data.DealModel)
+	dealModel.ColumnValues[constants.BidColumn] = strconv.Itoa(input.BidId)
 	dealModel.ColumnValues["tx_idx"] = rand.Int31()
-	dealModel.ForeignKeyValues[constants.AddressFK] = input.ContractAddress
+	dealModel.ColumnValues[constants.AddressColumn] = input.ContractAddress
 	dealModel.ColumnValues[constants.HeaderFK] = input.DealHeaderId
 	dealModel.ColumnValues[constants.LogFK] = dealLog.ID
-	deals := []shared.InsertionModel{dealModel}
+	deals := []event.InsertionModel{dealModel}
 	return input.DealRepo.Create(deals)
 }
 

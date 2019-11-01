@@ -33,8 +33,8 @@ import (
 
 var _ = Describe("Flip Deal Converter", func() {
 	var (
-		converter  	deal.Converter
-		db			*postgres.DB
+		converter deal.Converter
+		db        *postgres.DB
 	)
 
 	BeforeEach(func() {
