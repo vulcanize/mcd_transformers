@@ -201,9 +201,8 @@ func (state *GeneratorState) touchIlks() error {
 	p := rand.Float32()
 	if p < 0.05 {
 		return state.createIlk()
-	} else {
-		return state.updateIlk()
 	}
+	return state.updateIlk()
 }
 
 func (state *GeneratorState) createIlk() error {
@@ -265,9 +264,8 @@ func (state *GeneratorState) touchUrns() error {
 	p := rand.Float32()
 	if p < 0.1 {
 		return state.createUrn()
-	} else {
-		return state.updateUrn()
 	}
+	return state.updateUrn()
 }
 
 // Creates a new urn associated with a random ilk

@@ -34,18 +34,16 @@ var ErrInvalidIndex = func(index int) error {
 func BigIntToInt64(value *big.Int) int64 {
 	if value == nil {
 		return int64(0)
-	} else {
-		return value.Int64()
 	}
+	return value.Int64()
 }
 
 func BigIntToString(value *big.Int) string {
 	result := value.String()
 	if result == "<nil>" {
 		return ""
-	} else {
-		return result
 	}
+	return result
 }
 
 func ConvertIntStringToHex(n string) (string, error) {

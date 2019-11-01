@@ -188,10 +188,9 @@ func PopulateForeignKeyIDs(fkToValue ForeignKeyValues, columnToValue ColumnValue
 				logrus.Error("failed to rollback ", rollbackErr)
 			}
 			return fmt.Errorf("couldn't get or create FK (%s, %s): %s", fk, value, dbErr.Error())
-		} else {
-			columnName := string(fk)
-			columnToValue[columnName] = fkID
 		}
+		columnName := string(fk)
+		columnToValue[columnName] = fkID
 	}
 
 	return nil
