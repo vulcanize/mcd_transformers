@@ -22,9 +22,9 @@ import (
 	. "github.com/onsi/gomega"
 	"github.com/vulcanize/mcd_transformers/test_config"
 	"github.com/vulcanize/mcd_transformers/transformers/events/deal"
-	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
 	"github.com/vulcanize/mcd_transformers/transformers/test_data"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/factories/event"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/fetcher"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
 	"github.com/vulcanize/vulcanizedb/pkg/core"
@@ -36,7 +36,7 @@ var _ = XDescribe("Deal transformer", func() {
 		db          *postgres.DB
 		blockChain  core.BlockChain
 		dealConfig  transformer.EventTransformerConfig
-		initializer shared.EventTransformer
+		initializer event.Transformer
 		logFetcher  fetcher.ILogFetcher
 		addresses   []common.Address
 		topics      []common.Hash
@@ -60,10 +60,10 @@ var _ = XDescribe("Deal transformer", func() {
 			Topic: constants.DealSignature(),
 		}
 
-		initializer = shared.EventTransformer{
+		initializer = event.Transformer{
 			Config:     dealConfig,
-			Converter:  &deal.DealConverter{},
-			Repository: &deal.DealRepository{},
+			Converter:  &deal.Converter{},
+			Repository: &deal.Repository{},
 		}
 
 		logFetcher = fetcher.NewLogFetcher(blockChain)
@@ -86,7 +86,7 @@ var _ = XDescribe("Deal transformer", func() {
 
 		headerSyncLogs := test_data.CreateLogs(header.Id, logs, db)
 
-		transformer := initializer.NewEventTransformer(db)
+		transformer := initializer.NewTransformer(db)
 		err = transformer.Execute(headerSyncLogs)
 		Expect(err).NotTo(HaveOccurred())
 
@@ -116,7 +116,7 @@ var _ = XDescribe("Deal transformer", func() {
 
 		headerSyncLogs := test_data.CreateLogs(header.Id, logs, db)
 
-		transformer := initializer.NewEventTransformer(db)
+		transformer := initializer.NewTransformer(db)
 		err = transformer.Execute(headerSyncLogs)
 		Expect(err).NotTo(HaveOccurred())
 

@@ -20,7 +20,10 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	"github.com/vulcanize/mcd_transformers/test_config"
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/factories/event"
+	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
 
 	"github.com/vulcanize/mcd_transformers/transformers/events/deal"
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
@@ -29,11 +32,22 @@ import (
 )
 
 var _ = Describe("Flip Deal Converter", func() {
-	var converter = deal.DealConverter{}
+	var (
+		converter  	deal.Converter
+		db			*postgres.DB
+	)
+
+	BeforeEach(func() {
+		converter = deal.Converter{}
+		db = test_config.NewTestDB(test_config.NewTestNode())
+		converter.SetDB(db)
+	})
+
 	It("converts logs to models", func() {
 		models, err := converter.ToModels(constants.FlipABI(), []core.HeaderSyncLog{test_data.DealHeaderSyncLog})
 		Expect(err).NotTo(HaveOccurred())
-		Expect(models).To(Equal([]shared.InsertionModel{test_data.DealModel}))
+		expectedModel := test_data.DealModel
+		Expect(models).To(Equal([]event.InsertionModel{expectedModel}))
 	})
 
 	It("returns an error if the expected amount of topics aren't in the log", func() {

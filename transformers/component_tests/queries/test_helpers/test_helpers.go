@@ -735,7 +735,7 @@ type DealCreationInput struct {
 	Db              *postgres.DB
 	BidId           int
 	ContractAddress string
-	DealRepo        deal.DealRepository
+	DealRepo        deal.Repository
 	DealHeaderId    int64
 }
 

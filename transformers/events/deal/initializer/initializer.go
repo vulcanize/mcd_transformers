@@ -18,14 +18,15 @@ package initializer
 
 import (
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/factories/event"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
 
 	"github.com/vulcanize/mcd_transformers/transformers/events/deal"
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
 )
 
-var EventTransformerInitializer transformer.EventTransformerInitializer = shared.EventTransformer{
+var EventTransformerInitializer transformer.EventTransformerInitializer = event.Transformer{
 	Config:     shared.GetEventTransformerConfig(constants.DealLabel, constants.DealSignature()),
-	Converter:  &deal.DealConverter{},
-	Repository: &deal.DealRepository{},
-}.NewEventTransformer
+	Converter:  &deal.Converter{},
+	Repository: &deal.Repository{},
+}.NewTransformer

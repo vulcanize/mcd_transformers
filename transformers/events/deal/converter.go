@@ -19,17 +19,23 @@ package deal
 import (
 	"github.com/vulcanize/mcd_transformers/transformers/shared"
 	"github.com/vulcanize/mcd_transformers/transformers/shared/constants"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/factories/event"
 	"github.com/vulcanize/vulcanizedb/pkg/core"
+	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
 )
 
-type DealConverter struct{}
+type Converter struct{
+	db 		*postgres.DB
+}
+
 
 const (
 	logDataRequired   = true
 	numTopicsRequired = 3
 )
 
-func (DealConverter) ToModels(_ string, logs []core.HeaderSyncLog) (result []shared.InsertionModel, err error) {
+func (converter Converter) ToModels(_ string, logs []core.HeaderSyncLog) ([]event.InsertionModel, error) {
+	var results []event.InsertionModel
 	for _, log := range logs {
 		validationErr := shared.VerifyLog(log.Log, numTopicsRequired, logDataRequired)
 		if validationErr != nil {
@@ -38,23 +44,28 @@ func (DealConverter) ToModels(_ string, logs []core.HeaderSyncLog) (result []sha
 
 		bidId := log.Log.Topics[2].Big()
 
-		model := shared.InsertionModel{
+		result := event.InsertionModel{
 			SchemaName: "maker",
 			TableName:  "deal",
-			OrderedColumns: []string{
-				constants.HeaderFK, "bid_id", string(constants.AddressFK), constants.LogFK,
+			OrderedColumns: []event.ColumnName{
+				event.HeaderFK,
+				constants.BidColumn,
+				constants.AddressColumn,
+				event.LogFK,
 			},
-			ColumnValues: shared.ColumnValues{
-				"bid_id":           bidId.String(),
-				constants.HeaderFK: log.HeaderID,
-				constants.LogFK:    log.ID,
-			},
-			ForeignKeyValues: shared.ForeignKeyValues{
-				constants.AddressFK: log.Log.Address.String(),
+			ColumnValues: event.ColumnValues{
+				event.HeaderFK: 			log.HeaderID,
+				constants.BidColumn:    	bidId.String(),
+				constants.AddressColumn:    log.Log.Address.String(),
+				event.LogFK:    			log.ID,
 			},
 		}
-		result = append(result, model)
+		results = append(results, result)
 	}
 
-	return result, nil
+	return results, nil
+}
+
+func (converter *Converter) SetDB(db *postgres.DB) {
+	converter.db = db
 }
